@@ -1,0 +1,87 @@
+stateDiagram-v2
+
+    state Off
+    [*] --> Off
+    
+    state On
+    Off --> On : powerOn / pOn()
+    On --> Off : powerOff / pOff()
+    
+    state On {
+        region Journey {
+            state WaitingAtFirstStation
+            [*] --> WaitingAtFirstStation
+            
+            note right of WaitingAtFirstStation
+                entry / setCS(firstSegment)
+            end note
+            
+            state Moving
+            WaitingAtFirstStation --> Moving : afterStopDuration / setSpeed(currentSegment.speed)
+            
+            state Moving {
+                state Traveling
+                [*] --> Traveling
+                state H
+            }
+            
+            Moving --> Moving : enteredSegment [segmentType==regular] / setCS(segment), setSpeed(segment.speed)
+            Moving --> Moving : enteredSegment [segmentType==trafficLight && !lightRed] / setCS(segment), setSpeed(segment.speed)
+            
+            state StoppedAtTrafficLight
+            Moving --> StoppedAtTrafficLight : enteredSegment [segmentType==trafficLight && lightRed] / setCS(segment), stopAL(segment.location)
+            StoppedAtTrafficLight --> Moving : lightTurnedGreen / setSpeed(currentSegment.speed)
+            
+            state StoppedAtStation
+            Moving --> StoppedAtStation : enteredSegment [segmentType==station && !finalStation] / setCS(segment), stopAL(segment.location)
+            
+            state StoppedAtStation {
+                state DoorsOpening
+                [*] --> DoorsOpening
+                
+                note right of DoorsOpening
+                    entry / openDoors()
+                end note
+                
+                state WaitingAtStation
+                DoorsOpening --> WaitingAtStation : doorsOpened
+                
+                state DoorsClosing
+                WaitingAtStation --> DoorsClosing : afterStopDuration / closeDoors()
+            }
+            
+            StoppedAtStation --> Moving : doorsClosed / setSpeed(currentSegment.speed)
+            
+            state StoppedAtFinalStation
+            Moving --> StoppedAtFinalStation : enteredSegment [segmentType==station && finalStation] / setCS(segment), stopAL(segment.location)
+            
+            note right of StoppedAtFinalStation
+                entry / openDoors()
+            end note
+            
+            StoppedAtFinalStation --> Off : afterStopDuration / pOff()
+            
+            state EmergencyStopped
+            Moving --> EmergencyStopped : obstructionDetected / eStop()
+            EmergencyStopped --> H : cleared / setSpeed(currentSegment.speed)
+        }
+        
+        region SDS {
+            state SDSActive
+            [*] --> SDSActive
+            SDSActive --> SDSActive : after1sec / checkSegment()
+        }
+        
+        region MDS {
+            state MDSActive
+            [*] --> MDSActive
+            MDSActive --> MDSActive : after1sec / checkMovement()
+        }
+        
+        region ODS {
+            state ODSActive
+            [*] --> ODSActive
+            ODSActive --> ODSActive : after1sec / checkObstruction()
+        }
+    }
+

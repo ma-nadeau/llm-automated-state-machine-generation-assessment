@@ -1,0 +1,58 @@
+
+stateDiagram-v2
+    state Off
+    [*] --> Off
+    
+    state On
+    Off --> On : powerOn
+    On --> Off : powerOff
+    
+    state On {
+        state WaitingForLogin
+        [*] --> WaitingForLogin
+        
+        WaitingForLogin --> WaitingForLogin : tapCard [!authorized] / showLoginError()
+        
+        state LoggedIn
+        WaitingForLogin --> LoggedIn : tapCard [authorized]
+        
+        LoggedIn --> WaitingForLogin : logoff
+        LoggedIn --> LoggedIn : startPrint [queueEmpty] / showPrintError()
+        LoggedIn --> LoggedIn : startScan [!documentDetected] / showScanError()
+        
+        state PrintingProcess {
+            state Printing
+            [*] --> Printing
+            
+            state PrintSuspendedPaperJam
+            Printing --> PrintSuspendedPaperJam : paperJam
+            PrintSuspendedPaperJam --> Printing : resume
+            PrintSuspendedPaperJam --> LoggedIn : cancel
+            
+            state PrintSuspendedOutOfPaper
+            Printing --> PrintSuspendedOutOfPaper : outOfPaper
+            PrintSuspendedOutOfPaper --> Printing : resume
+            PrintSuspendedOutOfPaper --> LoggedIn : cancel
+            
+            Printing --> LoggedIn : done
+        }
+        
+        LoggedIn --> PrintingProcess : startPrint [!queueEmpty] / printDocument()
+        PrintingProcess --> LoggedIn : stop
+        
+        state ScanningProcess {
+            state Scanning
+            [*] --> Scanning
+            
+            state ScanSuspendedPaperJam
+            Scanning --> ScanSuspendedPaperJam : paperJam
+            ScanSuspendedPaperJam --> Scanning : resume
+            ScanSuspendedPaperJam --> LoggedIn : cancel
+            
+            Scanning --> LoggedIn : done
+        }
+        
+        LoggedIn --> ScanningProcess : startScan [documentDetected] / scanToEmail()
+        ScanningProcess --> LoggedIn : stop
+    }
+

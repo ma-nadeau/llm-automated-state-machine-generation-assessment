@@ -101,7 +101,7 @@ Each date folder contains the following files:
 ### Generated State Machine Files
 
 #### `output_single_prompt.txt` / `output_single_prompt.png` (One Stage)
-#### `output_two_shot_prompt.txt` / `output_two_shot_prompt.png` (Two Stage)
+#### `output_two_stage_prompt.txt` / `output_two_stage_prompt.png` (Two Stage)
 
 **Purpose:** The generated state machine diagram produced by the LLM based on the problem description
 
@@ -213,8 +213,8 @@ The grading results are classified using the following categories:
 - `grading_results.tsv` - LLM grading in TSV format of grading results (tab-separated)
 - `output_single_prompt.txt` - Generated state diagram from one stage (single prompt) - Mermaid code
 - `output_single_prompt.png` - Generated state diagram from one stage (single prompt) - PNG visualization
-- `output_two_shot_prompt.txt` - Generated state diagram from two stage (prompt with refinement) - Mermaid code
-- `output_two_shot_prompt.png` - Generated state diagram from two stage (prompt with refinement) - PNG visualization
+- `output_two_stage_prompt.txt` - Generated state diagram from two stage (prompt with refinement) - Mermaid code
+- `output_two_stage_prompt.png` - Generated state diagram from two stage (prompt with refinement) - PNG visualization
 
 
 # llm-automated-state-machine-design-eval
