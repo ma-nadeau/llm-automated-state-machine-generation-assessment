@@ -1,0 +1,55 @@
+Type	Element	Grading	Notes
+Composite State	DishwasherOn	0	No top-level composite state encompassing the entire system; student model starts directly with Idle
+Region	Door	0	No separate Door region modeling door states (Closed/Open/Locked)
+State	initial state (⇒ Closed)	0	No Door region or Closed state
+State	Closed	0	No Door region or Closed state
+Transition	open (Closed ⇒ Open)	0	No Door region or open transition between door states
+Transition	lock (Closed ⇒ Locked)	0	No Door region or lock transition
+State	Open	0	No Door region; DoorOpen state exists but in different context
+Transition	close (Open ⇒ Closed)	0	No Door region or close transition between door states
+State	Locked	0	No Door region or Locked state
+Transition	unlock (Locked ⇒ Closed)	0	No Door region or unlock transition
+Region	Washer	0	No separate Washer region; functionality exists but not as a parallel region
+State	initial state	1	Initial state correctly transitions to Idle
+Transition	r =1; dT=20; (initial state ⇒ Idle)	0	No initialization of variables r and dT on initial transition
+State	Idle	1	Idle state present and correctly positioned
+Transition	selectProgram(n) (Idle ⇒ Idle)	0	No selectProgram transition in Idle
+Guard	[n ≥ 1]	0	No selectProgram transition with guard
+Action	r = n;	0	No action setting number of cycles based on program selection
+Transition	toggleDryingTime (Idle ⇒ Idle)	0.5	extendDrying and reduceDrying transitions exist but do not toggle; they set fixed values
+Action	if dT = 20 then dT = 40 else dT = 20;	0.5	setDryingTime actions exist but are not conditional toggles
+Transition	start (Idle ⇒ Cleaning)	1	start transition from Idle to ProgramActive (which contains cleaning) present
+Guard	[door.isClosed()]	0	No guard checking door state on start transition
+Action	door.lock(); c = 1;	0.5	lockDoor() action present but no cycle counter initialization
+Composite State	Cleaning	1	WashCycle composite state represents the cleaning phase
+State	initial state (⇒ Intake)	1	Initial state in WashCycle transitions to WaterIntake
+State	Intake	1	WaterIntake state represents intake phase
+Transition	Intake ⇒ Washing	1	Transition from WaterIntake to Washing present
+State	Washing	1	Washing state present
+Transition	after 10 min (Washing ⇒ Drain)	1	Transition after10min from Washing to Draining present
+State	Drain	1	Draining state present
+Guard	[c < r]	1	Guard [cyclesRemaining > 0] semantically equivalent to [c < r]
+Transition	Drain ⇒ Intake	1	Transition from Draining back to WaterIntake with guard present
+Action	c++	1	decrementCycles() action semantically represents cycle progression
+Transition	(Drain ⇒ end state)	0.5	Transition from Draining to Drying exists but not to explicit end state within Cleaning
+Guard	[c ≥ r]	1	Guard [cyclesRemaining == 0] semantically equivalent to [c >= r]
+History State	History State for Cleaning	0	No history state in Cleaning composite
+Transition	toggleDryingTime (Cleaning ⇒ History State)	0.5	extendDrying/reduceDrying transitions exist in WashCycle but do not use history state
+Action	if dT = 20 then dT = 40 else dT = 20;	0.5	setDryingTime actions exist but are not conditional toggles
+Transition	Cleaning ⇒ Drying	1	Transition from Draining (end of WashCycle) to Drying present
+Action	door.unlock();	1	unlockDoor() action present on transition to Drying
+State	Drying	1	Drying state present
+Transition	after dT min (Drying ⇒ Idle)	1	dryingComplete transition from Drying to Idle represents timed completion
+Transition	extend DryingTime (Drying ⇒ Drying)	1	extendDrying self-transition on Drying present
+Action	dT = 40;	1	setDryingTime(40) action present on extendDrying transition
+Transition	open (Drying ⇒ Suspended)	1	openDoor transition from Drying to DoorOpen present
+State	Suspended	1	DoorOpen state represents suspended drying
+Transition	close (Suspended ⇒ Drying)	1	closeDoor transition from DoorOpen to Drying present
+Transition	after 5 min (Suspended ⇒ Idle)	1	after5min transition from DoorOpen to Idle present
+State	additional elements	0	No incorrect additional states
+Transition	additional elements	0	No incorrect additional transitions
+Guard	additional elements	0	No incorrect additional guards
+Action	additional elements	0	No incorrect additional actions
+Composite State	additional elements	0	ProgramActive is a reasonable composite state grouping
+Region	additional elements	0	No incorrect additional regions
+History State	additional elements	0	No incorrect additional history states

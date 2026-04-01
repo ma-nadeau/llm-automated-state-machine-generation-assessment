@@ -1,0 +1,1153 @@
+=== Shot 1 Raw LLM Response ===
+<thinking>
+Step 1: Derive implicit knowledge
+- The SpaManager is the top-level system that controls both Sauna and Jacuzzi
+- Both Sauna and Jacuzzi have Off and On states
+- When a sauna is turned off, all heating, fan, and water dispersal activities stop
+- When a Jacuzzi is turned off, all jet activities stop
+- The sauna temperature oscillates between 85°C and 90°C when on
+- The fan in the sauna operates independently of the heating cycle
+- Water dispersal in the sauna is a one-time action that completes, not a continuous state
+- The 15-minute timer for water dispersal starts after water is dispersed
+- The Jacuzzi pressure level persists across pattern changes
+- The Jacuzzi pause feature is temporary (2 minutes) and returns to the previous state
+- Both remote control (SpaManager) and local panel control the Jacuzzi identically
+- The ejection pattern selection is independent of the pressure level
+- Default ejection pattern is pattern 1 (implied by "choose from twenty five different ejection patterns")
+
+Step 2: Extract states
+Sauna states:
+- Off: sauna is powered off
+- On: sauna is powered on (composite state containing heating and fan control)
+  - Heating: stove is actively heating
+  - Maintaining: stove has reached 90°C and is not heating
+  - FanOff: fan is not active
+  - FanMonitoring: humidity exceeded 40% and timer started
+  - FanOn: fan is actively running
+  - WaterDispersal states are handled as transitions/actions, not persistent states
+
+Jacuzzi states:
+- Off: Jacuzzi is powered off
+- On: Jacuzzi is powered on (composite state)
+  - Level1: jets at low pressure
+  - Level2: jets at medium pressure
+  - Level3: jets at high pressure
+  - Paused: jets stopped temporarily for 2 minutes
+  - Pattern selection (1-25) is a variable, not a state
+
+Step 3: Extract transitions
+Sauna:
+- Off --> On: turnOn
+- On --> Off: turnOff
+- Heating --> Maintaining: [temp >= 90]
+- Maintaining --> Heating: [temp < 85]
+- FanOff --> FanMonitoring: [humidity > 40%]
+- FanMonitoring --> FanOff: [humidity <= 40%]
+- FanMonitoring --> FanOn: after(3min)
+- FanOn --> FanOff: after(5min)
+- Water dispersal: disperseWater [humidity < 40% && !fanActive] (self-transition on On state or handled within)
+
+Jacuzzi:
+- Off --> On: turnOn (enters Level1 by default)
+- On --> Off: turnOff
+- Level1 --> Level2: increaseLevel
+- Level2 --> Level3: increaseLevel
+- Level3 --> Level2: decreaseLevel
+- Level2 --> Level1: decreaseLevel
+- Any level --> Paused: pause
+- Paused --> (previous level): after(2min) - requires history state
+- Pattern selection: selectPattern(n) [n >= 1 && n <= 25] (self-transition on active level)
+
+Step 4: Extract hierarchical states
+- SpaManager (top level, implicit)
+  - Sauna (composite)
+    - Off
+    - On (composite with parallel regions for heating and fan)
+  - Jacuzzi (composite)
+    - Off
+    - On (composite with substates for levels and pause)
+
+Sauna.On needs parallel regions:
+- HeatingControl region: Heating, Maintaining
+- FanControl region: FanOff, FanMonitoring, FanOn
+
+Jacuzzi.On needs:
+- Level substates: Level1, Level2, Level3
+- Paused state
+- History state to return from Paused
+
+Step 5: Extract concurrent regions
+Sauna.On has two parallel regions:
+1. HeatingControl: manages the heating cycle (Heating ↔ Maintaining)
+2. FanControl: manages the fan based on humidity (FanOff → FanMonitoring → FanOn → FanOff)
+
+These operate independently - the fan can activate regardless of heating state.
+
+Jacuzzi does not have parallel regions - pressure level and pattern are not truly concurrent (pattern is a parameter of the level state).
+
+SpaManager has two parallel regions:
+1. SaunaControl: manages the sauna
+2. JacuzziControl: manages the Jacuzzi
+
+Step 6: Extract history states
+Jacuzzi.On needs a history state:
+- When pause is activated, the system must remember which level (1, 2, or 3) was active
+- After 2 minutes, the system returns to that level
+- History state H is placed in Jacuzzi.On
+- Paused --> H: after(2min)
+
+Sauna does not need history states:
+- Heating/Maintaining cycle continues based on temperature, not re-entry
+- Fan control is based on humidity monitoring, not re-entry
+
+Step 7: Assemble the final Mermaid diagram
+
+Structure:
+```
+stateDiagram-v2
+[*] --> SpaManager
+state SpaManager {
+    region SaunaControl {
+        state SaunaOff
+        state SaunaOn {
+            region HeatingControl { ... }
+            region FanControl { ... }
+        }
+    }
+    region JacuzziControl {
+        state JacuzziOff
+        state JacuzziOn {
+            state Level1
+            state Level2
+            state Level3
+            state Paused
+            state H
+        }
+    }
+}
+```
+
+Water dispersal handling:
+- It's a one-time action, not a state
+- Implemented as self-transition on SaunaOn with guard and action
+- The 15-minute cooldown is tracked by a timer variable
+
+Pattern selection:
+- Implemented as self-transition on each level state
+- Guard ensures pattern number is valid (1-25)
+</thinking>
+
+<mermaid_code_solution>
+stateDiagram-v2
+    state SpaManager
+    [*] --> SpaManager
+    
+    state SpaManager {
+        region SaunaControl {
+            state SaunaOff
+            [*] --> SaunaOff
+            
+            state SaunaOn
+            SaunaOff --> SaunaOn : turnOn
+            SaunaOn --> SaunaOff : turnOff
+            
+            state SaunaOn {
+                region HeatingControl {
+                    state Heating
+                    [*] --> Heating
+                    
+                    note right of Heating
+                        do: heatStove()
+                    end note
+                    
+                    state Maintaining
+                    Heating --> Maintaining : [temp >= 90]
+                    Maintaining --> Heating : [temp < 85]
+                }
+                
+                region FanControl {
+                    state FanOff
+                    [*] --> FanOff
+                    
+                    state FanMonitoring
+                    FanOff --> FanMonitoring : [humidity > 40%] / startTimer(3min)
+                    FanMonitoring --> FanOff : [humidity <= 40%]
+                    
+                    state FanOn
+                    FanMonitoring --> FanOn : after(3min) / activateFan()
+                    FanOn --> FanOff : after(5min) / deactivateFan()
+                    
+                    note right of FanOn
+                        do: runFan()
+                    end note
+                }
+            }
+            
+            SaunaOn --> SaunaOn : disperseWater [humidity < 40% && !fanActive()] / pourWater() and startCooldown(15min)
+        }
+        
+        region JacuzziControl {
+            state JacuzziOff
+            [*] --> JacuzziOff
+            
+            state JacuzziOn
+            JacuzziOff --> JacuzziOn : turnOn
+            JacuzziOn --> JacuzziOff : turnOff
+            
+            state JacuzziOn {
+                state Level1
+                [*] --> Level1
+                
+                note right of Level1
+                    do: ejectWater(lowPressure)
+                end note
+                
+                state Level2
+                Level1 --> Level2 : increaseLevel
+                Level2 --> Level1 : decreaseLevel
+                
+                note right of Level2
+                    do: ejectWater(mediumPressure)
+                end note
+                
+                state Level3
+                Level2 --> Level3 : increaseLevel
+                Level3 --> Level2 : decreaseLevel
+                
+                note right of Level3
+                    do: ejectWater(highPressure)
+                end note
+                
+                state Paused
+                Level1 --> Paused : pause
+                Level2 --> Paused : pause
+                Level3 --> Paused : pause
+                
+                state H
+                Paused --> H : after(2min)
+                
+                Level1 --> Level1 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                Level2 --> Level2 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                Level3 --> Level3 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+            }
+        }
+    }
+</mermaid_code_solution>
+
+=== Shot 1 (Initial) ===
+stateDiagram-v2
+    state SpaManager
+    [*] --> SpaManager
+    
+    state SpaManager {
+        region SaunaControl {
+            state SaunaOff
+            [*] --> SaunaOff
+            
+            state SaunaOn
+            SaunaOff --> SaunaOn : turnOn
+            SaunaOn --> SaunaOff : turnOff
+            
+            state SaunaOn {
+                region HeatingControl {
+                    state Heating
+                    [*] --> Heating
+                    
+                    note right of Heating
+                        do: heatStove()
+                    end note
+                    
+                    state Maintaining
+                    Heating --> Maintaining : [temp >= 90]
+                    Maintaining --> Heating : [temp < 85]
+                }
+                
+                region FanControl {
+                    state FanOff
+                    [*] --> FanOff
+                    
+                    state FanMonitoring
+                    FanOff --> FanMonitoring : [humidity > 40%] / startTimer(3min)
+                    FanMonitoring --> FanOff : [humidity <= 40%]
+                    
+                    state FanOn
+                    FanMonitoring --> FanOn : after(3min) / activateFan()
+                    FanOn --> FanOff : after(5min) / deactivateFan()
+                    
+                    note right of FanOn
+                        do: runFan()
+                    end note
+                }
+            }
+            
+            SaunaOn --> SaunaOn : disperseWater [humidity < 40% && !fanActive()] / pourWater() and startCooldown(15min)
+        }
+        
+        region JacuzziControl {
+            state JacuzziOff
+            [*] --> JacuzziOff
+            
+            state JacuzziOn
+            JacuzziOff --> JacuzziOn : turnOn
+            JacuzziOn --> JacuzziOff : turnOff
+            
+            state JacuzziOn {
+                state Level1
+                [*] --> Level1
+                
+                note right of Level1
+                    do: ejectWater(lowPressure)
+                end note
+                
+                state Level2
+                Level1 --> Level2 : increaseLevel
+                Level2 --> Level1 : decreaseLevel
+                
+                note right of Level2
+                    do: ejectWater(mediumPressure)
+                end note
+                
+                state Level3
+                Level2 --> Level3 : increaseLevel
+                Level3 --> Level2 : decreaseLevel
+                
+                note right of Level3
+                    do: ejectWater(highPressure)
+                end note
+                
+                state Paused
+                Level1 --> Paused : pause
+                Level2 --> Paused : pause
+                Level3 --> Paused : pause
+                
+                state H
+                Paused --> H : after(2min)
+                
+                Level1 --> Level1 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                Level2 --> Level2 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                Level3 --> Level3 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+            }
+        }
+    }
+
+=== Shot 2 Refinement Prompt (sent to LLM) ===
+<instructions>
+The diagram in <previous_output> is your first attempt at modeling the system in <system_description>. First drafts commonly have structural gaps: multi-step processes collapsed into single transitions, states that should be grouped into composites left flat, missing history states, and incomplete transition labels. Treat the previous output as a starting point, not a finished product. Use <system_description> as your ground truth — if any described behavior is not fully and accurately captured in the diagram, restructure it until it is. The checklist in <common_errors> identifies the most common failure patterns; work through each one critically. The diagram you output must also conform to the syntax rules in <mermaid_syntax>, which the downstream parser enforces mechanically.
+</instructions>
+
+<system_description>
+The SpaManager allows saunas and Jacuzzis to be controlled from a central management point. With SpaManager it is possible to turn a sauna or Jacuzzi on and off.
+When a sauna is turned on, the stove in the sauna heats until a temperature of 90°C is reached, at which point the stove stops heating until the temperature falls below 85°C and consequently the stove starts heating again. As a safety feature, a humidity sensor monitors the sauna and activates a fan when the humidity exceeds the safety threshold of 40% for more than 3 minutes. The fan turns off automatically after 5 minutes. SpaManager also controls whether eucalyptus-infused water is poured over the stove to increase the humidity. Upon request from the user, a predetermined amount of water is dispersed, if the humidity is below the safety threshold and the fan is not active. At most, water is dispersed once every 15 minutes.
+When a Jacuzzi is turned on, the jets of the Jacuzzi eject water at level 1 (the low pressure setting). This can be increased first to level 2 (medium pressure setting) and then to level 3 (high pressure setting). Similarly, the level can be reduced gradually from the highest to the lowest. Furthermore, the user can choose from twenty five different ejection patterns, which determine the order, frequency, and duration of active jets. All ejection patterns work for all three pressure levels. The Jacuzzi comes with a pause feature, which stops the jets from ejecting water for two minutes. The Jacuzzi can also be controlled via a panel attached to the Jacuzzi in the same way as it is controlled remotely from the central management point.
+</system_description>
+
+<mermaid_syntax>
+
+<state_declaration>
+Declare every state explicitly before referencing it anywhere in the diagram, the parser
+resolves names top-to-bottom, so an undeclared name causes a hard failure.
+
+Syntax: `state StateName`
+</state_declaration>
+
+<initial_state>
+Every diagram and every composite/parallel region must have exactly one initial pseudostate.
+Declare the target state BEFORE the initial transition; because the parser reads declarations
+top-to-bottom, a state that appears in a transition before its `state` line causes a hard failure.
+
+Syntax: `[*] --> StateName`
+
+<examples>
+<example type="correct">
+    stateDiagram-v2
+    state Off
+    state On
+    [*] --> Off
+    Off --> On : powerOn
+    On --> Off : powerOff
+</example>
+
+<example type="incorrect state referenced before its declaration">
+    stateDiagram-v2
+    [*] --> Off          ← Off is used here but has not been declared yet
+    state On
+    Off --> On : powerOn
+    On --> Off : powerOff
+</example>
+</examples>
+</initial_state>
+
+<transitions>
+Declare every transition explicitly. Include both source and target state names on every line.
+
+Syntax - use the most specific form that applies:
+- Event, Guard, and Action: `SourceState --> TargetState : event [guard] / action`
+- Event and Action:         `SourceState --> TargetState : event / action`
+- Event and Guard:          `SourceState --> TargetState : event [guard]`
+- Event only:               `SourceState --> TargetState : event`
+</transitions>
+
+<guards>
+A guard is a boolean condition that must evaluate to true for the transition to fire.
+Enclose the guard in square brackets immediately after the event label so the parser
+can distinguish it from the action.
+
+Syntax: `SourceState --> TargetState : event [guard]`
+</guards>
+
+<actions>
+<transition_actions>
+Purpose: describe activities executed when a transition fires (e.g., sending a signal,
+updating a variable). Actions run only when the transition is taken AND any guard
+evaluates to true.
+
+Syntax: `Source --> Target : event [guard] / action`
+
+Action labels use imperative style and may include arguments: `lockDoor()`, `startTimer(10s)`.
+When multiple actions must occur on the same logical event, place them on separate transitions
+or document them in a `note` block for clarity.
+</transition_actions>
+
+<state_actions>
+Purpose:
+- `entry` - executes once when the state is entered.
+- `exit`  - executes once when the state is exited.
+- `do`    - executes continuously while the system remains in the state.
+
+Declare state actions in a `note right of` block placed AFTER the state or composite-state
+declaration - the parser expects the note to follow its target state.
+
+Syntax:
+    note right of StateName
+        entry / actionOnEntry()
+        exit / actionOnExit()
+        do: ongoingAction()
+    end note
+
+<example>
+    state WashCycle {{
+        [*] --> WaterIntake
+        WaterIntake --> Washing : tankFull
+    }}
+
+    note right of WashCycle
+        entry / lockDoor()
+        exit / unlockDoor()
+        do: monitorWaterLevel()
+    end note
+</example>
+</state_actions>
+</actions>
+
+<events>
+An event is the trigger that causes a transition to fire.
+Declare it after the colon on the transition line.
+
+Syntax: `SourceState --> TargetState : event`
+</events>
+
+<parallel_regions>
+Use parallel regions to model concurrent activities that proceed independently.
+Declare each region with the `region` keyword inside a parent composite state.
+Each region is self-contained: declare its own states and its own initial pseudostate
+(`[*] --> Substate`) - missing either causes a parse error for that region.
+Cross-region transitions must reference explicit substate names.
+
+Parallel regions may contain composite states; apply the composite-state rules inside
+each region exactly as you would at the top level.
+
+<example>
+    stateDiagram-v2
+    [*] --> ParallelController
+    state ParallelController {{
+        region RegionA {{
+            state Substate1
+            state Substate2
+            [*] --> Substate1
+            Substate1 --> Substate2 : event1
+        }}
+        region RegionWithComposite {{
+            [*] --> CompositeState
+            state CompositeState {{
+                state Substate3
+                state Substate4
+                [*] --> Substate3
+                Substate3 --> Substate4 : event2
+            }}
+        }}
+    }}
+</example>
+</parallel_regions>
+
+<composite_states>
+Purpose: group related substates under a named parent to model internal phases while
+keeping the same external interface.
+Use a composite state when:
+- A state has multiple internal phases or steps.
+- Substates share external transitions or entry/exit behavior.
+- Re-entry must resume the last active substate (pair with a history state).
+- The flat model becomes too complex to read.
+
+Syntax: `state CompositeName {{ ... }}`
+Declare substates and an initial pseudostate inside the braces.
+
+Typically, a composite state will have a history state to enable resuming the last active substate on re-entry, but this is not strictly required if the system's behavior does not demand it. If a history state is included, follow the rules in the <history_states> section.
+
+Rules - each violation causes a parse or semantic error:
+1. Declare the composite state before referencing it in any transition.
+2. The composite block must contain an initial pseudostate (`[*] --> Substate`).
+3. Place entry/exit/do `note` blocks AFTER the composite declaration, outside the braces.
+4. If a history state is declared inside the composite, it is exclusively for external
+   re-entry; substates must not transition directly to it. The two valid use cases for a history state are:
+   a) The composite state itself transitions to its history state on re-entry:
+        `Composite --> H : reenter / resumeAction`
+    b) An external state transitions directly to the history state:
+        `Outside --> H : reenter`
+   Any other usage is a violation that causes incorrect behavior or parse errors.
+
+<example>
+    stateDiagram-v2
+    [*] --> Device
+    state Device {{
+        state Idle
+        state Active {{
+            state Step1
+            state Step2
+            [*] --> Step1
+            Step1 --> Step2 : next
+        }}
+        Idle --> Active : start
+    }}
+
+    note right of Active
+        entry / startTimer()
+        exit / stopTimer()
+    end note
+</example>
+</composite_states>
+
+<history_states>
+Purpose: when a composite state is re-entered from outside, a history state causes the
+machine to resume the last active substate instead of restarting from the initial pseudostate.
+
+Rules - violations produce incorrect re-entry behavior or parse errors:
+1. Declare history states inside the composite state's block.
+2. Target a history state only from a transition that originates OUTSIDE the composite state,
+   or from the composite state itself (e.g., `Composite --> H : reenter / resumeAction`
+   or `Outside --> H : reenter`).
+3. Substates inside the same composite must NEVER transition directly to the history state.
+4. History states are exclusively for external re-entry; do not use them for internal
+   navigation, sequencing, or normal state flow.
+
+<examples>
+<example type="correct - composite transitions to its own history state">
+    stateDiagram-v2
+    [*] --> Outside
+    state Outside
+    state Composite
+    state Composite {{
+        state A
+        state B
+        state H
+        [*] --> A
+        A --> B : toB
+    }}
+    Composite --> H : reenter / resumeAction
+    Outside --> Composite : enter
+</example>
+
+<example type="correct - external state transitions directly to history state">
+    stateDiagram-v2
+    [*] --> Outside
+    state Outside
+    state Composite
+    state Composite {{
+        state A
+        state B
+        state H
+        [*] --> A
+        A --> B : toB
+    }}
+    Outside --> H : reenter
+    Outside --> Composite : enter
+</example>
+
+<example type="incorrect - substate transitions directly to history state">
+    stateDiagram-v2
+    [*] --> Outside
+    Outside --> Composite : enter
+    state Composite {{
+        state A
+        state H
+        [*] --> A
+        A --> H : illegal / bad    ← substates must never target the history state
+    }}
+</example>
+</examples>
+</history_states>
+
+</mermaid_syntax>
+
+<previous_output>
+stateDiagram-v2
+    state SpaManager
+    [*] --> SpaManager
+    
+    state SpaManager {
+        region SaunaControl {
+            state SaunaOff
+            [*] --> SaunaOff
+            
+            state SaunaOn
+            SaunaOff --> SaunaOn : turnOn
+            SaunaOn --> SaunaOff : turnOff
+            
+            state SaunaOn {
+                region HeatingControl {
+                    state Heating
+                    [*] --> Heating
+                    
+                    note right of Heating
+                        do: heatStove()
+                    end note
+                    
+                    state Maintaining
+                    Heating --> Maintaining : [temp >= 90]
+                    Maintaining --> Heating : [temp < 85]
+                }
+                
+                region FanControl {
+                    state FanOff
+                    [*] --> FanOff
+                    
+                    state FanMonitoring
+                    FanOff --> FanMonitoring : [humidity > 40%] / startTimer(3min)
+                    FanMonitoring --> FanOff : [humidity <= 40%]
+                    
+                    state FanOn
+                    FanMonitoring --> FanOn : after(3min) / activateFan()
+                    FanOn --> FanOff : after(5min) / deactivateFan()
+                    
+                    note right of FanOn
+                        do: runFan()
+                    end note
+                }
+            }
+            
+            SaunaOn --> SaunaOn : disperseWater [humidity < 40% && !fanActive()] / pourWater() and startCooldown(15min)
+        }
+        
+        region JacuzziControl {
+            state JacuzziOff
+            [*] --> JacuzziOff
+            
+            state JacuzziOn
+            JacuzziOff --> JacuzziOn : turnOn
+            JacuzziOn --> JacuzziOff : turnOff
+            
+            state JacuzziOn {
+                state Level1
+                [*] --> Level1
+                
+                note right of Level1
+                    do: ejectWater(lowPressure)
+                end note
+                
+                state Level2
+                Level1 --> Level2 : increaseLevel
+                Level2 --> Level1 : decreaseLevel
+                
+                note right of Level2
+                    do: ejectWater(mediumPressure)
+                end note
+                
+                state Level3
+                Level2 --> Level3 : increaseLevel
+                Level3 --> Level2 : decreaseLevel
+                
+                note right of Level3
+                    do: ejectWater(highPressure)
+                end note
+                
+                state Paused
+                Level1 --> Paused : pause
+                Level2 --> Paused : pause
+                Level3 --> Paused : pause
+                
+                state H
+                Paused --> H : after(2min)
+                
+                Level1 --> Level1 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                Level2 --> Level2 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                Level3 --> Level3 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+            }
+        }
+    }
+</previous_output>
+
+<common_errors>
+Each entry below names an error, explains WHY it causes a problem, and shows the correct pattern. Check your output against each one in order.
+
+<error id="1" name="Missing history states for composite states that can be interrupted and resumed">
+When a composite state can be interrupted by an external event and later re-entered, a history state (`state H` declared inside the composite) must be present so the machine resumes the last active substate rather than restarting from the initial pseudostate. Re-entry from outside the composite should target H directly. If the system description implies interrupted-and-resumed behavior for a composite state and your diagram omits the history state, add it.
+
+Two legal patterns for targeting a history state:
+- The composite state itself transitions to its history state on re-entry:
+  `CompositeState --> H : reenter`
+- A state outside the composite transitions directly to H:
+  `OutsideState --> H : reenter`
+
+<examples>
+<example type="incorrect – composite interrupted but no history state">
+    state Active {
+        state Step1
+        state Step2
+        [*] --> Step1
+        Step1 --> Step2 : next
+    }
+    state Suspended
+    Active --> Suspended : interrupt
+    Suspended --> Active : resume    ← resumes from Step1 every time, ignoring prior progress
+</example>
+
+<example type="correct – history state preserves last active substate">
+    state Active {
+        state Step1
+        state Step2
+        state H
+        [*] --> Step1
+        Step1 --> Step2 : next
+    }
+    state Suspended
+    Active --> Suspended : interrupt
+    Suspended --> H : resume    ← resumes from whichever substate was active
+</example>
+</examples>
+</error>
+
+<error id="2" name="Missing transitions implied by the system description">
+Re-read the system description and compare every event, condition, or behavioral path it describes against the transitions in your diagram. A transition is missing when the description clearly states that one state can lead to another under some event or condition but no corresponding `SourceState --> TargetState : event` line exists in the diagram. Missing transitions cause the machine to get stuck or behave incorrectly at runtime — the parser accepts the diagram but the modeled behavior is wrong. Add every transition that is grounded in the system description and absent from your output.
+
+<examples>
+<example type="incorrect – error recovery transition omitted">
+    state Processing
+    state Done
+    state Error
+    [*] --> Processing
+    Processing --> Done : success
+    ← description says errors can be retried, but Processing --> Error and Error --> Processing are missing
+</example>
+
+<example type="correct – all described transitions present">
+    state Processing
+    state Done
+    state Error
+    [*] --> Processing
+    Processing --> Done : success
+    Processing --> Error : failure
+    Error --> Processing : retry
+</example>
+</examples>
+</error>
+
+<error id="3" name="Incomplete transition labels — missing guards or actions described in the system">
+Re-read the system description for each transition in your diagram. A guard is missing when the description states a condition that must be true for the transition to fire but no `[condition]` appears on that transition line. An action is missing when the description states that an activity occurs when a transition fires but no `/ action` appears on that line. Omitting guards makes the machine fire unconditionally where it should not; omitting actions loses behavior that the system requires. Add every guard and action that is explicitly described and absent from your output.
+
+<examples>
+<example type="incorrect – guard and action omitted">
+    Idle --> Active : start
+    ← description says transition only fires when authorized, and door must lock on entry
+</example>
+
+<example type="correct – guard and action present">
+    Idle --> Active : start [authorized] / lockDoor()
+</example>
+</examples>
+</error>
+
+<error id="4" name="Multi-step behavioral sequences collapsed into a single transition">
+When the system description describes a behavior that unfolds in multiple distinct phases — where the system waits for input, waits for a timer, or offers a cancellable intermediate step — each phase must be a separate state. Collapsing these phases into a single transition loses intermediate behavior that the model must capture.
+
+Signs that a process needs intermediate states:
+- The description uses "then" between distinct phases of a process.
+- A phase exists where the system waits for the user to act before proceeding.
+- A timed waiting phase exists (the system waits X seconds before something fires).
+- A step can be cancelled or reversed before the process completes.
+
+Re-read every described process and verify that each distinct phase is represented as a state, not folded into a guard or event label on a single transition.
+
+<examples>
+<example type="incorrect – multi-step process collapsed into one transition">
+    state Active
+    state Off
+    Active --> Off : triggerAction [after5s]
+    ← description says: user triggers action → system enters a waiting phase with a confirmation message → user confirms → completes (cancellable during the wait)
+</example>
+
+<example type="correct – intermediate waiting phase modeled as its own state">
+    state Active
+    state PendingConfirmation
+    state Off
+    Active --> PendingConfirmation : triggerAction
+    PendingConfirmation --> Off : confirmed
+    PendingConfirmation --> Active : cancel
+</example>
+</examples>
+</error>
+
+<error id="5" name="Flat structure where composite states are implied">
+When a set of states all share the same external transitions (every state in the group exits on the same event to the same target), or when the description refers to them collectively as a named process or mode, they belong inside a composite state. Leaving them flat duplicates the shared transitions on every state and loses the hierarchical structure the description implies.
+
+Signs that states should be grouped into a composite:
+- Multiple states all exit on the same event to the same target state.
+- The description names a process or operational mode that contains several   internal phases.
+- A group of states all represent sub-steps of a single described operation.
+
+Group the states into a composite, declare a single shared external transition on the composite, and declare an initial pseudostate inside it.
+
+<examples>
+<example type="incorrect – substates flat, each repeating the same shared exit">
+    state StepA
+    state StepB
+    state StepC
+    [*] --> StepA
+    StepA --> StepB : next
+    StepB --> StepC : next
+    StepA --> Idle : interrupt
+    StepB --> Idle : interrupt
+    StepC --> Idle : interrupt
+</example>
+
+<example type="correct – substates grouped in a composite with one shared exit">
+    state Process {
+        state StepA
+        state StepB
+        state StepC
+        [*] --> StepA
+        StepA --> StepB : next
+        StepB --> StepC : next
+    }
+    Process --> Idle : interrupt
+</example>
+</examples>
+</error>
+</common_errors>
+
+<task>
+Work through the following steps in order. Place your review in <thinking> tags, then write the corrected diagram in step 3.
+
+1. Check your previous output against each error in <common_errors> in order    (errors 1, 2, 3, 4, 5). For each error, state explicitly whether it is    present and, if so, identify every affected state or transition.
+2. List every correction and addition you will make. If no errors are found,    state that explicitly and confirm the diagram is correct as-is.
+3. Output the corrected (or confirmed-correct) diagram using the exact    tags shown — nothing else may appear after the closing tag:
+   <mermaid_code_solution>YOUR_MERMAID_CODE_HERE</mermaid_code_solution>
+</task>
+
+<output_instructions>
+- Begin your response immediately with `<thinking>` tags — the very first   character of your response must be `<`. Any text before `<thinking>` is   a violation.
+- Place your review (steps 1–2) inside <thinking>...</thinking> tags.
+- Write plain Mermaid code inside the solution tags — no markdown fences   (```), no comments, no extra text.
+- Nothing may appear after the closing </mermaid_code_solution> tag.
+- You may add states, intermediate phases, composite structures, transitions,   guards, and actions whenever they are grounded in the system description.   Do not invent behavior that has no basis in the description.
+</output_instructions>
+
+
+=== Shot 2 Raw LLM Response ===
+<thinking>
+Let me work through each error systematically:
+
+**Error 1: Missing history states for composite states that can be interrupted and resumed**
+
+Looking at the previous output:
+- `SaunaOn` composite state: Can be turned off and back on. When turned back on, should it resume the last heating/fan state? The description says "When a sauna is turned on, the stove in the sauna heats..." which implies it always starts heating from the beginning. No history state needed.
+- `JacuzziOn` composite state: Can be turned off and back on. The description says "When a Jacuzzi is turned on, the jets of the Jacuzzi eject water at level 1" - this explicitly states it starts at level 1, not resuming. No history state needed for the main JacuzziOn state.
+- However, the `Paused` state in JacuzziOn IS an interruption that should resume! The description says "The Jacuzzi comes with a pause feature, which stops the jets from ejecting water for two minutes." After pause ends, it should resume the level it was at before pausing. The current diagram has `Paused --> H : after(2min)` which is correct usage of history state H.
+
+Wait, I need to check if H is properly declared. Looking at the previous output, `state H` is declared inside JacuzziOn, and `Paused --> H : after(2min)` targets it. This is correct - an internal state (Paused) transitioning to the history state to resume. Actually, re-reading the rules: "Substates inside the same composite must NEVER transition directly to the history state." This is a violation! The Paused state is inside JacuzziOn and should not transition to H directly.
+
+The correct pattern should be: Paused should transition back to a specific level, OR we need to restructure this. Actually, looking more carefully at the description: "The Jacuzzi comes with a pause feature, which stops the jets from ejecting water for two minutes." This means pause should resume to the previous level. But the rules say substates cannot transition to history states.
+
+The solution: The pause feature should be modeled differently. Since all three levels can pause, and pause should resume to the previous level, we need to either:
+1. Have explicit transitions from Paused back to each level (but we don't know which)
+2. Model the levels and pause as parallel regions (not appropriate here)
+3. Create a composite for the active jet states (Level1, Level2, Level3) and have Paused outside that composite transition to the history state
+
+Actually, re-reading the rules more carefully: History states are for when you EXIT a composite and re-enter it. The pause is WITHIN the same composite. This is a different pattern. We need to model pause differently - perhaps as a state that remembers which level to return to, or we need to restructure.
+
+Let me reconsider: The levels (Level1, Level2, Level3) should be in their own composite state "JetsActive" or similar, and Paused should be a sibling state at the same level. Then when resuming from Paused, we transition to the history state of JetsActive.
+
+**Error 2: Missing transitions implied by the system description**
+
+Let me check all described behaviors:
+- Sauna: turn on/off ✓, heating cycle ✓, fan activation ✓, water dispersion ✓
+- Jacuzzi: turn on/off ✓, level increase/decrease ✓, pattern selection ✓, pause ✓
+- "The Jacuzzi can also be controlled via a panel attached to the Jacuzzi in the same way as it is controlled remotely" - this doesn't require additional transitions, just means the same events can come from different sources.
+
+All transitions seem present.
+
+**Error 3: Incomplete transition labels — missing guards or actions**
+
+Checking each transition:
+- `SaunaOff --> SaunaOn : turnOn` - should this have an action to start heating? The description says "the stove in the sauna heats" which is captured by the Heating state's do action. OK.
+- `Heating --> Maintaining : [temp >= 90]` - should have an action to stop heating? The Maintaining state doesn't have a "do: heatStove()" so the heating stops implicitly. Could be clearer with `/ stopHeating()` action.
+- `FanOff --> FanMonitoring : [humidity > 40%] / startTimer(3min)` - this looks good.
+- `FanMonitoring --> FanOn : after(3min) / activateFan()` - good.
+- `FanOn --> FanOff : after(5min) / deactivateFan()` - good.
+- `SaunaOn --> SaunaOn : disperseWater [humidity < 40% && !fanActive()] / pourWater() and startCooldown(15min)` - the "and" syntax is not standard Mermaid. Should be `/ pourWater(), startCooldown(15min)` or separate actions. Also, this is a self-transition on SaunaOn, but the water dispersion should probably only happen when in certain substates.
+- `JacuzziOff --> JacuzziOn : turnOn` - should have `/ setLevel(1)` or similar? Actually, the initial state inside JacuzziOn is Level1, so this is implicit.
+- Pattern selection transitions look good.
+
+The water dispersion transition is problematic. It's a self-transition on the composite state SaunaOn, but the description says "Upon request from the user, a predetermined amount of water is dispersed, if the humidity is below the safety threshold and the fan is not active." This should be available from within the SaunaOn state, not as a self-transition on the composite. It should be modeled as self-transitions on the substates or as a more complex structure.
+
+**Error 4: Multi-step behavioral sequences collapsed into a single transition**
+
+- Fan activation: "activates a fan when the humidity exceeds the safety threshold of 40% for more than 3 minutes" - this is modeled with FanMonitoring state, which is correct.
+- Water dispersion: "At most, water is dispersed once every 15 minutes" - this implies a cooldown period. The current model has `startCooldown(15min)` as an action, but there's no state to represent the cooldown period. This should be a separate state or tracked differently.
+
+Actually, the water dispersion is more complex. The description says:
+1. User requests water dispersion
+2. Check if humidity < 40% and fan not active
+3. If yes, disperse water
+4. Start 15-minute cooldown
+5. During cooldown, cannot disperse again
+
+This needs states: WaterDispersionReady, WaterDispersionCooldown (or similar).
+
+**Error 5: Flat structure where composite states are implied**
+
+- The three jet levels (Level1, Level2, Level3) all can pause. They should be grouped into a composite "JetsActive" with the pause feature outside or handled via history state properly.
+- The heating and fan control are already in parallel regions, which is correct.
+
+**Summary of corrections needed:**
+
+1. Restructure JacuzziOn to have a composite state for active jet levels (Level1, Level2, Level3) and properly handle pause with history state.
+2. Add explicit actions for stopping/starting heating where appropriate.
+3. Model water dispersion properly with a cooldown state structure.
+4. Fix the water dispersion to be available from the heating states, not as a self-transition on SaunaOn composite.
+5. Ensure all states are declared before use.
+
+Let me design the corrected structure:
+
+For Sauna:
+- SaunaOn should have parallel regions for HeatingControl, FanControl, and WaterDispersionControl
+- WaterDispersionControl: Ready, Cooldown states
+
+For Jacuzzi:
+- JacuzziOn should have JetsActive composite (with Level1, Level2, Level3 and history state H) and Paused as sibling states
+- Paused transitions to H after 2 minutes
+
+Let me write the corrected diagram:
+</thinking>
+
+<mermaid_code_solution>
+stateDiagram-v2
+    state SpaManager
+    [*] --> SpaManager
+    
+    state SpaManager {
+        region SaunaControl {
+            state SaunaOff
+            [*] --> SaunaOff
+            
+            state SaunaOn
+            SaunaOff --> SaunaOn : turnOn
+            SaunaOn --> SaunaOff : turnOff
+            
+            state SaunaOn {
+                region HeatingControl {
+                    state Heating
+                    [*] --> Heating
+                    
+                    note right of Heating
+                        do: heatStove()
+                    end note
+                    
+                    state Maintaining
+                    Heating --> Maintaining : [temp >= 90] / stopHeating()
+                    Maintaining --> Heating : [temp < 85] / startHeating()
+                }
+                
+                region FanControl {
+                    state FanOff
+                    [*] --> FanOff
+                    
+                    state FanMonitoring
+                    FanOff --> FanMonitoring : [humidity > 40%] / startTimer(3min)
+                    FanMonitoring --> FanOff : [humidity <= 40%] / cancelTimer()
+                    
+                    state FanOn
+                    FanMonitoring --> FanOn : after(3min) / activateFan()
+                    FanOn --> FanOff : after(5min) / deactivateFan()
+                    
+                    note right of FanOn
+                        do: runFan()
+                    end note
+                }
+                
+                region WaterDispersionControl {
+                    state WaterReady
+                    [*] --> WaterReady
+                    
+                    state WaterCooldown
+                    WaterReady --> WaterCooldown : disperseWater [humidity < 40% && fanOff] / pourWater(), startTimer(15min)
+                    WaterCooldown --> WaterReady : after(15min)
+                }
+            }
+        }
+        
+        region JacuzziControl {
+            state JacuzziOff
+            [*] --> JacuzziOff
+            
+            state JacuzziOn
+            JacuzziOff --> JacuzziOn : turnOn
+            JacuzziOn --> JacuzziOff : turnOff
+            
+            state JacuzziOn {
+                state JetsActive
+                [*] --> JetsActive
+                
+                state JetsActive {
+                    state Level1
+                    [*] --> Level1
+                    
+                    note right of Level1
+                        do: ejectWater(lowPressure)
+                    end note
+                    
+                    state Level2
+                    Level1 --> Level2 : increaseLevel
+                    Level2 --> Level1 : decreaseLevel
+                    
+                    note right of Level2
+                        do: ejectWater(mediumPressure)
+                    end note
+                    
+                    state Level3
+                    Level2 --> Level3 : increaseLevel
+                    Level3 --> Level2 : decreaseLevel
+                    
+                    note right of Level3
+                        do: ejectWater(highPressure)
+                    end note
+                    
+                    Level1 --> Level1 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                    Level2 --> Level2 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                    Level3 --> Level3 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                    
+                    state H
+                }
+                
+                state Paused
+                JetsActive --> Paused : pause / stopJets()
+                Paused --> H : after(2min) / resumeJets()
+            }
+        }
+    }
+</mermaid_code_solution>
+
+=== Shot 2 (Refined, Final) ===
+stateDiagram-v2
+    state SpaManager
+    [*] --> SpaManager
+    
+    state SpaManager {
+        region SaunaControl {
+            state SaunaOff
+            [*] --> SaunaOff
+            
+            state SaunaOn
+            SaunaOff --> SaunaOn : turnOn
+            SaunaOn --> SaunaOff : turnOff
+            
+            state SaunaOn {
+                region HeatingControl {
+                    state Heating
+                    [*] --> Heating
+                    
+                    note right of Heating
+                        do: heatStove()
+                    end note
+                    
+                    state Maintaining
+                    Heating --> Maintaining : [temp >= 90] / stopHeating()
+                    Maintaining --> Heating : [temp < 85] / startHeating()
+                }
+                
+                region FanControl {
+                    state FanOff
+                    [*] --> FanOff
+                    
+                    state FanMonitoring
+                    FanOff --> FanMonitoring : [humidity > 40%] / startTimer(3min)
+                    FanMonitoring --> FanOff : [humidity <= 40%] / cancelTimer()
+                    
+                    state FanOn
+                    FanMonitoring --> FanOn : after(3min) / activateFan()
+                    FanOn --> FanOff : after(5min) / deactivateFan()
+                    
+                    note right of FanOn
+                        do: runFan()
+                    end note
+                }
+                
+                region WaterDispersionControl {
+                    state WaterReady
+                    [*] --> WaterReady
+                    
+                    state WaterCooldown
+                    WaterReady --> WaterCooldown : disperseWater [humidity < 40% && fanOff] / pourWater(), startTimer(15min)
+                    WaterCooldown --> WaterReady : after(15min)
+                }
+            }
+        }
+        
+        region JacuzziControl {
+            state JacuzziOff
+            [*] --> JacuzziOff
+            
+            state JacuzziOn
+            JacuzziOff --> JacuzziOn : turnOn
+            JacuzziOn --> JacuzziOff : turnOff
+            
+            state JacuzziOn {
+                state JetsActive
+                [*] --> JetsActive
+                
+                state JetsActive {
+                    state Level1
+                    [*] --> Level1
+                    
+                    note right of Level1
+                        do: ejectWater(lowPressure)
+                    end note
+                    
+                    state Level2
+                    Level1 --> Level2 : increaseLevel
+                    Level2 --> Level1 : decreaseLevel
+                    
+                    note right of Level2
+                        do: ejectWater(mediumPressure)
+                    end note
+                    
+                    state Level3
+                    Level2 --> Level3 : increaseLevel
+                    Level3 --> Level2 : decreaseLevel
+                    
+                    note right of Level3
+                        do: ejectWater(highPressure)
+                    end note
+                    
+                    Level1 --> Level1 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                    Level2 --> Level2 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                    Level3 --> Level3 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                    
+                    state H
+                }
+                
+                state Paused
+                JetsActive --> Paused : pause / stopJets()
+                Paused --> H : after(2min) / resumeJets()
+            }
+        }
+    }
+

@@ -1,0 +1,51 @@
+Type,Element,Grading,Notes
+State,"initial state (⇒ TransportationMode)",1,Initial state correctly transitions to TransportationMode
+State,"TransportationMode",1,TransportationMode state is present
+Transition,"selectorPressed (TransportationMode ⇒ On)",1,Transition from TransportationMode to On via selectorPressed is present with deactivation action
+State,"PreparingOff",1,Represented as ShutdownPending state which captures the preparing-to-shutdown behavior
+Transition,"selectorReleased (PreparingOff ⇒ On)",1,ShutdownPending to On via selectorReleased correctly represents canceling shutdown
+Transition,"after 5sec (PreparingOff ⇒ Off)",1,ShutdownPending to ShutdownConfirmed after 5s then to Off captures the 5-second hold requirement
+State,"Off",1,Off state is present
+Transition,"selectorPressed (Off ⇒ On)",1,Transition from Off to On via selectorPressed is present
+Composite State,"On",1,On is modeled as a composite state with substates
+History State,"History State for On",0,No history state is present in the On composite state
+Transition,"selectorHeld (On ⇒ PreparingOff)",1,Transition from On to ShutdownPending via selectorHeld is present
+Transition,"bowlRemoved (On ⇒ On)",1,BowlRemoved transitions within On return to HomeScreen preserving the On state
+State,"Initial State (On ⇒ Home)",1,Initial state within On correctly transitions to HomeScreen
+State,"Home",1,HomeScreen state represents the home state
+Transition,"after 14min 30sec (Home ⇒ Preparing Shutdown)",1,Transition from HomeScreen to AutoShutdownWarning after 14.5min is present
+Transition,"start (Home ⇒ PromptToAdd)",0.5,Start transition exists from RecipeSelected but guard for bowl placement is on the transition not from Home
+Guard,"[!bowlRemoved()]",0.5,Guard [bowlPlaced] is present but represents the inverse condition
+Action,"setIngredients()",0,No setIngredients action is present in the model
+State,"Preparing Shutdown",1,AutoShutdownWarning state represents the preparing shutdown state
+Transition,"after 30sec (Preparing Shutdown ⇒ Off)",1,Transition from AutoShutdownWarning to Off after 30s is present
+Transition,"cancel (Preparing Shutdown ⇒ Home)",1,Cancel transition from AutoShutdownWarning to HomeScreen is present
+State,"PromptToAdd",1,AddIngredients state represents prompting to add ingredients
+Transition,"next (PromptToAdd ⇒ PromptToAdd)",0,No self-loop transition on AddIngredients for adding more ingredients
+Guard,"[weightCorrect() && moreIngredientsRequired()]",0.5,Guard [correctAmount] partially captures weight checking but not the more-ingredients condition
+Action,"setIngredients()",0,No setIngredients action is present
+Transition,"next (PromptToAdd ⇒ Chop)",0.5,Weighing to Chopping via next with correctAmount guard partially represents this but missing moreIngredientsRequired check
+Guard,"[weightCorrect() && !moreIngredientsRequired()]",0.5,Guard [correctAmount] captures weight check but not the ingredients-required condition
+Action,"setChoppingSpeedAndTime()",0,No setChoppingSpeedAndTime action is present
+State,"Chop",1,Chopping state is present
+Transition,"next (Chop ⇒ PromptToAdd)",0.5,Cooking to AddIngredients via next with moreIngredientsNeeded guard partially represents looping back but from wrong state
+Guard,"[choppingTimeDone && moreIngredientsRequired()]",0.5,Guard [moreIngredientsNeeded] captures the loop condition but not choppingTimeDone
+Action,"setIngredients()",0,No setIngredients action is present
+Transition,"next (Chop ⇒ Cook)",1,Transition from Chopping to Cooking via next is present
+Guard,"[choppingTimeDone && !moreIngredientsRequired()]",0,No guard on Chopping to Cooking transition
+Action,"setCookingSpeedAndTime()",0,No setCookingSpeedAndTime action is present
+State,"Cook",1,Cooking state is present
+Transition,"after choppingTime (Cook ⇒ PromptToAdd)",0.5,Cooking to AddIngredients transition exists but uses next event not after choppingTime
+Guard,"[choppingTimeDone && moreIngredientsRequired()]",0.5,Guard [moreIngredientsNeeded] captures ingredients condition but not choppingTimeDone
+Action,"setIngredients()",0,No setIngredients action is present
+Transition,"after cookingTime (Cook ⇒ Ready)",0.5,RecipeExecution to MealReady via next with lastStep guard represents completion but not as timed transition
+Guard,"[!moreIngredientsRequired()]",0.5,Guard [lastStep] represents final step but not explicitly as not-more-ingredients-required
+State,"Ready",1,MealReady state is present
+Transition,"after 14min 30sec (Ready ⇒ Preparing Shutdown)",0,No transition from MealReady to auto-shutdown warning
+State,"additional elements",1,ShutdownConfirmed state is an unnecessary intermediate state between shutdown preparation and Off
+Transition,"additional elements",0,All transitions are reasonable representations of system behavior
+Guard,"additional elements",0,All guards are reasonable modeling choices
+Action,"additional elements",0,Actions like deactivateTransportMode and showShutdownMessage are reasonable additions
+Composite State,"additional elements",1,RecipeExecution as composite state is unnecessary abstraction not required by system description
+Region,"additional elements",0,No additional regions present
+History State,"additional elements",0,No additional history states present

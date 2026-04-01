@@ -1,0 +1,55 @@
+Type,Element,Grading,Notes
+Composite State,"DishwasherOn",0,No composite state representing the overall dishwasher system; student uses Off/Idle/Active instead
+Region,"Door",0,No separate Door region; door locking/unlocking is modeled as actions only
+State,"initial state (⇒ Closed)",0,No Door region or Closed state
+State,"Closed",0,No Door region or Closed state
+Transition,"open (Closed ⇒ Open)",0,No Door region or door state transitions
+Transition,"lock (Closed ⇒ Locked)",0,No Door region or door state transitions
+State,"Open",0,No Door region or Open state
+Transition,"close (Open ⇒ Closed)",0,No Door region or door state transitions
+State,"Locked",0,No Door region or Locked state
+Transition,"unlock (Locked ⇒ Closed)",0,No Door region or door state transitions
+Region,"Washer",0,No explicit Washer region; student uses flat state hierarchy
+State,"initial state",1,Initial state correctly transitions to Off then Idle
+Transition,"r =1; dT=20; (initial state ⇒ Idle)",0.5,No explicit initialization of r and dT variables shown
+State,"Idle",1,Idle state present and correctly represents waiting for user input
+Transition,"selectProgram(n) (Idle ⇒ Idle)",1,selectProgram(program) self-transition present in Idle
+Guard,"[n ≥ 1]",0,No guard on selectProgram transition
+Action,"r = n;",0,No action to store program parameter
+Transition,"toggleDryingTime (Idle ⇒ Idle)",0.5,Separate extendDrying and reduceDrying transitions present but no toggle logic
+Action,"if dT = 20 then dT = 40 else dT = 20;",0.5,setDryingTime actions present but no conditional toggle logic
+Transition,"start (Idle ⇒ Cleaning)",1,start transition from Idle to Active (cleaning) present
+Guard,"[door.isClosed()]",0,No guard checking door state on start transition
+Action,"door.lock(); c = 1;",0.5,lockDoor() action present but no cycle counter initialization
+Composite State,"Cleaning",1,Active state with WashCycle composite represents cleaning phase
+State,"initial state (⇒ Intake)",1,WashCycle has initial state transitioning to WaterIntake
+State,"Intake",1,WaterIntake state represents intake phase
+Transition,"Intake ⇒ Washing",1,Transition from WaterIntake to Washing with intakeComplete event
+State,"Washing",1,Washing state present
+Transition,"after 10 min (Washing ⇒ Drain)",1,Transition after(10min) from Washing to Draining
+State,"Drain",1,Draining state present
+Guard,"[c < r]",1,Guard [cyclesRemaining > 0] semantically equivalent
+Transition,"Drain ⇒ Intake",1,Transition from Draining back to WaterIntake with guard
+Action,"c++",1,decrementCycle() action semantically equivalent to cycle counter update
+Transition,"(Drain ⇒ end state)",0.5,Transition to Drying present but not to explicit end state
+Guard,"[c ≥ r]",1,Guard [cyclesRemaining == 0] semantically equivalent
+History State,"History State for Cleaning",0,State H declared but not properly connected or used as history
+Transition,"toggleDryingTime (Cleaning ⇒ History State)",0.5,extendDrying and reduceDrying transitions present in WashCycle but no toggle or history mechanism
+Action,"if dT = 20 then dT = 40 else dT = 20;",0.5,setDryingTime actions present but no conditional toggle logic
+Transition,"Cleaning ⇒ Drying",1,Transition from WashCycle to Drying present
+Action,"door.unlock();",1,unlockDoor() action present on entry to Drying
+State,"Drying",1,Drying state present
+Transition,"after dT min (Drying ⇒ Idle)",1,dryingComplete transition from DryingActive to Idle represents completion
+Transition,"extend DryingTime (Drying ⇒ Drying)",1,extendDrying self-transition present in Drying
+Action,"dT = 40;",1,setDryingTime(40) action present
+Transition,"open (Drying ⇒ Suspended)",1,openDoor transition from DryingActive to DoorOpen
+State,"Suspended",1,DoorOpen state represents suspended drying
+Transition,"close (Suspended ⇒ Drying)",0.5,closeDoor transition to H state present but H not properly used as history
+Transition,"after 5 min (Suspended ⇒ Idle)",1,after(5min) transition from DoorOpen to Idle present
+State,"additional elements",1,Off state is unnecessary for the system description
+Transition,"additional elements",1,powerOn and powerOff transitions not described in system
+Guard,"additional elements",0,No fundamentally incorrect guards
+Action,"additional elements",0,No fundamentally incorrect actions
+Composite State,"additional elements",0,No fundamentally incorrect composite states
+Region,"additional elements",0,No fundamentally incorrect regions
+History State,"additional elements",1,H state declared but not properly implemented as history state

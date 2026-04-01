@@ -1,0 +1,51 @@
+Type	Element	Grading	Notes
+State	initial state (⇒ TransportationMode)	1	Initial state correctly transitions to TransportationMode
+State	TransportationMode	1	TransportationMode state is present
+Transition	selectorPressed (TransportationMode ⇒ On)	1	Transition present with correct trigger and target
+State	PreparingOff	0	No intermediate state for holding selector; student uses direct transition with guard
+Transition	selectorReleased (PreparingOff ⇒ On)	0	Not present; student model uses different approach for selector hold
+Transition	after 5sec (PreparingOff ⇒ Off)	0	Not present as separate transition; combined with selectorHeld transition
+State	Off	1	Off state is present
+Transition	selectorPressed (Off ⇒ On)	1	Transition from Off to On with selectorPressed is present
+Composite State	On	1	On is modeled as composite state containing substates
+History State	History State for On	0	No history state present in student submission
+Transition	selectorHeld (On ⇒ PreparingOff)	0.5	Transition exists from On to Off with selectorHeld but targets Off directly instead of PreparingOff
+Transition	bowlRemoved (On ⇒ On)	0	No self-transition for bowlRemoved; student uses removeBowl to exit RecipeExecution
+State	Initial State (On ⇒ Home)	1	Initial state within On correctly points to HomeScreen
+State	Home	1	HomeScreen state represents Home
+Transition	after 14min 30sec (Home ⇒ Preparing Shutdown)	1	Transition after15min from HomeScreen to AutoShutdownWarning captures the behavior (minor timing difference acceptable)
+Transition	start (Home ⇒ PromptToAdd)	0.5	Transition selectRecipe with bowlPresent guard goes to RecipeExecution; partially captures starting recipe but missing direct prompt-to-add
+Guard	[!bowlRemoved()]	1	Guard bowlPresent on selectRecipe transition captures bowl requirement
+Action	setIngredients()	0	No setIngredients action present in student submission
+State	Preparing Shutdown	1	AutoShutdownWarning state represents preparing shutdown
+Transition	after 30sec (Preparing Shutdown ⇒ Off)	1	Transition after30sec from AutoShutdownWarning to Off is present
+Transition	cancel (Preparing Shutdown ⇒ Home)	1	Transition selectCancel from AutoShutdownWarning to HomeScreen is present
+State	PromptToAdd	0.5	Weighing state partially represents prompting to add ingredients
+Transition	next (PromptToAdd ⇒ PromptToAdd)	0	No self-transition for adding more ingredients in weighing state
+Guard	[weightCorrect() && moreIngredientsRequired()]	0	No guard for checking both weight and more ingredients required
+Action	setIngredients()	0	No setIngredients action present
+Transition	next (PromptToAdd ⇒ Chop)	1	Transition selectNext with correctAmount guard from Weighing to Chopping is present
+Guard	[weightCorrect() && !moreIngredientsRequired()]	1	Guard correctAmount on transition to Chopping captures weight verification
+Action	setChoppingSpeedAndTime()	1	Action startChopping on transition to Chopping state captures setting chopping parameters
+State	Chop	1	Chopping state is present
+Transition	next (Chop ⇒ PromptToAdd)	0	No transition from Chopping back to Weighing for more ingredients
+Guard	[choppingTimeDone && moreIngredientsRequired()]	0	No guard checking chopping done and more ingredients needed
+Action	setIngredients()	0	No setIngredients action present
+Transition	next (Chop ⇒ Cook)	1	Transition selectNext from Chopping to Cooking is present
+Guard	[choppingTimeDone && !moreIngredientsRequired()]	0	No guard on Chopping to Cooking transition
+Action	setCookingSpeedAndTime()	1	Action startCooking on transition to Cooking captures setting cooking parameters
+State	Cook	1	Cooking state is present
+Transition	after choppingTime (Cook ⇒ PromptToAdd)	0.5	Transition from Cooking to Weighing with moreSteps guard partially captures returning for more ingredients
+Guard	[choppingTimeDone && moreIngredientsRequired()]	0.5	Guard moreSteps partially captures the need for more ingredients but not chopping completion
+Action	setIngredients()	0	No setIngredients action on this transition
+Transition	after cookingTime (Cook ⇒ Ready)	0.5	Transition selectNext with lastStep guard from Cooking to MealReady partially captures completion
+Guard	[!moreIngredientsRequired()]	1	Guard lastStep on transition to MealReady captures no more steps needed
+State	Ready	1	MealReady state represents Ready
+Transition	after 14min 30sec (Ready ⇒ Preparing Shutdown)	0	No transition from MealReady to auto-shutdown warning
+State	additional elements	0	No fundamentally incorrect states present
+Transition	additional elements	0	No fundamentally incorrect transitions present
+Guard	additional elements	0	No fundamentally incorrect guards present
+Action	additional elements	1	Action deactivateTransportMode on first transition is not described in system description
+Composite State	additional elements	1	RecipeExecution composite state adds unnecessary hierarchy not required by system description
+Region	additional elements	0	No incorrect regions present
+History State	additional elements	0	No incorrect history states present

@@ -1,0 +1,98 @@
+stateDiagram-v2
+
+state Off
+[*] --> Off
+
+state On
+Off --> On : powerOn
+On --> Off : powerOff
+
+state On {
+    state WaitingForLogin
+    [*] --> WaitingForLogin
+    
+    state LoginError
+    WaitingForLogin --> LoginError : tapCard [!authorized] / showLoginError()
+    LoginError --> WaitingForLogin : dismiss
+    
+    state LoggedIn
+    WaitingForLogin --> LoggedIn : tapCard [authorized]
+    
+    state LoggedIn {
+        state Idle
+        [*] --> Idle
+        
+        state PrintError
+        state ScanError
+        
+        Idle --> PrintError : startPrint [queueEmpty] / showPrintError()
+        PrintError --> Idle : dismiss
+        
+        Idle --> ScanError : startScan [!documentPresent] / showScanError()
+        ScanError --> Idle : dismiss
+        
+        state PrintTask
+        Idle --> PrintTask : startPrint [!queueEmpty]
+        
+        state PrintTask {
+            state Printing
+            state PrintingPaperJam
+            state PrintingOutOfPaper
+            state HPrint
+            
+            [*] --> Printing
+            
+            Printing --> PrintingPaperJam : paperJam
+            PrintingPaperJam --> HPrint : resume
+            PrintingPaperJam --> Idle : cancel
+            
+            Printing --> PrintingOutOfPaper : outOfPaper
+            PrintingOutOfPaper --> HPrint : resume
+            PrintingOutOfPaper --> Idle : cancel
+            
+            Printing --> Idle : complete
+            Printing --> Idle : stop
+        }
+        
+        note right of Printing
+            do: printDocument()
+        end note
+        
+        note right of PrintingPaperJam
+            entry / suspendPrinting()
+        end note
+        
+        note right of PrintingOutOfPaper
+            entry / suspendPrinting()
+        end note
+        
+        state ScanTask
+        Idle --> ScanTask : startScan [documentPresent]
+        
+        state ScanTask {
+            state Scanning
+            state ScanningPaperJam
+            state HScan
+            
+            [*] --> Scanning
+            
+            Scanning --> ScanningPaperJam : paperJam
+            ScanningPaperJam --> HScan : resume
+            ScanningPaperJam --> Idle : cancel
+            
+            Scanning --> Idle : complete
+            Scanning --> Idle : stop
+        }
+        
+        note right of Scanning
+            do: scanDocument()
+            exit / sendToEmail()
+        end note
+        
+        note right of ScanningPaperJam
+            entry / suspendScanning()
+        end note
+    }
+    
+    LoggedIn --> WaitingForLogin : logoff
+}

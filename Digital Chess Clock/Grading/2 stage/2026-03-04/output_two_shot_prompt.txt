@@ -1,0 +1,58 @@
+stateDiagram-v2
+    
+    state Off
+    [*] --> Off
+    Off --> On : onOff
+    On --> Off : onOff
+    
+    state On {
+        state Setup {
+            state TimingSelection
+            [*] --> TimingSelection
+            
+            TimingSelection --> TimingSelection : plus
+            TimingSelection --> TimingSelection : minus
+            TimingSelection --> TimingSelection : flip
+            
+            state Ready
+            TimingSelection --> Ready : select
+            Ready --> Ready : flip
+        }
+        
+        [*] --> Setup
+        
+        state GameActive {
+            state Running {
+                state WhiteTurn
+                state BlackTurn
+                state H
+                
+                [*] --> WhiteTurn
+                
+                WhiteTurn --> BlackTurn : flip / addIncrementToWhite()
+                BlackTurn --> WhiteTurn : flip / addIncrementToBlack()
+            }
+            
+            note right of Running
+                do: countDown()
+            end note
+            
+            [*] --> Running
+            
+            state Paused
+            
+            Running --> Paused : startStop
+            Paused --> H : startStop
+        }
+        
+        Ready --> GameActive : startStop
+        
+        state GameOver
+        
+        note right of GameOver
+            entry / showFlashingFlag()
+        end note
+        
+        WhiteTurn --> GameOver : [whiteTimeExpired]
+        BlackTurn --> GameOver : [blackTimeExpired]
+    }

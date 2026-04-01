@@ -1,0 +1,1193 @@
+=== Shot 1 Raw LLM Response ===
+<thinking>
+## Step 1: Derive implicit knowledge
+
+1. The printer starts in an "Off" state when the master switch is off.
+2. When turned on, the printer transitions to a state where it waits for user login.
+3. After login, the user remains logged in until they explicitly log off.
+4. The printer can only perform one task (print or scan) at a time.
+5. Paper jam and out-of-paper conditions can occur during both printing and scanning tasks (though out-of-paper is only mentioned for printing, it's reasonable to assume it applies to both).
+6. When a task is suspended (due to paper jam or out of paper), the user can either resume or cancel.
+7. The user cannot log off while a task is in progress (printing or scanning).
+8. After completing a task, the system returns to a state where the user can choose to print, scan, or log off.
+9. Error messages are transient states that return to the previous state (logged in, ready to choose an action).
+10. The "stop" button cancels the current task and returns to the logged-in state.
+
+## Step 2: Extract states
+
+1. **Off** - Printer is powered off via master switch
+2. **WaitingForLogin** - Printer is on but no user is logged in
+3. **LoginError** - Shown when unauthorized card is tapped (transient, returns to WaitingForLogin)
+4. **LoggedIn** - User is authenticated and can choose print/scan/logoff
+5. **PrintError** - Shown when print queue is empty (transient, returns to LoggedIn)
+6. **ScanError** - Shown when no document is detected in feeder (transient, returns to LoggedIn)
+7. **Printing** - Printer is actively printing a document
+8. **Scanning** - Printer is actively scanning a document
+9. **PrintSuspendedPaperJam** - Printing suspended due to paper jam
+10. **ScanSuspendedPaperJam** - Scanning suspended due to paper jam
+11. **PrintSuspendedOutOfPaper** - Printing suspended due to out of paper
+12. **TaskComplete** - Task finished, user can choose next action (this might be the same as LoggedIn)
+
+Actually, upon reflection, TaskComplete and LoggedIn are the same state - after a task completes, the user is still logged in and can choose the next action.
+
+Revised states:
+1. **Off** - Printer powered off
+2. **WaitingForLogin** - Printer on, waiting for card tap
+3. **LoginError** - Unauthorized card (transient)
+4. **LoggedIn** - User authenticated, can choose action
+5. **PrintError** - Empty print queue (transient)
+6. **ScanError** - No document in feeder (transient)
+7. **Printing** - Actively printing
+8. **Scanning** - Actively scanning
+9. **PrintSuspendedPaperJam** - Print paused for paper jam
+10. **ScanSuspendedPaperJam** - Scan paused for paper jam
+11. **PrintSuspendedOutOfPaper** - Print paused for out of paper
+
+## Step 3: Extract transitions
+
+Events:
+- **powerOn** - Master switch turns printer on
+- **powerOff** - Master switch turns printer off
+- **tapCard** - User taps printer card
+- **choosePrint** - User selects print option
+- **chooseScan** - User selects scan option
+- **start** - User presses start button
+- **stop** - User presses stop button
+- **logoff** - User logs off
+- **done** - Task completion (internal event)
+- **paperJam** - Paper jam detected
+- **outOfPaper** - Out of paper detected
+- **clearJam** - User clears paper jam
+- **resupplyPaper** - User adds paper
+- **resume** - User chooses to resume task
+- **cancel** - User chooses to cancel task
+
+Transitions:
+1. Off → WaitingForLogin : powerOn
+2. WaitingForLogin → Off : powerOff
+3. WaitingForLogin → LoggedIn : tapCard [authorized]
+4. WaitingForLogin → LoginError : tapCard [!authorized]
+5. LoginError → WaitingForLogin : (automatic return)
+6. LoggedIn → Off : powerOff
+7. LoggedIn → WaitingForLogin : logoff
+8. LoggedIn → PrintError : choosePrint / start [queueEmpty]
+9. LoggedIn → Printing : choosePrint / start [!queueEmpty]
+10. LoggedIn → ScanError : chooseScan / start [!documentDetected]
+11. LoggedIn → Scanning : chooseScan / start [documentDetected]
+12. PrintError → LoggedIn : (automatic return)
+13. ScanError → LoggedIn : (automatic return)
+14. Printing → LoggedIn : done
+15. Printing → LoggedIn : stop
+16. Printing → PrintSuspendedPaperJam : paperJam
+17. Printing → PrintSuspendedOutOfPaper : outOfPaper
+18. Scanning → LoggedIn : done
+19. Scanning → LoggedIn : stop
+20. Scanning → ScanSuspendedPaperJam : paperJam
+21. PrintSuspendedPaperJam → Printing : clearJam / resume
+22. PrintSuspendedPaperJam → LoggedIn : clearJam / cancel
+23. ScanSuspendedPaperJam → Scanning : clearJam / resume
+24. ScanSuspendedPaperJam → LoggedIn : clearJam / cancel
+25. PrintSuspendedOutOfPaper → Printing : resupplyPaper / resume
+26. PrintSuspendedOutOfPaper → LoggedIn : resupplyPaper / cancel
+
+Wait, I need to reconsider the flow. The description says:
+- "For the 'print' option, the user presses the start button to print..."
+- "For the 'scan' option, the user presses the start button for the printer to scan..."
+
+This suggests that choosing print/scan and pressing start are separate actions. So the flow should be:
+1. User chooses print or scan (enters a "ready to print" or "ready to scan" state)
+2. User presses start (transitions to printing or scanning, or shows error)
+
+Let me revise:
+
+Additional states:
+- **ReadyToPrint** - User selected print, waiting for start button
+- **ReadyToScan** - User selected scan, waiting for start button
+
+Revised transitions:
+1. Off → WaitingForLogin : powerOn
+2. WaitingForLogin → Off : powerOff
+3. WaitingForLogin → LoggedIn : tapCard [authorized]
+4. WaitingForLogin → LoginError : tapCard [!authorized]
+5. LoginError → WaitingForLogin : (automatic)
+6. LoggedIn → Off : powerOff
+7. LoggedIn → WaitingForLogin : logoff
+8. LoggedIn → ReadyToPrint : choosePrint
+9. LoggedIn → ReadyToScan : chooseScan
+10. ReadyToPrint → PrintError : start [queueEmpty]
+11. ReadyToPrint → Printing : start [!queueEmpty]
+12. ReadyToScan → ScanError : start [!documentDetected]
+13. ReadyToScan → Scanning : start [documentDetected]
+14. PrintError → LoggedIn : (automatic)
+15. ScanError → LoggedIn : (automatic)
+16. Printing → LoggedIn : done
+17. Printing → LoggedIn : stop
+18. Printing → PrintSuspendedPaperJam : paperJam
+19. Printing → PrintSuspendedOutOfPaper : outOfPaper
+20. Scanning → LoggedIn : done
+21. Scanning → LoggedIn : stop
+22. Scanning → ScanSuspendedPaperJam : paperJam
+23. PrintSuspendedPaperJam → Printing : resume
+24. PrintSuspendedPaperJam → LoggedIn : cancel
+25. ScanSuspendedPaperJam → Scanning : resume
+26. ScanSuspendedPaperJam → LoggedIn : cancel
+27. PrintSuspendedOutOfPaper → Printing : resume
+28. PrintSuspendedOutOfPaper → LoggedIn : cancel
+
+Actually, re-reading the description more carefully:
+"For the 'print' option, the user presses the start button to print..."
+"For the 'scan' option, the user presses the start button for the printer to scan..."
+
+This could mean that choosing print/scan and pressing start happen together, or it could mean they're separate. The description also says "When the printer is done printing or scanning, the user can print or scan the next document." This suggests returning to a state where the user can choose print or scan again, which is the LoggedIn state.
+
+I think the simpler interpretation is that choosePrint and chooseScan are the same as pressing start after selecting the option. So I'll go with the original simpler model without ReadyToPrint/ReadyToScan states.
+
+Actually, let me re-read once more: "the user can either choose 'scan' or 'print'... the user presses the start button to print..." This suggests two separate actions. But for simplicity and based on the examples, I'll model it as a single transition with the event being the combination of choosing and starting.
+
+Let me simplify: I'll use events like "startPrint" and "startScan" to represent the combined action of choosing and starting.
+
+Revised events and transitions:
+- **powerOn** - Master switch on
+- **powerOff** - Master switch off
+- **tapCard** - Card tapped
+- **startPrint** - User chooses print and presses start
+- **startScan** - User chooses scan and presses start
+- **stop** - Stop button pressed
+- **logoff** - User logs off
+- **done** - Task completed
+- **paperJam** - Paper jam occurs
+- **outOfPaper** - Out of paper
+- **resume** - Resume after clearing issue
+- **cancel** - Cancel suspended task
+
+Transitions:
+1. Off → WaitingForLogin : powerOn
+2. WaitingForLogin → Off : powerOff
+3. WaitingForLogin → LoggedIn : tapCard [authorized]
+4. WaitingForLogin → LoginError : tapCard [!authorized]
+5. LoginError → WaitingForLogin : (auto)
+6. LoggedIn → Off : powerOff
+7. LoggedIn → WaitingForLogin : logoff
+8. LoggedIn → PrintError : startPrint [queueEmpty]
+9. LoggedIn → Printing : startPrint [!queueEmpty]
+10. LoggedIn → ScanError : startScan [!documentDetected]
+11. LoggedIn → Scanning : startScan [documentDetected]
+12. PrintError → LoggedIn : (auto)
+13. ScanError → LoggedIn : (auto)
+14. Printing → LoggedIn : done
+15. Printing → LoggedIn : stop
+16. Printing → PrintSuspendedPaperJam : paperJam
+17. Printing → PrintSuspendedOutOfPaper : outOfPaper
+18. Scanning → LoggedIn : done
+19. Scanning → LoggedIn : stop
+20. Scanning → ScanSuspendedPaperJam : paperJam
+21. PrintSuspendedPaperJam → Printing : resume
+22. PrintSuspendedPaperJam → LoggedIn : cancel
+23. ScanSuspendedPaperJam → Scanning : resume
+24. ScanSuspendedPaperJam → LoggedIn : cancel
+25. PrintSuspendedOutOfPaper → Printing : resume
+26. PrintSuspendedOutOfPaper → LoggedIn : cancel
+
+## Step 4: Extract hierarchical states
+
+Looking at the states, I can identify some hierarchical relationships:
+
+1. **On** (composite state) - Contains all states when printer is powered on
+   - WaitingForLogin
+   - LoginError
+   - LoggedIn
+   - PrintError
+   - ScanError
+   - Printing
+   - Scanning
+   - PrintSuspendedPaperJam
+   - ScanSuspendedPaperJam
+   - PrintSuspendedOutOfPaper
+
+2. **PrintTask** (composite state) - Contains all print-related states
+   - Printing
+   - PrintSuspendedPaperJam
+   - PrintSuspendedOutOfPaper
+
+3. **ScanTask** (composite state) - Contains all scan-related states
+   - Scanning
+   - ScanSuspendedPaperJam
+
+Actually, looking at the examples, I should consider whether these groupings make sense. The PrintTask and ScanTask groupings could be useful if there are shared entry/exit actions or if we need history states.
+
+However, the description doesn't suggest shared behaviors for these groups. The suspended states are distinct and have different resume targets. So I'll keep the structure flat within the On state for now.
+
+Let me reconsider: The "On" composite state makes sense because all these states share the property that the printer is powered on, and powerOff can transition from any of them to Off.
+
+But actually, looking at the description again: "The printer has a master switch which turns the printer on or off." This suggests that powerOff can happen from any state. So I should have transitions from all states to Off on powerOff.
+
+However, this would clutter the diagram. A better approach is to use a composite state "On" that contains all the powered-on states, and have a single transition from On to Off on powerOff.
+
+## Step 5: Extract concurrent regions
+
+Looking at the description, I don't see any concurrent behaviors. The printer performs one task at a time, and there are no independent subsystems that operate in parallel. So no parallel regions are needed.
+
+## Step 6: Extract history states
+
+History states are used when re-entering a composite state should resume the last active substate. Looking at the description:
+
+- When the printer is turned off and back on, it goes to WaitingForLogin (not resuming the previous state). So no history state for the On composite.
+- When a task is suspended and resumed, it goes back to the same task (Printing or Scanning). But this is handled by explicit transitions, not history states.
+- When a user logs off and logs back in, they start fresh at LoggedIn (not resuming a previous task). So no history state needed.
+
+I don't see a need for history states in this system.
+
+## Step 7: Assemble the final Mermaid diagram
+
+Based on the analysis above, here's the structure:
+- Top level: Off and On states
+- On is a composite state containing:
+  - WaitingForLogin (initial state)
+  - LoginError
+  - LoggedIn
+  - PrintError
+  - ScanError
+  - Printing
+  - Scanning
+  - PrintSuspendedPaperJam
+  - ScanSuspendedPaperJam
+  - PrintSuspendedOutOfPaper
+
+Let me now write the Mermaid code following the syntax rules:
+
+1. Declare all states first
+2. Set initial state
+3. Define transitions
+4. Follow the syntax rules exactly
+
+Wait, I need to reconsider the error states. The description says "an error message is shown" but doesn't specify how the user dismisses it or how long it stays. Looking at the examples, transient states often have automatic transitions. I'll assume the error states automatically return to the previous state (LoggedIn for PrintError and ScanError, WaitingForLogin for LoginError).
+
+Actually, looking more carefully at the examples, I don't see automatic transitions without events. Every transition has an event. So I need to add an event for dismissing errors, or model them differently.
+
+Let me reconsider: Perhaps the error messages are not separate states but just displayed while remaining in the same state. In that case:
+- LoggedIn → LoggedIn : startPrint [queueEmpty] / showPrintError()
+- LoggedIn → LoggedIn : startScan [!documentDetected] / showScanError()
+- WaitingForLogin → WaitingForLogin : tapCard [!authorized] / showLoginError()
+
+This makes more sense and avoids the need for separate error states.
+
+Revised state list:
+1. Off
+2. On (composite)
+   - WaitingForLogin
+   - LoggedIn
+   - Printing
+   - Scanning
+   - PrintSuspendedPaperJam
+   - ScanSuspendedPaperJam
+   - PrintSuspendedOutOfPaper
+
+Revised transitions:
+1. [*] → Off
+2. Off → On : powerOn
+3. On → Off : powerOff
+4. [*] → WaitingForLogin (inside On)
+5. WaitingForLogin → WaitingForLogin : tapCard [!authorized] / showLoginError()
+6. WaitingForLogin → LoggedIn : tapCard [authorized]
+7. LoggedIn → WaitingForLogin : logoff
+8. LoggedIn → LoggedIn : startPrint [queueEmpty] / showPrintError()
+9. LoggedIn → Printing : startPrint [!queueEmpty]
+10. LoggedIn → LoggedIn : startScan [!documentDetected] / showScanError()
+11. LoggedIn → Scanning : startScan [documentDetected]
+12. Printing → LoggedIn : done
+13. Printing → LoggedIn : stop
+14. Printing → PrintSuspendedPaperJam : paperJam
+15. Printing → PrintSuspendedOutOfPaper : outOfPaper
+16. Scanning → LoggedIn : done
+17. Scanning → LoggedIn : stop
+18. Scanning → ScanSuspendedPaperJam : paperJam
+19. PrintSuspendedPaperJam → Printing : resume
+20. PrintSuspendedPaperJam → LoggedIn : cancel
+21. ScanSuspendedPaperJam → Scanning : resume
+22. ScanSuspendedPaperJam → LoggedIn : cancel
+23. PrintSuspendedOutOfPaper → Printing : resume
+24. PrintSuspendedOutOfPaper → LoggedIn : cancel
+
+Now I'll write the Mermaid code following the exact syntax rules.
+</thinking>
+
+<mermaid_code_solution>
+stateDiagram-v2
+    state Off
+    [*] --> Off
+    
+    state On
+    Off --> On : powerOn
+    On --> Off : powerOff
+    
+    state On {
+        state WaitingForLogin
+        [*] --> WaitingForLogin
+        
+        WaitingForLogin --> WaitingForLogin : tapCard [!authorized] / showLoginError()
+        
+        state LoggedIn
+        WaitingForLogin --> LoggedIn : tapCard [authorized]
+        
+        LoggedIn --> WaitingForLogin : logoff
+        LoggedIn --> LoggedIn : startPrint [queueEmpty] / showPrintError()
+        LoggedIn --> LoggedIn : startScan [!documentDetected] / showScanError()
+        
+        state Printing
+        LoggedIn --> Printing : startPrint [!queueEmpty]
+        Printing --> LoggedIn : done
+        Printing --> LoggedIn : stop
+        
+        state Scanning
+        LoggedIn --> Scanning : startScan [documentDetected]
+        Scanning --> LoggedIn : done
+        Scanning --> LoggedIn : stop
+        
+        state PrintSuspendedPaperJam
+        Printing --> PrintSuspendedPaperJam : paperJam
+        PrintSuspendedPaperJam --> Printing : resume
+        PrintSuspendedPaperJam --> LoggedIn : cancel
+        
+        state PrintSuspendedOutOfPaper
+        Printing --> PrintSuspendedOutOfPaper : outOfPaper
+        PrintSuspendedOutOfPaper --> Printing : resume
+        PrintSuspendedOutOfPaper --> LoggedIn : cancel
+        
+        state ScanSuspendedPaperJam
+        Scanning --> ScanSuspendedPaperJam : paperJam
+        ScanSuspendedPaperJam --> Scanning : resume
+        ScanSuspendedPaperJam --> LoggedIn : cancel
+    }
+</mermaid_code_solution>
+
+=== Shot 1 (Initial) ===
+stateDiagram-v2
+    state Off
+    [*] --> Off
+    
+    state On
+    Off --> On : powerOn
+    On --> Off : powerOff
+    
+    state On {
+        state WaitingForLogin
+        [*] --> WaitingForLogin
+        
+        WaitingForLogin --> WaitingForLogin : tapCard [!authorized] / showLoginError()
+        
+        state LoggedIn
+        WaitingForLogin --> LoggedIn : tapCard [authorized]
+        
+        LoggedIn --> WaitingForLogin : logoff
+        LoggedIn --> LoggedIn : startPrint [queueEmpty] / showPrintError()
+        LoggedIn --> LoggedIn : startScan [!documentDetected] / showScanError()
+        
+        state Printing
+        LoggedIn --> Printing : startPrint [!queueEmpty]
+        Printing --> LoggedIn : done
+        Printing --> LoggedIn : stop
+        
+        state Scanning
+        LoggedIn --> Scanning : startScan [documentDetected]
+        Scanning --> LoggedIn : done
+        Scanning --> LoggedIn : stop
+        
+        state PrintSuspendedPaperJam
+        Printing --> PrintSuspendedPaperJam : paperJam
+        PrintSuspendedPaperJam --> Printing : resume
+        PrintSuspendedPaperJam --> LoggedIn : cancel
+        
+        state PrintSuspendedOutOfPaper
+        Printing --> PrintSuspendedOutOfPaper : outOfPaper
+        PrintSuspendedOutOfPaper --> Printing : resume
+        PrintSuspendedOutOfPaper --> LoggedIn : cancel
+        
+        state ScanSuspendedPaperJam
+        Scanning --> ScanSuspendedPaperJam : paperJam
+        ScanSuspendedPaperJam --> Scanning : resume
+        ScanSuspendedPaperJam --> LoggedIn : cancel
+    }
+
+=== Shot 2 Refinement Prompt (sent to LLM) ===
+<instructions>
+The diagram in <previous_output> is your first attempt at modeling the system in <system_description>. First drafts commonly have structural gaps: multi-step processes collapsed into single transitions, states that should be grouped into composites left flat, missing history states, and incomplete transition labels. Treat the previous output as a starting point, not a finished product. Use <system_description> as your ground truth — if any described behavior is not fully and accurately captured in the diagram, restructure it until it is. The checklist in <common_errors> identifies the most common failure patterns; work through each one critically. The diagram you output must also conform to the syntax rules in <mermaid_syntax>, which the downstream parser enforces mechanically.
+</instructions>
+
+<system_description>
+The printer has a master switch which turns the printer on or off. Once the printer is turned on, a user needs to log in before being able to print or scan a document. To login, a user taps her/his printer card on the printer's card reader. Each printer card has a unique ID. If the printer card is authorized, the user can either choose "scan" or "print". If the printer card is not authorized, a login error message is shown.
+For the "print" option, the user presses the start button to print the user's first document in the user's print queue. If there is no document in the print queue, an error message is shown instead of performing the printing task. For the "scan" option, the user presses the start button for the printer to scan an original document, which was placed by the user in the automatic page feeder. The scan is sent to the user's email inbox. If the printer does not detect an original document, an error message is shown instead of performing the scanning task. When the printer is done printing or scanning, the user can print or scan the next document. The user may also stop the printing/scanning task at any time by pressing the stop button. The user is allowed to logoff either before or after a printing/scanning task but not while the printer is in the middle of a printing/scanning task.
+If there is a paper jam, the printer will suspend the printing/scanning task to allow the user to clear the paper jam. The user may then either cancel the printing/scanning task or resume it. In case the printer runs out of paper during a printing task, the printer suspends the printing task to allow the user to resupply paper. The user may then either cancel the printing task or resume it.
+</system_description>
+
+<mermaid_syntax>
+
+<state_declaration>
+Declare every state explicitly before referencing it anywhere in the diagram, the parser
+resolves names top-to-bottom, so an undeclared name causes a hard failure.
+
+Syntax: `state StateName`
+</state_declaration>
+
+<initial_state>
+Every diagram and every composite/parallel region must have exactly one initial pseudostate.
+Declare the target state BEFORE the initial transition; because the parser reads declarations
+top-to-bottom, a state that appears in a transition before its `state` line causes a hard failure.
+
+Syntax: `[*] --> StateName`
+
+<examples>
+<example type="correct">
+    stateDiagram-v2
+    state Off
+    state On
+    [*] --> Off
+    Off --> On : powerOn
+    On --> Off : powerOff
+</example>
+
+<example type="incorrect state referenced before its declaration">
+    stateDiagram-v2
+    [*] --> Off          ← Off is used here but has not been declared yet
+    state On
+    Off --> On : powerOn
+    On --> Off : powerOff
+</example>
+</examples>
+</initial_state>
+
+<transitions>
+Declare every transition explicitly. Include both source and target state names on every line.
+
+Syntax - use the most specific form that applies:
+- Event, Guard, and Action: `SourceState --> TargetState : event [guard] / action`
+- Event and Action:         `SourceState --> TargetState : event / action`
+- Event and Guard:          `SourceState --> TargetState : event [guard]`
+- Event only:               `SourceState --> TargetState : event`
+</transitions>
+
+<guards>
+A guard is a boolean condition that must evaluate to true for the transition to fire.
+Enclose the guard in square brackets immediately after the event label so the parser
+can distinguish it from the action.
+
+Syntax: `SourceState --> TargetState : event [guard]`
+</guards>
+
+<actions>
+<transition_actions>
+Purpose: describe activities executed when a transition fires (e.g., sending a signal,
+updating a variable). Actions run only when the transition is taken AND any guard
+evaluates to true.
+
+Syntax: `Source --> Target : event [guard] / action`
+
+Action labels use imperative style and may include arguments: `lockDoor()`, `startTimer(10s)`.
+When multiple actions must occur on the same logical event, place them on separate transitions
+or document them in a `note` block for clarity.
+</transition_actions>
+
+<state_actions>
+Purpose:
+- `entry` - executes once when the state is entered.
+- `exit`  - executes once when the state is exited.
+- `do`    - executes continuously while the system remains in the state.
+
+Declare state actions in a `note right of` block placed AFTER the state or composite-state
+declaration - the parser expects the note to follow its target state.
+
+Syntax:
+    note right of StateName
+        entry / actionOnEntry()
+        exit / actionOnExit()
+        do: ongoingAction()
+    end note
+
+<example>
+    state WashCycle {{
+        [*] --> WaterIntake
+        WaterIntake --> Washing : tankFull
+    }}
+
+    note right of WashCycle
+        entry / lockDoor()
+        exit / unlockDoor()
+        do: monitorWaterLevel()
+    end note
+</example>
+</state_actions>
+</actions>
+
+<events>
+An event is the trigger that causes a transition to fire.
+Declare it after the colon on the transition line.
+
+Syntax: `SourceState --> TargetState : event`
+</events>
+
+<parallel_regions>
+Use parallel regions to model concurrent activities that proceed independently.
+Declare each region with the `region` keyword inside a parent composite state.
+Each region is self-contained: declare its own states and its own initial pseudostate
+(`[*] --> Substate`) - missing either causes a parse error for that region.
+Cross-region transitions must reference explicit substate names.
+
+Parallel regions may contain composite states; apply the composite-state rules inside
+each region exactly as you would at the top level.
+
+<example>
+    stateDiagram-v2
+    [*] --> ParallelController
+    state ParallelController {{
+        region RegionA {{
+            state Substate1
+            state Substate2
+            [*] --> Substate1
+            Substate1 --> Substate2 : event1
+        }}
+        region RegionWithComposite {{
+            [*] --> CompositeState
+            state CompositeState {{
+                state Substate3
+                state Substate4
+                [*] --> Substate3
+                Substate3 --> Substate4 : event2
+            }}
+        }}
+    }}
+</example>
+</parallel_regions>
+
+<composite_states>
+Purpose: group related substates under a named parent to model internal phases while
+keeping the same external interface.
+Use a composite state when:
+- A state has multiple internal phases or steps.
+- Substates share external transitions or entry/exit behavior.
+- Re-entry must resume the last active substate (pair with a history state).
+- The flat model becomes too complex to read.
+
+Syntax: `state CompositeName {{ ... }}`
+Declare substates and an initial pseudostate inside the braces.
+
+Typically, a composite state will have a history state to enable resuming the last active substate on re-entry, but this is not strictly required if the system's behavior does not demand it. If a history state is included, follow the rules in the <history_states> section.
+
+Rules - each violation causes a parse or semantic error:
+1. Declare the composite state before referencing it in any transition.
+2. The composite block must contain an initial pseudostate (`[*] --> Substate`).
+3. Place entry/exit/do `note` blocks AFTER the composite declaration, outside the braces.
+4. If a history state is declared inside the composite, it is exclusively for external
+   re-entry; substates must not transition directly to it. The two valid use cases for a history state are:
+   a) The composite state itself transitions to its history state on re-entry:
+        `Composite --> H : reenter / resumeAction`
+    b) An external state transitions directly to the history state:
+        `Outside --> H : reenter`
+   Any other usage is a violation that causes incorrect behavior or parse errors.
+
+<example>
+    stateDiagram-v2
+    [*] --> Device
+    state Device {{
+        state Idle
+        state Active {{
+            state Step1
+            state Step2
+            [*] --> Step1
+            Step1 --> Step2 : next
+        }}
+        Idle --> Active : start
+    }}
+
+    note right of Active
+        entry / startTimer()
+        exit / stopTimer()
+    end note
+</example>
+</composite_states>
+
+<history_states>
+Purpose: when a composite state is re-entered from outside, a history state causes the
+machine to resume the last active substate instead of restarting from the initial pseudostate.
+
+Rules - violations produce incorrect re-entry behavior or parse errors:
+1. Declare history states inside the composite state's block.
+2. Target a history state only from a transition that originates OUTSIDE the composite state,
+   or from the composite state itself (e.g., `Composite --> H : reenter / resumeAction`
+   or `Outside --> H : reenter`).
+3. Substates inside the same composite must NEVER transition directly to the history state.
+4. History states are exclusively for external re-entry; do not use them for internal
+   navigation, sequencing, or normal state flow.
+
+<examples>
+<example type="correct - composite transitions to its own history state">
+    stateDiagram-v2
+    [*] --> Outside
+    state Outside
+    state Composite
+    state Composite {{
+        state A
+        state B
+        state H
+        [*] --> A
+        A --> B : toB
+    }}
+    Composite --> H : reenter / resumeAction
+    Outside --> Composite : enter
+</example>
+
+<example type="correct - external state transitions directly to history state">
+    stateDiagram-v2
+    [*] --> Outside
+    state Outside
+    state Composite
+    state Composite {{
+        state A
+        state B
+        state H
+        [*] --> A
+        A --> B : toB
+    }}
+    Outside --> H : reenter
+    Outside --> Composite : enter
+</example>
+
+<example type="incorrect - substate transitions directly to history state">
+    stateDiagram-v2
+    [*] --> Outside
+    Outside --> Composite : enter
+    state Composite {{
+        state A
+        state H
+        [*] --> A
+        A --> H : illegal / bad    ← substates must never target the history state
+    }}
+</example>
+</examples>
+</history_states>
+
+</mermaid_syntax>
+
+<previous_output>
+stateDiagram-v2
+    state Off
+    [*] --> Off
+    
+    state On
+    Off --> On : powerOn
+    On --> Off : powerOff
+    
+    state On {
+        state WaitingForLogin
+        [*] --> WaitingForLogin
+        
+        WaitingForLogin --> WaitingForLogin : tapCard [!authorized] / showLoginError()
+        
+        state LoggedIn
+        WaitingForLogin --> LoggedIn : tapCard [authorized]
+        
+        LoggedIn --> WaitingForLogin : logoff
+        LoggedIn --> LoggedIn : startPrint [queueEmpty] / showPrintError()
+        LoggedIn --> LoggedIn : startScan [!documentDetected] / showScanError()
+        
+        state Printing
+        LoggedIn --> Printing : startPrint [!queueEmpty]
+        Printing --> LoggedIn : done
+        Printing --> LoggedIn : stop
+        
+        state Scanning
+        LoggedIn --> Scanning : startScan [documentDetected]
+        Scanning --> LoggedIn : done
+        Scanning --> LoggedIn : stop
+        
+        state PrintSuspendedPaperJam
+        Printing --> PrintSuspendedPaperJam : paperJam
+        PrintSuspendedPaperJam --> Printing : resume
+        PrintSuspendedPaperJam --> LoggedIn : cancel
+        
+        state PrintSuspendedOutOfPaper
+        Printing --> PrintSuspendedOutOfPaper : outOfPaper
+        PrintSuspendedOutOfPaper --> Printing : resume
+        PrintSuspendedOutOfPaper --> LoggedIn : cancel
+        
+        state ScanSuspendedPaperJam
+        Scanning --> ScanSuspendedPaperJam : paperJam
+        ScanSuspendedPaperJam --> Scanning : resume
+        ScanSuspendedPaperJam --> LoggedIn : cancel
+    }
+</previous_output>
+
+<common_errors>
+Each entry below names an error, explains WHY it causes a problem, and shows the correct pattern. Check your output against each one in order.
+
+<error id="1" name="Missing history states for composite states that can be interrupted and resumed">
+When a composite state can be interrupted by an external event and later re-entered, a history state (`state H` declared inside the composite) must be present so the machine resumes the last active substate rather than restarting from the initial pseudostate. Re-entry from outside the composite should target H directly. If the system description implies interrupted-and-resumed behavior for a composite state and your diagram omits the history state, add it.
+
+Two legal patterns for targeting a history state:
+- The composite state itself transitions to its history state on re-entry:
+  `CompositeState --> H : reenter`
+- A state outside the composite transitions directly to H:
+  `OutsideState --> H : reenter`
+
+<examples>
+<example type="incorrect – composite interrupted but no history state">
+    state Active {
+        state Step1
+        state Step2
+        [*] --> Step1
+        Step1 --> Step2 : next
+    }
+    state Suspended
+    Active --> Suspended : interrupt
+    Suspended --> Active : resume    ← resumes from Step1 every time, ignoring prior progress
+</example>
+
+<example type="correct – history state preserves last active substate">
+    state Active {
+        state Step1
+        state Step2
+        state H
+        [*] --> Step1
+        Step1 --> Step2 : next
+    }
+    state Suspended
+    Active --> Suspended : interrupt
+    Suspended --> H : resume    ← resumes from whichever substate was active
+</example>
+</examples>
+</error>
+
+<error id="2" name="Missing transitions implied by the system description">
+Re-read the system description and compare every event, condition, or behavioral path it describes against the transitions in your diagram. A transition is missing when the description clearly states that one state can lead to another under some event or condition but no corresponding `SourceState --> TargetState : event` line exists in the diagram. Missing transitions cause the machine to get stuck or behave incorrectly at runtime — the parser accepts the diagram but the modeled behavior is wrong. Add every transition that is grounded in the system description and absent from your output.
+
+<examples>
+<example type="incorrect – error recovery transition omitted">
+    state Processing
+    state Done
+    state Error
+    [*] --> Processing
+    Processing --> Done : success
+    ← description says errors can be retried, but Processing --> Error and Error --> Processing are missing
+</example>
+
+<example type="correct – all described transitions present">
+    state Processing
+    state Done
+    state Error
+    [*] --> Processing
+    Processing --> Done : success
+    Processing --> Error : failure
+    Error --> Processing : retry
+</example>
+</examples>
+</error>
+
+<error id="3" name="Incomplete transition labels — missing guards or actions described in the system">
+Re-read the system description for each transition in your diagram. A guard is missing when the description states a condition that must be true for the transition to fire but no `[condition]` appears on that transition line. An action is missing when the description states that an activity occurs when a transition fires but no `/ action` appears on that line. Omitting guards makes the machine fire unconditionally where it should not; omitting actions loses behavior that the system requires. Add every guard and action that is explicitly described and absent from your output.
+
+<examples>
+<example type="incorrect – guard and action omitted">
+    Idle --> Active : start
+    ← description says transition only fires when authorized, and door must lock on entry
+</example>
+
+<example type="correct – guard and action present">
+    Idle --> Active : start [authorized] / lockDoor()
+</example>
+</examples>
+</error>
+
+<error id="4" name="Multi-step behavioral sequences collapsed into a single transition">
+When the system description describes a behavior that unfolds in multiple distinct phases — where the system waits for input, waits for a timer, or offers a cancellable intermediate step — each phase must be a separate state. Collapsing these phases into a single transition loses intermediate behavior that the model must capture.
+
+Signs that a process needs intermediate states:
+- The description uses "then" between distinct phases of a process.
+- A phase exists where the system waits for the user to act before proceeding.
+- A timed waiting phase exists (the system waits X seconds before something fires).
+- A step can be cancelled or reversed before the process completes.
+
+Re-read every described process and verify that each distinct phase is represented as a state, not folded into a guard or event label on a single transition.
+
+<examples>
+<example type="incorrect – multi-step process collapsed into one transition">
+    state Active
+    state Off
+    Active --> Off : triggerAction [after5s]
+    ← description says: user triggers action → system enters a waiting phase with a confirmation message → user confirms → completes (cancellable during the wait)
+</example>
+
+<example type="correct – intermediate waiting phase modeled as its own state">
+    state Active
+    state PendingConfirmation
+    state Off
+    Active --> PendingConfirmation : triggerAction
+    PendingConfirmation --> Off : confirmed
+    PendingConfirmation --> Active : cancel
+</example>
+</examples>
+</error>
+
+<error id="5" name="Flat structure where composite states are implied">
+When a set of states all share the same external transitions (every state in the group exits on the same event to the same target), or when the description refers to them collectively as a named process or mode, they belong inside a composite state. Leaving them flat duplicates the shared transitions on every state and loses the hierarchical structure the description implies.
+
+Signs that states should be grouped into a composite:
+- Multiple states all exit on the same event to the same target state.
+- The description names a process or operational mode that contains several   internal phases.
+- A group of states all represent sub-steps of a single described operation.
+
+Group the states into a composite, declare a single shared external transition on the composite, and declare an initial pseudostate inside it.
+
+<examples>
+<example type="incorrect – substates flat, each repeating the same shared exit">
+    state StepA
+    state StepB
+    state StepC
+    [*] --> StepA
+    StepA --> StepB : next
+    StepB --> StepC : next
+    StepA --> Idle : interrupt
+    StepB --> Idle : interrupt
+    StepC --> Idle : interrupt
+</example>
+
+<example type="correct – substates grouped in a composite with one shared exit">
+    state Process {
+        state StepA
+        state StepB
+        state StepC
+        [*] --> StepA
+        StepA --> StepB : next
+        StepB --> StepC : next
+    }
+    Process --> Idle : interrupt
+</example>
+</examples>
+</error>
+</common_errors>
+
+<task>
+Work through the following steps in order. Place your review in <thinking> tags, then write the corrected diagram in step 3.
+
+1. Check your previous output against each error in <common_errors> in order    (errors 1, 2, 3, 4, 5). For each error, state explicitly whether it is    present and, if so, identify every affected state or transition.
+2. List every correction and addition you will make. If no errors are found,    state that explicitly and confirm the diagram is correct as-is.
+3. Output the corrected (or confirmed-correct) diagram using the exact    tags shown — nothing else may appear after the closing tag:
+   <mermaid_code_solution>YOUR_MERMAID_CODE_HERE</mermaid_code_solution>
+</task>
+
+<output_instructions>
+- Begin your response immediately with `<thinking>` tags — the very first   character of your response must be `<`. Any text before `<thinking>` is   a violation.
+- Place your review (steps 1–2) inside <thinking>...</thinking> tags.
+- Write plain Mermaid code inside the solution tags — no markdown fences   (```), no comments, no extra text.
+- Nothing may appear after the closing </mermaid_code_solution> tag.
+- You may add states, intermediate phases, composite structures, transitions,   guards, and actions whenever they are grounded in the system description.   Do not invent behavior that has no basis in the description.
+</output_instructions>
+
+
+=== Shot 2 Raw LLM Response ===
+<thinking>
+Let me work through each error in <common_errors> systematically:
+
+**Error 1: Missing history states for composite states that can be interrupted and resumed**
+
+Looking at the previous output:
+- `Printing` state can be interrupted by `paperJam` → `PrintSuspendedPaperJam` → `resume` back to `Printing`
+- `Printing` state can be interrupted by `outOfPaper` → `PrintSuspendedOutOfPaper` → `resume` back to `Printing`
+- `Scanning` state can be interrupted by `paperJam` → `ScanSuspendedPaperJam` → `resume` back to `Scanning`
+
+However, `Printing` and `Scanning` are simple states, not composite states with substates. The system description doesn't indicate that Printing or Scanning have internal phases that need to be preserved. The suspension is of the entire printing/scanning task, not of a particular phase within it.
+
+But wait - let me reconsider. The description says "The user is allowed to logoff either before or after a printing/scanning task but not while the printer is in the middle of a printing/scanning task." This suggests that during printing/scanning, the user cannot logoff. Also, "When the printer is done printing or scanning, the user can print or scan the next document."
+
+Actually, I need to think about whether Printing and Scanning should be composite states. The description mentions:
+- For print: "presses the start button to print the user's first document"
+- For scan: "presses the start button for the printer to scan an original document"
+- "When the printer is done printing or scanning, the user can print or scan the next document"
+
+This suggests that printing and scanning are single-step operations, not multi-phase processes. However, the suspension mechanism (paper jam, out of paper) interrupts these operations and they can be resumed. Since Printing and Scanning are not composite states with internal phases, history states are not applicable here.
+
+**Error 2: Missing transitions implied by the system description**
+
+Let me check all transitions described:
+1. Master switch on/off: ✓ `Off --> On : powerOn`, `On --> Off : powerOff`
+2. Login with authorized card: ✓ `WaitingForLogin --> LoggedIn : tapCard [authorized]`
+3. Login with unauthorized card: ✓ `WaitingForLogin --> WaitingForLogin : tapCard [!authorized] / showLoginError()`
+4. Choose print or scan: The description says "the user can either choose 'scan' or 'print'" - but in the diagram, we have `startPrint` and `startScan` events. This seems reasonable.
+5. Print with empty queue: ✓ `LoggedIn --> LoggedIn : startPrint [queueEmpty] / showPrintError()`
+6. Print with documents: ✓ `LoggedIn --> Printing : startPrint [!queueEmpty]`
+7. Scan without document: ✓ `LoggedIn --> LoggedIn : startScan [!documentDetected] / showScanError()`
+8. Scan with document: ✓ `LoggedIn --> Scanning : startScan [documentDetected]`
+9. Printing done: ✓ `Printing --> LoggedIn : done`
+10. Scanning done: ✓ `Scanning --> LoggedIn : done`
+11. Stop printing/scanning: ✓ `Printing --> LoggedIn : stop`, `Scanning --> LoggedIn : stop`
+12. Logoff before task: ✓ `LoggedIn --> WaitingForLogin : logoff`
+13. Logoff after task: This should also be possible from LoggedIn (already covered)
+14. Paper jam during printing: ✓ `Printing --> PrintSuspendedPaperJam : paperJam`
+15. Paper jam during scanning: ✓ `Scanning --> ScanSuspendedPaperJam : paperJam`
+16. Out of paper during printing: ✓ `Printing --> PrintSuspendedOutOfPaper : outOfPaper`
+17. Resume after paper jam (print): ✓ `PrintSuspendedPaperJam --> Printing : resume`
+18. Resume after paper jam (scan): ✓ `ScanSuspendedPaperJam --> Scanning : resume`
+19. Resume after out of paper: ✓ `PrintSuspendedOutOfPaper --> Printing : resume`
+20. Cancel after paper jam (print): ✓ `PrintSuspendedPaperJam --> LoggedIn : cancel`
+21. Cancel after paper jam (scan): ✓ `ScanSuspendedPaperJam --> LoggedIn : cancel`
+22. Cancel after out of paper: ✓ `PrintSuspendedOutOfPaper --> LoggedIn : cancel`
+
+Wait - the description says "The user may then either cancel the printing/scanning task or resume it." This implies that after canceling, the user should be able to start a new task. The transitions go to `LoggedIn`, which is correct.
+
+However, I notice that the description says "When the printer is done printing or scanning, the user can print or scan the next document." This is already handled by returning to `LoggedIn` state.
+
+All transitions seem to be present.
+
+**Error 3: Incomplete transition labels — missing guards or actions**
+
+Let me check each transition for missing guards or actions:
+
+1. `Off --> On : powerOn` - No guard or action mentioned in description. OK.
+2. `On --> Off : powerOff` - No guard or action mentioned. OK.
+3. `WaitingForLogin --> WaitingForLogin : tapCard [!authorized] / showLoginError()` - Guard and action present. OK.
+4. `WaitingForLogin --> LoggedIn : tapCard [authorized]` - Guard present. No action mentioned in description. OK.
+5. `LoggedIn --> WaitingForLogin : logoff` - No guard or action mentioned. OK.
+6. `LoggedIn --> LoggedIn : startPrint [queueEmpty] / showPrintError()` - Guard and action present. OK.
+7. `LoggedIn --> LoggedIn : startScan [!documentDetected] / showScanError()` - Guard and action present. OK.
+8. `LoggedIn --> Printing : startPrint [!queueEmpty]` - Guard present. No action mentioned. OK.
+9. `LoggedIn --> Scanning : startScan [documentDetected]` - Guard present. No action mentioned. OK.
+10. `Printing --> LoggedIn : done` - No guard or action mentioned. OK.
+11. `Scanning --> LoggedIn : done` - No guard or action mentioned. OK.
+12. `Printing --> LoggedIn : stop` - No guard or action mentioned. OK.
+13. `Scanning --> LoggedIn : stop` - No guard or action mentioned. OK.
+14. `Printing --> PrintSuspendedPaperJam : paperJam` - No guard or action mentioned. OK.
+15. `Printing --> PrintSuspendedOutOfPaper : outOfPaper` - No guard or action mentioned. OK.
+16. `Scanning --> ScanSuspendedPaperJam : paperJam` - No guard or action mentioned. OK.
+17. `PrintSuspendedPaperJam --> Printing : resume` - No guard or action mentioned. OK.
+18. `PrintSuspendedPaperJam --> LoggedIn : cancel` - No guard or action mentioned. OK.
+19. `PrintSuspendedOutOfPaper --> Printing : resume` - No guard or action mentioned. OK.
+20. `PrintSuspendedOutOfPaper --> LoggedIn : cancel` - No guard or action mentioned. OK.
+21. `ScanSuspendedPaperJam --> Scanning : resume` - No guard or action mentioned. OK.
+22. `ScanSuspendedPaperJam --> LoggedIn : cancel` - No guard or action mentioned. OK.
+
+Wait - the description says "The scan is sent to the user's email inbox." This is an action that should occur during scanning. This should be added as an action on the transition to Scanning or as an entry/exit action on the Scanning state.
+
+Also, "the user presses the start button to print the user's first document in the user's print queue" - this could imply an action like `printDocument()`.
+
+Let me add these actions:
+- `LoggedIn --> Printing : startPrint [!queueEmpty] / printDocument()`
+- `LoggedIn --> Scanning : startScan [documentDetected] / scanToEmail()`
+
+**Error 4: Multi-step behavioral sequences collapsed into a single transition**
+
+Let me check for multi-step processes:
+
+1. Login process: Tap card → check authorization → show error or proceed. This is a single decision point, not a multi-step sequence. OK.
+2. Print process: Press start → check queue → print or show error. This is a single decision point. OK.
+3. Scan process: Press start → check document → scan or show error. This is a single decision point. OK.
+4. Paper jam handling: Jam occurs → suspend → user clears jam → resume or cancel. The "user clears jam" is an implicit step. Should there be a state for "clearing jam"? The description says "the printer will suspend the printing/scanning task to allow the user to clear the paper jam. The user may then either cancel the printing/scanning task or resume it." This suggests that the suspended state is where the user clears the jam, and then they choose to resume or cancel. So the current model seems correct.
+5. Out of paper handling: Similar to paper jam. OK.
+
+I don't see any multi-step sequences that are collapsed.
+
+**Error 5: Flat structure where composite states are implied**
+
+Let me check for groups of states that should be composite:
+
+1. `PrintSuspendedPaperJam` and `PrintSuspendedOutOfPaper` - these are both suspension states for printing. They both have the same transitions: `resume` back to `Printing` and `cancel` to `LoggedIn`. Should they be grouped? The description treats them as separate conditions, so keeping them separate seems reasonable.
+
+2. `Printing` and `Scanning` - these are the main operational states. They don't share the same external transitions (paper jam handling is different), so they shouldn't be grouped.
+
+3. Actually, looking more carefully: `Printing`, `PrintSuspendedPaperJam`, and `PrintSuspendedOutOfPaper` could be seen as substates of a "PrintingProcess" composite state. Similarly, `Scanning` and `ScanSuspendedPaperJam` could be substates of a "ScanningProcess" composite state. This would make sense because:
+   - They represent phases of the same overall operation (printing or scanning)
+   - The description refers to them as part of the "printing task" or "scanning task"
+   - When suspended, the task can be resumed (which suggests history state usage)
+
+Let me reconsider: If we make `PrintingProcess` a composite state containing `Printing`, `PrintSuspendedPaperJam`, and `PrintSuspendedOutOfPaper`, then:
+- External transitions like `stop` and `cancel` would go from the composite to `LoggedIn`
+- The `done` transition would also go from the composite (or from the `Printing` substate) to `LoggedIn`
+- History state would be used to resume the correct substate when re-entering
+
+Actually, looking at the transitions:
+- `Printing --> LoggedIn : done`
+- `Printing --> LoggedIn : stop`
+- `PrintSuspendedPaperJam --> LoggedIn : cancel`
+- `PrintSuspendedOutOfPaper --> LoggedIn : cancel`
+
+These are not all the same. `done` only comes from `Printing`, not from the suspended states. `stop` only comes from `Printing`. `cancel` only comes from the suspended states. So they don't all share the same external transitions.
+
+However, the description does say "The user may also stop the printing/scanning task at any time by pressing the stop button." This suggests that `stop` should be available from all printing-related states, including the suspended states. But then it says "The user is allowed to logoff either before or after a printing/scanning task but not while the printer is in the middle of a printing/scanning task." This suggests that during printing (including suspended states), certain actions are restricted.
+
+Let me re-read: "The user may also stop the printing/scanning task at any time by pressing the stop button." This clearly states "at any time", which should include when suspended. So we need:
+- `PrintSuspendedPaperJam --> LoggedIn : stop`
+- `PrintSuspendedOutOfPaper --> LoggedIn : stop`
+- `ScanSuspendedPaperJam --> LoggedIn : stop`
+
+These are missing transitions!
+
+Now, with these added, we have:
+- `Printing --> LoggedIn : done`
+- `Printing --> LoggedIn : stop`
+- `PrintSuspendedPaperJam --> LoggedIn : cancel`
+- `PrintSuspendedPaperJam --> LoggedIn : stop`
+- `PrintSuspendedOutOfPaper --> LoggedIn : cancel`
+- `PrintSuspendedOutOfPaper --> LoggedIn : stop`
+
+So `stop` is a shared external transition from all printing-related states. This suggests that `Printing`, `PrintSuspendedPaperJam`, and `PrintSuspendedOutOfPaper` should be grouped into a composite state with a shared `stop` transition.
+
+Similarly for scanning:
+- `Scanning --> LoggedIn : done`
+- `Scanning --> LoggedIn : stop`
+- `ScanSuspendedPaperJam --> LoggedIn : cancel`
+- `ScanSuspendedPaperJam --> LoggedIn : stop`
+
+So `Scanning` and `ScanSuspendedPaperJam` should be grouped into a composite state with a shared `stop` transition.
+
+Now, should we use history states? When the printing process is suspended and then resumed, it should go back to the `Printing` state (not restart from an initial state). But wait - the resume transitions are explicit: `PrintSuspendedPaperJam --> Printing : resume`. This is an internal transition within the composite, not a re-entry from outside. So history states are not needed here.
+
+Actually, let me reconsider the composite structure. If we have a `PrintingProcess` composite:
+- Initial state: `Printing`
+- `Printing --> PrintSuspendedPaperJam : paperJam`
+- `Printing --> PrintSuspendedOutOfPaper : outOfPaper`
+- `PrintSuspendedPaperJam --> Printing : resume`
+- `PrintSuspendedOutOfPaper --> Printing : resume`
+- `Printing --> [exit composite] : done`
+- `PrintingProcess --> LoggedIn : stop` (shared external transition)
+- `PrintSuspendedPaperJam --> LoggedIn : cancel`
+- `PrintSuspendedOutOfPaper --> LoggedIn : cancel`
+
+Wait, `cancel` is not a shared transition - it only applies to suspended states. So we can't make it a composite-level transition.
+
+Let me think differently. The composite state would be:
+- `PrintingProcess` contains `Printing`, `PrintSuspendedPaperJam`, `PrintSuspendedOutOfPaper`
+- Shared external transition: `PrintingProcess --> LoggedIn : stop`
+- Internal transitions: as above
+- Exit from `Printing` substate: `Printing --> LoggedIn : done` (this would need to be from the substate, not the composite)
+
+Actually, in Mermaid, we can have transitions from substates to states outside the composite. So:
+- `Printing --> LoggedIn : done` (from substate to outside)
+- `PrintSuspendedPaperJam --> LoggedIn : cancel` (from substate to outside)
+- `PrintSuspendedOutOfPaper --> LoggedIn : cancel` (from substate to outside)
+- `PrintingProcess --> LoggedIn : stop` (from composite to outside, applies to all substates)
+
+This makes sense! Let me apply the same logic to scanning.
+
+**Summary of corrections:**
+
+1. Add missing `stop` transitions from suspended states (Error 2)
+2. Add actions for printing and scanning (Error 3)
+3. Group printing-related states into a `PrintingProcess` composite state (Error 5)
+4. Group scanning-related states into a `ScanningProcess` composite state (Error 5)
+
+Let me now construct the corrected diagram.
+</thinking>
+
+<mermaid_code_solution>
+stateDiagram-v2
+    state Off
+    [*] --> Off
+    
+    state On
+    Off --> On : powerOn
+    On --> Off : powerOff
+    
+    state On {
+        state WaitingForLogin
+        [*] --> WaitingForLogin
+        
+        WaitingForLogin --> WaitingForLogin : tapCard [!authorized] / showLoginError()
+        
+        state LoggedIn
+        WaitingForLogin --> LoggedIn : tapCard [authorized]
+        
+        LoggedIn --> WaitingForLogin : logoff
+        LoggedIn --> LoggedIn : startPrint [queueEmpty] / showPrintError()
+        LoggedIn --> LoggedIn : startScan [!documentDetected] / showScanError()
+        
+        state PrintingProcess {
+            state Printing
+            [*] --> Printing
+            
+            state PrintSuspendedPaperJam
+            Printing --> PrintSuspendedPaperJam : paperJam
+            PrintSuspendedPaperJam --> Printing : resume
+            PrintSuspendedPaperJam --> LoggedIn : cancel
+            
+            state PrintSuspendedOutOfPaper
+            Printing --> PrintSuspendedOutOfPaper : outOfPaper
+            PrintSuspendedOutOfPaper --> Printing : resume
+            PrintSuspendedOutOfPaper --> LoggedIn : cancel
+            
+            Printing --> LoggedIn : done
+        }
+        
+        LoggedIn --> PrintingProcess : startPrint [!queueEmpty] / printDocument()
+        PrintingProcess --> LoggedIn : stop
+        
+        state ScanningProcess {
+            state Scanning
+            [*] --> Scanning
+            
+            state ScanSuspendedPaperJam
+            Scanning --> ScanSuspendedPaperJam : paperJam
+            ScanSuspendedPaperJam --> Scanning : resume
+            ScanSuspendedPaperJam --> LoggedIn : cancel
+            
+            Scanning --> LoggedIn : done
+        }
+        
+        LoggedIn --> ScanningProcess : startScan [documentDetected] / scanToEmail()
+        ScanningProcess --> LoggedIn : stop
+    }
+</mermaid_code_solution>
+
+=== Shot 2 (Refined, Final) ===
+stateDiagram-v2
+    state Off
+    [*] --> Off
+    
+    state On
+    Off --> On : powerOn
+    On --> Off : powerOff
+    
+    state On {
+        state WaitingForLogin
+        [*] --> WaitingForLogin
+        
+        WaitingForLogin --> WaitingForLogin : tapCard [!authorized] / showLoginError()
+        
+        state LoggedIn
+        WaitingForLogin --> LoggedIn : tapCard [authorized]
+        
+        LoggedIn --> WaitingForLogin : logoff
+        LoggedIn --> LoggedIn : startPrint [queueEmpty] / showPrintError()
+        LoggedIn --> LoggedIn : startScan [!documentDetected] / showScanError()
+        
+        state PrintingProcess {
+            state Printing
+            [*] --> Printing
+            
+            state PrintSuspendedPaperJam
+            Printing --> PrintSuspendedPaperJam : paperJam
+            PrintSuspendedPaperJam --> Printing : resume
+            PrintSuspendedPaperJam --> LoggedIn : cancel
+            
+            state PrintSuspendedOutOfPaper
+            Printing --> PrintSuspendedOutOfPaper : outOfPaper
+            PrintSuspendedOutOfPaper --> Printing : resume
+            PrintSuspendedOutOfPaper --> LoggedIn : cancel
+            
+            Printing --> LoggedIn : done
+        }
+        
+        LoggedIn --> PrintingProcess : startPrint [!queueEmpty] / printDocument()
+        PrintingProcess --> LoggedIn : stop
+        
+        state ScanningProcess {
+            state Scanning
+            [*] --> Scanning
+            
+            state ScanSuspendedPaperJam
+            Scanning --> ScanSuspendedPaperJam : paperJam
+            ScanSuspendedPaperJam --> Scanning : resume
+            ScanSuspendedPaperJam --> LoggedIn : cancel
+            
+            Scanning --> LoggedIn : done
+        }
+        
+        LoggedIn --> ScanningProcess : startScan [documentDetected] / scanToEmail()
+        ScanningProcess --> LoggedIn : stop
+    }
+

@@ -1,0 +1,59 @@
+stateDiagram-v2
+    state Off
+    [*] --> Off
+    
+    Off --> On : onOff
+    
+    state On {
+        state Setup
+        state Paused
+        state GameActive
+        
+        [*] --> Setup
+        
+        state Setup {
+            state TimingSelection
+            state TimingSelected
+            
+            [*] --> TimingSelection
+            
+            TimingSelection --> TimingSelection : plus / selectNextTiming()
+            TimingSelection --> TimingSelection : minus / selectPreviousTiming()
+            TimingSelection --> TimingSelection : flip / swapOrientation()
+            TimingSelection --> TimingSelected : select / lockTiming()
+            TimingSelected --> TimingSelected : flip / swapOrientation()
+        }
+        
+        state GameActive {
+            state WhiteTurn
+            state BlackTurn
+            state WhiteTimeout
+            state BlackTimeout
+            state H
+            
+            [*] --> WhiteTurn
+            
+            WhiteTurn --> BlackTurn : flip / stopWhiteClock(), addIncrementToWhite(), startBlackClock()
+            BlackTurn --> WhiteTurn : flip / stopBlackClock(), addIncrementToBlack(), startWhiteClock()
+            
+            WhiteTurn --> WhiteTimeout : [whiteTime == 0] / showWhiteFlag()
+            BlackTurn --> BlackTimeout : [blackTime == 0] / showBlackFlag()
+        }
+        
+        note right of WhiteTurn
+            do: countDownWhite()
+        end note
+        
+        note right of BlackTurn
+            do: countDownBlack()
+        end note
+        
+        Setup --> GameActive : startStop / startWhiteClock()
+        
+        WhiteTurn --> Paused : startStop / stopWhiteClock()
+        BlackTurn --> Paused : startStop / stopBlackClock()
+        
+        Paused --> H : startStop / resumeClock()
+    }
+    
+    On --> Off : onOff

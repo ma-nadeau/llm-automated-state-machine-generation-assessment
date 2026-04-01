@@ -1,0 +1,64 @@
+stateDiagram-v2
+    
+    state Off
+    [*] --> Off
+    
+    state Idle
+    Off --> Idle : powerOn
+    Idle --> Off : powerOff
+    
+    Idle --> Idle : selectProgram(program)
+    Idle --> Idle : extendDrying / setDryingTime(40)
+    Idle --> Idle : reduceDrying / setDryingTime(20)
+    
+    state Active
+    Idle --> Active : start
+    
+    note right of Active
+        entry / lockDoor()
+    end note
+    
+    state Active {
+        state WashCycle
+        [*] --> WashCycle
+        
+        state WashCycle {
+            state WaterIntake
+            [*] --> WaterIntake
+            
+            state Washing
+            WaterIntake --> Washing : intakeComplete
+            
+            state Draining
+            Washing --> Draining : after(10min)
+            
+            Draining --> WaterIntake : drainComplete [cyclesRemaining > 0] / decrementCycle()
+        }
+        
+        WashCycle --> WashCycle : extendDrying / setDryingTime(40)
+        WashCycle --> WashCycle : reduceDrying / setDryingTime(20)
+        
+        state Drying
+        WashCycle --> Drying : drainComplete [cyclesRemaining == 0]
+        
+        note right of Drying
+            entry / unlockDoor()
+        end note
+        
+        state Drying {
+            state DryingActive
+            [*] --> DryingActive
+            
+            state DoorOpen
+            DryingActive --> DoorOpen : openDoor
+            
+            state H
+            DoorOpen --> H : closeDoor
+            DoorOpen --> Idle : after(5min)
+        }
+        
+        Drying --> Drying : extendDrying / setDryingTime(40)
+        
+        DryingActive --> Idle : dryingComplete
+    }
+

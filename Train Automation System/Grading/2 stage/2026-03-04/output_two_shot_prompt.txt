@@ -1,0 +1,67 @@
+stateDiagram-v2
+    
+    state Off
+    state Active
+    [*] --> Off
+    
+    Off --> Active : powerOn / pOn(), setCS(firstSegment)
+    Active --> Off : powerOff / pOff()
+    
+    state Active {
+        --
+        state SDS {
+            state SDSMonitoring
+            [*] --> SDSMonitoring
+        }
+        --
+        state MDS {
+            state MDSMonitoring
+            [*] --> MDSMonitoring
+        }
+        --
+        state ODS {
+            state ODSMonitoring
+            [*] --> ODSMonitoring
+        }
+        --
+        state TrainOperation {
+            state WaitingAtFirstStation
+            state Moving
+            state StoppingAtTrafficLight
+            state WaitingAtTrafficLight
+            state StoppingAtStation
+            state AtStation
+            state AtFinalStation
+            state EmergencyStopped
+            state H
+            
+            [*] --> WaitingAtFirstStation
+            
+            WaitingAtFirstStation --> Moving : scheduledStopDurationElapsed / setSpeed(currentSegment.speed)
+            
+            Moving --> Moving : enteredNewSegment [isRegularSegment] / setCS(segment), setSpeed(currentSegment.speed)
+            Moving --> Moving : enteredNewSegment [isTrafficLightSegment && lightIsGreen] / setCS(segment), setSpeed(currentSegment.speed)
+            Moving --> StoppingAtTrafficLight : enteredNewSegment [isTrafficLightSegment && lightIsRed] / setCS(segment), stopAL(currentSegment.location)
+            Moving --> StoppingAtStation : enteredNewSegment [isStationSegment && !isFinalStation] / setCS(segment), stopAL(currentSegment.location)
+            Moving --> StoppingAtStation : enteredNewSegment [isStationSegment && isFinalStation] / setCS(segment), stopAL(currentSegment.location)
+            
+            StoppingAtTrafficLight --> WaitingAtTrafficLight : stoppedConfirmed
+            WaitingAtTrafficLight --> Moving : lightTurnsGreen / setSpeed(currentSegment.speed)
+            
+            StoppingAtStation --> AtStation : stoppedConfirmed [!isFinalStation] / openDoors()
+            StoppingAtStation --> AtFinalStation : stoppedConfirmed [isFinalStation] / openDoors()
+            
+            AtStation --> Moving : scheduledStopDurationElapsed / closeDoors(), setSpeed(currentSegment.speed)
+            
+            AtFinalStation --> Off : scheduledStopDurationElapsed / pOff()
+            
+            WaitingAtFirstStation --> EmergencyStopped : emergencyDetected / eStop()
+            Moving --> EmergencyStopped : emergencyDetected / eStop()
+            StoppingAtTrafficLight --> EmergencyStopped : emergencyDetected / eStop()
+            WaitingAtTrafficLight --> EmergencyStopped : emergencyDetected / eStop()
+            StoppingAtStation --> EmergencyStopped : emergencyDetected / eStop()
+            AtStation --> EmergencyStopped : emergencyDetected / eStop()
+            
+            EmergencyStopped --> H : emergencyCleared
+        }
+    }

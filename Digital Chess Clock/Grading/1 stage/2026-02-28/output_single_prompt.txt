@@ -1,0 +1,46 @@
+stateDiagram-v2
+    
+    state Off
+    [*] --> Off
+    Off --> On : onOff
+    
+    state On {
+        state Setup
+        [*] --> Setup
+        
+        Setup --> Setup : plus
+        Setup --> Setup : minus
+        Setup --> Setup : flip
+        state Ready
+        Setup --> Ready : select
+        
+        Ready --> Ready : flip
+        state Playing
+        Ready --> Playing : startStop
+        
+        state Playing {
+            state WhiteTurn
+            [*] --> WhiteTurn
+            
+            state BlackTurn
+            state WhiteTimeout
+            state BlackTimeout
+            state H
+            
+            WhiteTurn --> BlackTurn : flip / addIncrement(White)
+            BlackTurn --> WhiteTurn : flip / addIncrement(Black)
+            
+            WhiteTurn --> WhiteTimeout : timeout
+            BlackTurn --> BlackTimeout : timeout
+            
+            WhiteTimeout --> BlackTurn : flip / addIncrement(White)
+            BlackTimeout --> WhiteTurn : flip / addIncrement(Black)
+        }
+        
+        state Paused
+        Playing --> Paused : startStop
+        Paused --> H : startStop
+    }
+    
+    On --> Off : onOff
+

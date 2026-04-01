@@ -1,0 +1,56 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Off)	1	Initial state correctly transitions to Off
+State	Off	1	Off state is present
+Transition	on (Off ⇒ On)	1	Transition from Off to On with on event is present
+Composite State	On	1	On composite state is present
+Transition	on => off	1	Transition from On to Off with off event is present
+Composite State	Setup	0.5	Represented as CourseSelection state; lacks internal crust state machine structure
+State	Initial state (Setup → Medium)	0	No internal initial state to Medium within crust selection
+Action	delay=0; selectFirstCourse()	0	No initialization action for delay and course selection
+State	Medium	0	Medium crust state not modeled as separate state
+Transition	setup initial state => medium	0	No internal transition to Medium state
+Transition	medium => dark	0	Crust transitions not modeled as state transitions
+State	Dark	0	Dark crust state not modeled as separate state
+Transition	dark => light	0	Crust transitions not modeled as state transitions
+State	Light	0	Light crust state not modeled as separate state
+History State	H	0	No history state present for crust selection
+Transition	setup => H	0	No transition to history state
+Action	selectNextCourse()	1	Action selectNextCourse() present on menu transition
+Transition	plus (Setup ⇒ Setup)	1	Self-transition on plus event present in CourseSelection
+Guard	[delay <= 17*60+50]	0.5	Guard present as [timer < 1080] which is equivalent to 18 hours but uses different variable name
+Action	delay = delay + 10	1	Action timer += 10 is semantically equivalent
+Transition	minus (Setup ⇒ Setup)	1	Self-transition on minus event present in CourseSelection
+Guard	[delay >= 10]	0.5	Guard present as [timer > 0] which is close but not exact (allows decrement at timer=10 to 0)
+Action	delay = delay - 10	1	Action timer -= 10 is semantically equivalent
+Transition	start (Setup ⇒ Countdown)	1	Transition from CourseSelection to Countdown with start event and guard [timer > 0]
+Guard	[delay > 0]	1	Guard [timer > 0] is semantically equivalent
+Transition	start (Setup ⇒ Baking)	1	Transition from CourseSelection to BakingProcess with start event and guard [timer == 0]
+Guard	[delay == 0]	1	Guard [timer == 0] is semantically equivalent
+State	Countdown	1	Countdown state is present
+Action	setCourseTimes()	0	No setCourseTimes() action on transition to Countdown or Baking
+Transition	Countdown => baking	1	Transition from Countdown to BakingProcess with guard [timer == 1]
+Transition	Countdown => setup	1	Transition from Countdown to CourseSelection with stop event
+Action	setCourseTimes()	0	No setCourseTimes() action on transition from Countdown to Baking
+Composite State	Baking	1	BakingProcess composite state is present
+State	Initial state	1	Initial state within BakingProcess transitions to Kneading
+State	Kneading	1	Kneading state is present
+Action	startKneading()	1	startKneading() action present as entry action in note
+Action	stopKneading()	1	stopKneading() action present as exit action in note
+Transition	baking initial state => kneading	1	Initial state transitions to Kneading
+Transition	kneading => rising	1	Transition from Kneading to Rising present
+State	Rising	1	Rising state is present
+Transition	rising => baking	1	Transition from Rising to Baking state present
+State	Baking	1	Baking state is present within BakingProcess
+Action	heat()	1	heat() action present as entry action in note for Baking
+Transition	baking => warming	1	Transition from Baking to Warming present
+State	Warming	1	Warming state is present
+Action	warm()	1	warm() action present as entry action in note for Warming
+Transition	adter 60min (warming => setup)	1	Transition from Warming to CourseSelection after 60 minutes present
+Transition	baking => setup	1	Transition from BakingProcess to CourseSelection with stop event present
+State	additional elements	0	No additional incorrect states
+Transition	additional elements	0	No additional incorrect transitions
+Guard	additional elements	0	No additional incorrect guards
+Action	additional elements	0	No additional incorrect actions
+Composite State	additional elements	0	No additional incorrect composite states
+Region	additional elements	0	No additional incorrect regions
+History State	additional elements	0	No additional incorrect history states

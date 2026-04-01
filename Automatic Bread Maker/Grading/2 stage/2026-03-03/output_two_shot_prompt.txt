@@ -1,0 +1,52 @@
+stateDiagram-v2
+    
+    state Off
+    [*] --> Off
+    Off --> On : on
+    On --> Off : off
+    
+    state On {
+        state Configuration
+        [*] --> Configuration
+        
+        Configuration --> Configuration : menu
+        Configuration --> Configuration : crust
+        Configuration --> Configuration : plus [timer < 1080] / increaseTimer(10)
+        Configuration --> Configuration : minus [timer > 0] / decreaseTimer(10)
+        
+        state Countdown
+        Configuration --> Countdown : start [timer > 0]
+        Countdown --> Kneading : timerExpired
+        Countdown --> Configuration : stop
+        
+        state BakingProcess {
+            state Kneading
+            [*] --> Kneading
+            
+            state Rising
+            state Baking
+            state Warming
+            
+            Kneading --> Rising : knead_complete
+            Rising --> Baking : rise_complete
+            Baking --> Warming : bake_complete
+            Warming --> Configuration : after(60min)
+        }
+        
+        note right of Kneading
+            entry / startKneading()
+            exit / stopKneading()
+        end note
+        
+        note right of Baking
+            entry / heat()
+        end note
+        
+        note right of Warming
+            entry / warm()
+        end note
+        
+        Configuration --> Kneading : start [timer == 0]
+        
+        BakingProcess --> Configuration : stop
+    }

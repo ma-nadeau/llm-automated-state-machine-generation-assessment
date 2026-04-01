@@ -1,0 +1,45 @@
+Type,Element,Grading,Notes
+State,"initial state (Off)",1,Initial state correctly transitions to Off
+State,"Off",1,Off state is present
+Transition,"on (Off => On)",1,powerOn transition from Off to On is present
+Composite State,"On",1,On is a composite state containing substates
+Transition,"off (On => Off)",1,powerOff transition from On to Off is present
+State,"initial state (Idle)",0.5,Initial state transitions to WaitingForLogin instead of Idle; semantically similar but different naming
+State,"Idle",1,Idle state exists within LoggedIn composite state
+Transition,"login(cardID) (Idle => Idle)",0.5,Represented as tapCard transition to LoginError with guard; semantically captures unauthorized login but structure differs
+Guard,"[!idAuthorized(cardID)]",1,Guard [!authorized] is present on tapCard transition
+Transition,"login(cardID) (Idle => Ready)",0.5,Represented as tapCard to LoggedIn with [authorized] guard; semantically equivalent but naming differs
+Guard,"[idAuthorized(cardID)]",1,Guard [authorized] is present on tapCard transition
+Action,"action=""none""",0,No action setting action variable to none is present
+State,"Ready",0.5,Represented by Idle state within LoggedIn; semantically similar but naming differs
+Transition,"logoff (Ready => Idle)",0.5,Logoff transitions from LoggedIn to WaitingForLogin; semantically correct but different state names
+Transition,"start (Ready => Ready)",0.5,Error handling transitions exist (Idle to PrintError/ScanError) but structure differs from self-loop
+Guard,"[action==""scan"" & !originalLoaded()]",0.5,Guard [!documentPresent] on startScan exists; semantically equivalent but different variable naming
+Transition,"start (Ready => Ready)",0.5,Error handling for print queue exists with guard [queueEmpty]; semantically equivalent
+Guard,"[action==""print"" & !documentInQueue()]",0.5,Guard [queueEmpty] on startPrint exists; semantically equivalent but different variable naming
+Transition,"scan (Ready => Ready)",0,No explicit scan action setting transition is present
+Action,"action = ""scan""",0,No action variable assignment for scan is present
+Transition,"print (Ready => Ready)",0,No explicit print action setting transition is present
+Action,"action=""print""",0,No action variable assignment for print is present
+Transition,"start (Ready => Scan & Email)",0.5,Represented as startScan to ScanTask with [documentPresent] guard; semantically equivalent
+Guard,"[action==""scan"" && originalLoaded()]",0.5,Guard [documentPresent] on startScan exists; semantically equivalent but no action variable check
+Composite State,"Busy",0.5,Represented by separate PrintTask and ScanTask composite states; semantically equivalent but different structure
+Transition,"stop (Busy => Ready)",0.5,Stop transitions from Printing/Scanning to Idle; semantically equivalent but different target state name
+Transition,"done (Busy => Ready)",0.5,Complete transitions from Printing/Scanning to Idle; semantically equivalent
+Transition,"jam (Busy => Suspended)",0.5,PaperJam transitions exist from Printing/Scanning states; semantically equivalent but different state names
+History State,"for Busy",0.5,HPrint and HScan history states exist within PrintTask and ScanTask; semantically equivalent but different structure
+State,"Print",1,Printing state exists within PrintTask composite state
+Transition,"start (Ready => Print)",0.5,startPrint transition to PrintTask with [!queueEmpty] guard; semantically equivalent
+Guard,"[action=""print"" && documentInQueue()]",0.5,Guard [!queueEmpty] on startPrint exists; semantically equivalent but no action variable check
+Transition,"outOfPaper (Print => Suspended)",1,outOfPaper transition from Printing to PrintingOutOfPaper is present
+State,"Scan & Email",0.5,Represented by Scanning state with sendToEmail() exit action; semantically equivalent
+State,"Suspended",0.5,Represented by PrintingPaperJam, PrintingOutOfPaper, ScanningPaperJam states; semantically equivalent but different structure
+Transition,"resume (Suspended => History State for Busy)",1,Resume transitions to HPrint/HScan history states are present
+Transition,"cancel (Suspended => Ready)",0.5,Cancel transitions to Idle from suspended states; semantically equivalent
+State,"additional elements",0,No fundamentally incorrect states present
+Transition,"additional elements",0,No fundamentally incorrect transitions present
+Guard,"additional elements",0,No fundamentally incorrect guards present
+Action,"additional elements",0,No fundamentally incorrect actions present
+Composite State,"additional elements",0,Additional composite states are reasonable modeling choices
+Region,"additional elements",0,No incorrect regions present
+History State,"additional elements",0,No incorrect history states present

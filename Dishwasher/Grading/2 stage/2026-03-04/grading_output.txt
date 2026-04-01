@@ -1,0 +1,55 @@
+Type,Element,Grading,Notes
+Composite State,"DishwasherOn",0,No composite state representing the overall dishwasher system; student uses Running instead
+Region,"Door",0,No separate Door region; door locking/unlocking handled via actions only
+State,"initial state (⇒ Closed)",0,No Door region or Closed state
+State,"Closed",0,No Door region or Closed state
+Transition,"open (Closed ⇒ Open)",0,No Door region or open transition
+Transition,"lock (Closed ⇒ Locked)",0,Door locking handled as action in WashCycle entry note
+State,"Open",0,No Door region or Open state
+Transition,"close (Open ⇒ Closed)",0,No Door region or close transition
+State,"Locked",0,No Door region or Locked state
+Transition,"unlock (Locked ⇒ Closed)",0,Door unlocking handled as action in Drying entry note
+Region,"Washer",0,No separate Washer region; all logic in single region
+State,"initial state",1,Initial state transitions to Idle correctly
+Transition,"r =1; dT=20; (initial state ⇒ Idle)",0,No initialization of variables r and dT on initial transition
+State,"Idle",1,Idle state present and correctly used
+Transition,"selectProgram(n) (Idle ⇒ Idle)",1,selectProgram(program) self-transition present in Idle
+Guard,"[n ≥ 1]",0,No guard on selectProgram transition
+Action,"r = n;",0.5,setProgram(program) action present but does not explicitly set cycle count variable
+Transition,"toggleDryingTime (Idle ⇒ Idle)",0.5,extendDrying and reduceDrying transitions present but not as single toggle
+Action,"if dT = 20 then dT = 40 else dT = 20;",0.5,Separate extend/reduce actions instead of conditional toggle logic
+Transition,"start (Idle ⇒ Idle)",1,start transition from Idle to Running present
+Guard,"[door.isClosed()]",0,No guard checking door state on start transition
+Action,"door.lock(); c = 1;",0.5,lockDoor() action present in WashCycle entry but no cycle counter initialization
+Composite State,"Cleaning",1,WashCycle composite state represents cleaning phase
+State,"initial state (⇒ Intake)",1,Initial state transitions to WaterIntake in WashCycle
+State,"Intake",1,WaterIntake state present
+Transition,"Intake ⇒ Washing",1,WaterIntake to Washing transition present with waterFilled event
+State,"Washing",1,Washing state present
+Transition,"after 10 min (Washing ⇒ Drain)",1,Washing to Draining transition with after(10min) present
+State,"Drain",1,Draining state present
+Guard,"[c < r]",1,Guard [cyclesRemaining > 0] on Draining to WaterIntake transition
+Transition,"Drain ⇒ Intake",1,Draining to WaterIntake transition present
+Action,"c++",1,decrementCycles() action present on loop transition
+Transition,"(Drain ⇒ end state)",0.5,Transition to Drying present but not to explicit end state
+Guard,"[c ≥ r]",1,Guard [cyclesRemaining == 0] on transition to Drying
+History State,"History State for Cleaning",0.5,H state declared in Drying but not properly used for Cleaning history
+Transition,"toggleDryingTime (Cleaning ⇒ History State)",0.5,extendDrying/reduceDrying self-transitions in WashCycle but not to history state
+Action,"if dT = 20 then dT = 40 else dT = 20;",0.5,setDryingTime actions present but not as conditional toggle
+Transition,"Cleaning ⇒ Drying",1,WashCycle to Drying transition present
+Action,"door.unlock();",1,unlockDoor() action in Drying entry note
+State,"Drying",1,Drying state present
+Transition,"after dT min (Drying ⇒ Idle)",1,DryingActive to Idle transition with after(dryingTime) present
+Transition,"extend DryingTime (Drying ⇒ Drying)",1,extendDrying self-transition in Drying present
+Action,"dT = 40;",1,setDryingTime(40) action present
+Transition,"open (Drying ⇒ Suspended)",1,doorOpened transition from Drying to DoorOpenSuspended present
+State,"Suspended",1,DoorOpenSuspended state present
+Transition,"close (Suspended ⇒ Drying)",0.5,doorClosed transition to H state instead of directly to Drying
+Transition,"after 5 min (Suspended ⇒ Idle)",1,after(5min) transition from DoorOpenSuspended to Idle present
+State,"additional elements",0,No fundamentally incorrect states
+Transition,"additional elements",0,No fundamentally incorrect transitions
+Guard,"additional elements",0,No fundamentally incorrect guards
+Action,"additional elements",0,No fundamentally incorrect actions
+Composite State,"additional elements",0,Running composite state is reasonable alternative structure
+Region,"additional elements",0,No incorrect regions
+History State,"additional elements",0,H state declared but not harmful

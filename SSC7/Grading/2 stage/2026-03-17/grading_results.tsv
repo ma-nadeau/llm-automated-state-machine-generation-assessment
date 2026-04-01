@@ -1,0 +1,74 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Active)	1	Correctly represented as [*] --> Active
+Composite State	Active	1	Correctly represented as a composite state containing substates
+State	Initial state (Active → Ready)	1	Correctly represented as [*] --> ReadyForNextItem within Active
+State	Ready	1	Represented as ReadyForNextItem which captures the same semantic meaning
+Transition	scannedNr (Ready ⇒ Ready)	1	Represented as scanBarcode(code) [!codeExists] / showError() transition from ReadyForNextItem to ReadyForNextItem
+Guard	[!existsNr()]	1	Represented as [!codeExists] guard on the scanBarcode self-transition
+Action	error()	1	Represented as showError() action which captures the same semantic intent
+Transition	productCodeEntered (Ready ⇒ Ready)	1	Represented as productCodeEntered(code) [!codeExists] / showError() from EnteringProductCode to ReadyForNextItem
+Guard	[!existsCode()]	1	Represented as [!codeExists] guard on the productCodeEntered transition
+Action	error()	1	Represented as showError() action on the invalid product code transition
+Transition	productCodeEntered (Ready ⇒ WeighItem)	1	Represented as productCodeEntered(code) [codeExists] from EnteringProductCode to WeighingItem
+Guard	[existsCode()]	1	Represented as [codeExists] guard on the transition to WeighingItem
+Transition	scannedNr (Ready ⇒ CheckWeight)	1	Represented as scanBarcode(code) [codeExists] from ReadyForNextItem to ItemScanned followed by placeItemOnSecurityScale to SecurityWeightCheck
+Guard	[existsNr()]	1	Represented as [codeExists] guard on the scanBarcode transition
+Action	addItem()	1	Represented as showItem() which captures the item being added to the bill
+Transition	cancelCheckout (Ready ⇒ Override)	1	Represented as cancelEverything transition from ReadyForNextItem to WaitingForOverride
+Action	setTypeEverything()	0	Not explicitly represented; the student uses guard conditions in the override exit but does not set the type on entry
+Transition	removeItem (Ready ⇒ Override)	1	Represented as removeItem [billHasItems] transition from ReadyForNextItem to WaitingForOverride
+Guard	[billHasItem()]	1	Represented as [billHasItems] guard on the removeItem transition
+Action	setTypeItem()	0	Not explicitly represented; the student uses guard conditions in the override exit but does not set the type on entry
+Transition	broughtOwnBag (Ready ⇒ WeighBag)	1	Represented as addBag transition from ReadyForNextItem to WeighingBag
+Transition	pay (Ready ⇒ PayRequested)	1	Represented as pay [billHasItems] / sendPaymentRequest() from ReadyForNextItem to WaitingForPayment
+Guard	[billHasItem()]	1	Represented as [billHasItems] guard on the pay transition
+Action	sendPaymentRequest()	1	Correctly represented as sendPaymentRequest() action on the pay transition
+State	WeighItem	1	Represented as WeighingItem state
+Transition	cancel (WeighItem ⇒ Ready)	1	Represented as cancelWeighing transition from WeighingItem to ReadyForNextItem
+Transition	weighedItem (WeighItem ⇒ CheckWeight)	1	Represented as itemWeighed transition from WeighingItem to ItemWeighed followed by placeItemOnSecurityScale to SecurityWeightCheck
+Action	addWeighedItem()	1	Represented as showItemWithWeight() which captures the weighed item being added
+State	CheckWeight	1	Represented as SecurityWeightCheck state
+Transition	secWeighedItem (CheckWeight ⇒ Ready)	1	Represented as securityWeightMatches transition from SecurityWeightCheck to ReadyForNextItem
+Guard	[weightMatched()]	1	Implicitly represented by the securityWeightMatches event which indicates weight matched
+Transition	secWeighedItem (CheckWeight ⇒ Override)	1	Represented as securityWeightMismatch transition from SecurityWeightCheck to WaitingForOverride
+Guard	[!weightMatched()]	1	Implicitly represented by the securityWeightMismatch event which indicates weight did not match
+Action	setTypeItem()	0	Not explicitly represented; the student uses guard conditions in the override exit but does not set the type on entry
+Transition	cancelCheckout (CheckWeight ⇒ Override)	1	Represented as cancelEverything transition from SecurityWeightCheck to WaitingForOverride
+Action	setTypeEverything()	0	Not explicitly represented; the student uses guard conditions in the override exit but does not set the type on entry
+State	WeighBag	1	Represented as WeighingBag state
+Transition	secWeighedItem (WeighBag ⇒ Ready)	1	Represented as bagWeighed transition from WeighingBag to ReadyForNextItem
+Action	addBag()	1	Represented as incrementBagCount() action which captures adding the bag
+Transition	cancel (WeighBag ⇒ Ready)	1	Represented as cancelWeighing transition from WeighingBag to ReadyForNextItem
+State	Override	1	Represented as WaitingForOverride state
+Action	entry / lightOn()	1	Represented as turnOnLight() action on transitions entering WaitingForOverride
+Action	exit / lightOff()	1	Represented as turnOffLight() action on transitions exiting WaitingForOverride
+Transition	codeEntered (Override ⇒ Ready)	1	Represented as overrideEntered(code) [codeCorrect and itemOverride] / turnOffLight() clearItem() from WaitingForOverride to ReadyForNextItem
+Guard	[codeCorrect() && isTypeItem()]	1	Represented as [codeCorrect and itemOverride] guard which captures the same logic
+Action	clearItem()	1	Correctly represented as clearItem() action
+Transition	codeEntered (Override ⇒ Ready)	1	Represented as overrideEntered(code) [codeCorrect and clearAllOverride] / turnOffLight() clearEverything() from WaitingForOverride to ReadyForNextItem
+Guard	[codeCorrect() && isTypeEverything()]	1	Represented as [codeCorrect and clearAllOverride] guard which captures the same logic
+Action	clearEverything()	1	Correctly represented as clearEverything() action
+Transition	codeEntered (Override ⇒ Override)	1	Represented as overrideEntered(code) [!codeCorrect] / showError() self-transition on WaitingForOverride
+Guard	[!codeCorrect()]	1	Represented as [!codeCorrect] guard on the self-transition
+Transition	timeoutWarning (Active ⇒ TimeoutCountdown)	0.5	Represented as timeoutWarning transition from ReadyForNextItem to TimeoutWarning but should be from Active composite state level
+Transition	error()	1	Represented as showError() action on the incorrect override code transition
+History State	H (Active)	0.5	History state H is declared but the continue transition goes to H instead of from H which is incorrect usage
+State	TimeoutCountdown	1	Represented as TimeoutWarning state
+Action	do / countFrom60()	1	Represented as startCountdown() action which captures the countdown behavior
+Transition	(TimeoutCountdown ⇒ Active)	0.5	Represented as timeout transition from TimeoutWarning to ReadyForNextItem but should return to history state H
+Action	clearEverything()	1	Correctly represented as clearEverything() action on the timeout transition
+Action	readyForNextCustomer()	0	Not explicitly represented as a separate action
+State	PayRequested	1	Represented as WaitingForPayment state
+Transition	fail (PayRequested ⇒ Ready)	1	Represented as paymentFail(error) / showError() transition from WaitingForPayment to ReadyForNextItem
+Action	error()	1	Represented as showError() action on the payment fail transition
+Transition	cancel (PayRequested ⇒ Ready)	1	Represented as paymentCancel transition from WaitingForPayment to ReadyForNextItem
+Transition	success (PayRequested ⇒ Ready)	1	Represented as paymentSuccess(authCode) / printBill() transition from WaitingForPayment to ReadyForNextItem
+Action	printBill()	1	Correctly represented as printBill() action
+Action	readyForNextCustomer()	0	Not explicitly represented as a separate action on successful payment
+State	additional elements	2	ItemScanned and ItemWeighed are intermediate states that add unnecessary complexity; EnteringProductCode state is not needed per system description
+Transition	additional elements	1	placeItemOnSecurityScale transitions are explicit but the system description implies automatic placement
+Guard	additional elements	0	No fundamentally incorrect guards
+Action	additional elements	1	showBagCount() is extra detail not required by system description
+Composite State	additional elements	0	No additional incorrect composite states
+Region	additional elements	0	No parallel regions used
+History State	additional elements	0	Only one history state H as expected

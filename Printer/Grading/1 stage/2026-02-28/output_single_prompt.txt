@@ -1,0 +1,56 @@
+stateDiagram-v2
+
+state Off
+[*] --> Off
+
+state On {
+    state WaitingForLogin
+    [*] --> WaitingForLogin
+    
+    state LoginError
+    WaitingForLogin --> LoginError : tapCard [!authorized]
+    LoginError --> WaitingForLogin : dismissError
+    
+    state LoggedIn {
+        state Idle
+        [*] --> Idle
+        
+        state PrintError
+        state ScanError
+        state Printing
+        state Scanning
+        state PaperJam
+        state OutOfPaper
+        state H
+        
+        Idle --> PrintError : selectPrint, start [queueEmpty]
+        Idle --> Printing : selectPrint, start [!queueEmpty]
+        Idle --> ScanError : selectScan, start [noDocument]
+        Idle --> Scanning : selectScan, start [documentPresent]
+        
+        PrintError --> Idle : dismissError
+        ScanError --> Idle : dismissError
+        
+        Printing --> Idle : complete
+        Printing --> Idle : stop
+        Printing --> PaperJam : paperJam
+        Printing --> OutOfPaper : outOfPaper
+        
+        Scanning --> Idle : complete
+        Scanning --> Idle : stop
+        Scanning --> PaperJam : paperJam
+        
+        PaperJam --> Idle : clearJam, cancel
+        PaperJam --> H : clearJam, resume
+        
+        OutOfPaper --> Idle : addPaper, cancel
+        OutOfPaper --> H : addPaper, resume
+    }
+    
+    WaitingForLogin --> LoggedIn : tapCard [authorized]
+    LoggedIn --> WaitingForLogin : logoff
+}
+
+Off --> On : onOff
+On --> Off : onOff
+

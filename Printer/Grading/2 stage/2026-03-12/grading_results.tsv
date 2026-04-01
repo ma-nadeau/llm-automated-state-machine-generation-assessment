@@ -1,0 +1,45 @@
+Type	Element	Grading	Notes
+State	initial state (Off)	1	Correctly represented with [*] --> Off
+State	Off	1	Off state is present
+Transition	on (Off => On)	1	Transition powerOn from Off to On is present
+Composite State	On	1	On is correctly modeled as a composite state
+Transition	off (On => Off)	1	Transition powerOff from On to Off is present
+State	initial state (Idle)	1	Initial state within On correctly transitions to WaitingForLogin (equivalent to Idle)
+State	Idle	1	WaitingForLogin serves as the idle/waiting state
+Transition	login(cardID) (Idle => Idle)	1	Self-transition on WaitingForLogin with unauthorized card is present
+Guard	[!idAuthorized(cardID)]	1	Guard [!authorized] correctly checks for unauthorized card
+Transition	login(cardID) (Idle => Ready)	1	Transition tapCard from WaitingForLogin to LoggedIn (equivalent to Ready) is present
+Guard	[idAuthorized(cardID)]	1	Guard [authorized] correctly checks for authorized card
+Action	"action=""none"""	0	No action setting action to none is present in the login transition
+State	Ready	1	LoggedIn state serves as the ready state after login
+Transition	logoff (Ready => Idle)	1	Transition logoff from LoggedIn to WaitingForLogin is present
+Transition	start (Ready => Ready)	1	Self-transition startScan with !documentDetected guard is present
+Guard	"[action==""scan"" & !originalLoaded()]"	0.5	Guard [!documentDetected] checks document but lacks action variable check
+Transition	start (Ready => Ready)	1	Self-transition startPrint with queueEmpty guard is present
+Guard	"[action==""print"" & !documentInQueue()]"	0.5	Guard [queueEmpty] checks queue but lacks action variable check
+Transition	scan (Ready => Ready)	0	No explicit scan event that sets action variable is present
+Action	"action = ""scan"""	0	No action variable assignment for scan selection
+Transition	print (Ready => Ready)	0	No explicit print event that sets action variable is present
+Action	"action=""print"""	0	No action variable assignment for print selection
+Transition	start (Ready => Scan & Email)	1	Transition startScan to ScanningProcess with documentDetected guard is present
+Guard	"[action==""scan"" && originalLoaded()]"	0.5	Guard [documentDetected] checks document but lacks action variable check
+Composite State	Busy	0.5	PrintingProcess and ScanningProcess are separate composites rather than unified Busy state
+Transition	stop (Busy => Ready)	1	Stop transitions from both PrintingProcess and ScanningProcess to LoggedIn are present
+Transition	done (Busy => Ready)	1	Done transitions from Printing and Scanning to LoggedIn are present
+Transition	jam (Busy => Suspended)	1	PaperJam transitions from Printing and Scanning to suspended states are present
+History State	for Busy	0	No history state is used; resume transitions go directly to active states
+State	Print	1	Printing state within PrintingProcess is present
+Transition	start (Ready => Print)	1	Transition startPrint to PrintingProcess with !queueEmpty guard is present
+Guard	"[action=""print"" && documentInQueue()]"	0.5	Guard [!queueEmpty] checks queue but lacks action variable check
+Transition	outOfPaper (Print => Suspended)	1	Transition outOfPaper from Printing to PrintSuspendedOutOfPaper is present
+State	Scan & Email	1	Scanning state within ScanningProcess represents scan and email functionality
+State	Suspended	1	PrintSuspendedPaperJam and PrintSuspendedOutOfPaper represent suspended states
+Transition	resume (Suspended => History State for Busy)	0.5	Resume transitions exist but go directly to Printing/Scanning rather than through history state
+Transition	cancel (Suspended => Ready)	1	Cancel transitions from suspended states to LoggedIn are present
+State	additional elements	0	No incorrect additional states
+Transition	additional elements	0	No incorrect additional transitions
+Guard	additional elements	0	No incorrect additional guards
+Action	additional elements	0	No incorrect additional actions
+Composite State	additional elements	0	Separate PrintingProcess and ScanningProcess composites are reasonable modeling choices
+Region	additional elements	0	No incorrect additional regions
+History State	additional elements	0	No incorrect additional history states

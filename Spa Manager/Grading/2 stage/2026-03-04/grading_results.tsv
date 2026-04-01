@@ -1,0 +1,52 @@
+Type	Element	Grading	Notes
+Composite State	SpaManager	1	Correctly represented as the top-level composite state containing both regions
+Region	Jacuzzi	1	Correctly represented as JacuzziRegion within SpaManager
+State	initial state (Jacuzzi → Off)	1	Initial state correctly transitions to JacuzziOff
+State	Off	1	JacuzziOff state correctly represents the off state
+Composite State	On (Jacuzzi)	1	JacuzziOn correctly represented as composite state with internal structure
+Transition	on (Off ⇒ On)	1	turnOnJacuzzi transition correctly represents turning on the Jacuzzi
+Transition	off (On ⇒ Off)	1	turnOffJacuzzi transition correctly represents turning off the Jacuzzi
+State	initial state (Level1)	1	Initial state within ActivePressure correctly transitions to Level1
+State	Level1	1	Level1 state correctly represents low pressure setting
+Transition	up (Level1 ⇒ Level2)	1	increaseLevel transition from Level1 to Level2 correctly represents pressure increase
+State	Level2	1	Level2 state correctly represents medium pressure setting
+Transition	up (Level2 ⇒ Level3)	1	increaseLevel transition from Level2 to Level3 correctly represents pressure increase
+Transition	down (Level2 ⇒ Level1)	1	decreaseLevel transition from Level2 to Level1 correctly represents pressure decrease
+State	Level3	1	Level3 state correctly represents high pressure setting
+Transition	down (Level3 ⇒ Level2)	1	decreaseLevel transition from Level3 to Level2 correctly represents pressure decrease
+History State	History State for Jacuzzi On	1	History state H correctly placed within ActivePressure composite state
+Transition	setPattern(PatternType type) (On⇒ History State)	1	Pattern selection transition correctly represented with selectPattern event and guard
+State	Paused	1	Paused state correctly represents the pause feature
+Transition	pause (On⇒ Pause)	1	pause transition from ActivePressure to Paused correctly represents pause activation
+Transition	after 2min (Paused ⇒ History State)	1	after(2min) transition from Paused to H correctly represents 2-minute pause duration
+Region	Sauna	1	Correctly represented as SaunaRegion within SpaManager
+State	initial state (Sauna → Off)	1	Initial state correctly transitions to SaunaOff
+State	Off	1	SaunaOff state correctly represents the off state
+Composite State	On (Sauna)	1	SaunaOn correctly represented as composite state with internal regions
+Transition	on (Off ⇒ On)	1	turnOnSauna transition correctly represents turning on the sauna
+Transition	off (On ⇒ Off)	1	turnOffSauna transition correctly represents turning off the sauna
+Region	Heater	1	HeatingControl region correctly represents heater control within SaunaOn
+State	initial state (Heater → Heat)	1	Initial state within HeatingControl correctly transitions to Heating
+State	Heat	1	Heating state correctly represents the heating phase
+Transition	Heat ⇒ Idle	1	tempReached transition from Heating to Maintaining correctly represents reaching target temperature
+Guard	[temp ≥ 90°C]	1	Guard [temp >= 90] correctly represents the 90°C threshold
+State	Idle	1	Maintaining state correctly represents the idle/maintaining phase
+Transition	Idle ⇒ Heat	1	tempDropped transition from Maintaining to Heating correctly represents temperature drop
+Guard	[temp < 85°C]	1	Guard [temp < 85] correctly represents the 85°C threshold
+Region	Fan	1	FanControl region correctly represents fan control within SaunaOn
+State	initial state (Fan → Off)	1	Initial state within FanControl correctly transitions to FanOff
+State	Off	0.5	FanOff state exists but the model uses a Monitoring intermediate state rather than direct transition
+Transition	after 5min (Off ⇒ On)	0.5	FanOn to FanOff transition with after(5min) exists but the activation logic is split across Monitoring state
+Guard	[humidity > 40% && exceedTime > 3min]	0.5	Humidity guard exists but the 3-minute timing is modeled as after(3min) from Monitoring state rather than as exceedTime condition
+Region	Water	1	WaterControl region correctly represents water dispersion control within SaunaOn
+State	initial state (Water → Idle)	1	Initial state within WaterControl correctly transitions to WaterReady
+State	Idle	1	WaterReady state correctly represents the ready state for water dispersion
+Transition	Idle ⇒ Idle	1	Self-transition on WaterReady with disperseWater event correctly represents water dispersion
+Guard	disperse [humidity < 40% && !Fan.On && timeSinceLast ≥ 15min]	1	Guard [humidity < 40 && fanOff] and 15min cooldown correctly represent the dispersion conditions
+State	additional elements	1	Monitoring state in FanControl is an unnecessary intermediate state that complicates the fan activation logic
+Transition	additional elements	0	No fundamentally incorrect additional transitions
+Guard	additional elements	0	No fundamentally incorrect additional guards
+Action	additional elements	0	Actions like activateFan() and dispenseWater() are reasonable modeling choices
+Composite State	additional elements	1	ActivePressure composite state is unnecessary wrapping around pressure levels
+Region	additional elements	1	PressureControl and PatternControl as separate regions is incorrect; patterns should work across all pressure levels as a single concern
+History State	additional elements	0	No fundamentally incorrect additional history states

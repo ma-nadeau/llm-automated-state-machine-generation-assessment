@@ -1,0 +1,80 @@
+stateDiagram-v2
+    [*] --> SpaManager
+    
+    state SpaManager {
+        --
+        state SaunaControl {
+            state SaunaOff
+            [*] --> SaunaOff
+            
+            state SaunaOn
+            SaunaOff --> SaunaOn : turnSaunaOn
+            SaunaOn --> SaunaOff : turnSaunaOff
+            
+            state SaunaOn {
+                --
+                state HeatingControl {
+                    state Heating
+                    state Maintaining
+                    [*] --> Heating
+                    Heating --> Maintaining : [temperature >= 90]
+                    Maintaining --> Heating : [temperature < 85]
+                }
+                --
+                state HumidityControl {
+                    state FanOff
+                    state MonitoringHumidity
+                    state FanOn
+                    [*] --> FanOff
+                    FanOff --> MonitoringHumidity : [humidity > 40]
+                    MonitoringHumidity --> FanOn : after(3min)
+                    MonitoringHumidity --> FanOff : [humidity <= 40]
+                    FanOn --> FanOff : after(5min)
+                }
+                --
+                state WaterControl {
+                    state WaterDispensalReady
+                    state WaterDispensalCooldown
+                    [*] --> WaterDispensalReady
+                    WaterDispensalReady --> WaterDispensalCooldown : disperseWater [humidity < 40 && !fanActive] / disperseEucalyptusWater()
+                    WaterDispensalReady --> WaterDispensalReady : disperseWater [humidity >= 40 || fanActive]
+                    WaterDispensalCooldown --> WaterDispensalReady : after(15min)
+                }
+            }
+        }
+        --
+        state JacuzziControl {
+            state JacuzziOff
+            [*] --> JacuzziOff
+            
+            state JacuzziOn
+            JacuzziOff --> JacuzziOn : turnJacuzziOn
+            JacuzziOn --> JacuzziOff : turnJacuzziOff
+            
+            state JacuzziOn {
+                state Level1
+                state Level2
+                state Level3
+                state Paused
+                state H
+                
+                [*] --> Level1
+                
+                Level1 --> Level2 : increaseLevel
+                Level2 --> Level3 : increaseLevel
+                Level3 --> Level2 : decreaseLevel
+                Level2 --> Level1 : decreaseLevel
+                
+                Level1 --> Level1 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                Level2 --> Level2 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                Level3 --> Level3 : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                
+                Level1 --> Paused : pause
+                Level2 --> Paused : pause
+                Level3 --> Paused : pause
+                
+                Paused --> H : after(2min)
+            }
+        }
+    }
+

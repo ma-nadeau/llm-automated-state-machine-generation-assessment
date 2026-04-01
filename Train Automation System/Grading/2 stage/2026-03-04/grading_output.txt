@@ -1,0 +1,78 @@
+Type,Element,Grading,Notes
+State,"Initial state (→ Scheduled)",0,Student model starts with Off state instead of Scheduled; does not represent the scheduled state before train activation.
+State,"Scheduled",0,No Scheduled state exists in student submission; train lifecycle begins directly at Off.
+Transition,"at beginningStopDuration (Scheduled ⇒ Active)",0,No transition from Scheduled to Active; student uses powerOn event from Off to Active instead.
+Action,"pOn; setCS;",1,Actions pOn() and setCS(firstSegment) are present on the Off to Active transition.
+Composite State,"Active",1,Active composite state is correctly defined with parallel regions.
+Region,"TrainControl",0,Student uses TrainOperation region name instead of TrainControl; however the region exists and contains train movement logic.
+Composite State,"TrainMovement",0,Student does not have a TrainMovement composite state; uses TrainOperation region directly without nested composite.
+State,"Initial state (TrainMovement → AtStation)",0,Initial state in TrainOperation is WaitingAtFirstStation not AtStation.
+State,"AtStation",1,AtStation state exists in student submission within TrainOperation.
+Action,"entry / openDoors()",0.5,openDoors() action exists but is on transition to AtStation rather than as entry action of AtStation state.
+Action,"exit / closeDoors()",0.5,closeDoors() action exists but is on transition from AtStation rather than as exit action of AtStation state.
+Transition,"after stopDuration (AtStation ⇒ StopNotRequired)",0.5,Transition exists from AtStation to Moving after scheduledStopDurationElapsed but does not distinguish between last stop and non-last stop correctly.
+Guard,"[!isLastStop()]",0.5,Guard [!isFinalStation] exists on transition from StoppingAtStation to AtStation but not on the AtStation exit transition.
+Transition,"after stopDuration (AtStation ⇒ Arrived)",0,No transition from AtStation to Arrived state; student transitions to Off directly from AtFinalStation.
+Guard,"[isLastStop()]",0.5,Guard [isFinalStation] exists but on transition to AtFinalStation from StoppingAtStation not on exit from AtStation.
+Action,"pOff;",1,pOff() action is present on transition from AtFinalStation to Off.
+State,"StopNotRequired",0,Student uses Moving state instead of StopNotRequired; semantically similar but different naming and structure.
+Action,"entry / setSpeed()",0.5,setSpeed() is called on transitions rather than as entry action of a state; behavior is similar but structure differs.
+Transition,"enteringSegment (StopNotRequired ⇒ StopNotRequired)",1,Self-transition on Moving state with enteredNewSegment event and isRegularSegment guard exists.
+Guard,"[isRegularSegment()]",1,Guard [isRegularSegment] is present on Moving self-transition.
+Transition,"enteringSegment (StopNotRequired ⇒ ApproachingRedLight)",0.5,Transition exists from Moving to StoppingAtTrafficLight when light is red; semantically correct but state naming differs.
+Guard,"[isTrafficLightSegment() && isRed()]",1,Guard [isTrafficLightSegment && lightIsRed] is present on transition to StoppingAtTrafficLight.
+Transition,"enteringSegment (StopNotRequired ⇒ StopNotRequired)",1,Self-transition on Moving with guard [isTrafficLightSegment && lightIsGreen] exists.
+Guard,"[isTrafficLightSegment() && !isRed()]",1,Guard [isTrafficLightSegment && lightIsGreen] is present; semantically equivalent to !isRed.
+Transition,"enteringSegment (StopNotRequired ⇒ ApproachingStation)",0.5,Transition exists from Moving to StoppingAtStation; semantically correct but state naming differs.
+Guard,"[isStationSegment() && stopRequired()]",0.5,Guard [isStationSegment] exists but does not explicitly check stopRequired; assumes all station segments require stops.
+State,"ApproachingRedLight",0.5,Student uses StoppingAtTrafficLight state which represents the approaching/stopping phase; semantically similar.
+Action,"entry / stopAL",0.5,stopAL action is on transition to StoppingAtTrafficLight rather than as entry action; behavior is similar.
+Transition,"stopped (ApproachingRedLight ⇒ AtRedTrafficLight)",1,Transition from StoppingAtTrafficLight to WaitingAtTrafficLight on stoppedConfirmed event exists.
+State,"AtRedTrafficLight",1,WaitingAtTrafficLight state exists and represents waiting at red light.
+Transition,"green (AtRedTrafficLight ⇒ StopNotRequired)",1,Transition from WaitingAtTrafficLight to Moving on lightTurnsGreen event exists.
+State,"ApproachingStation",0.5,Student uses StoppingAtStation state which represents the approaching/stopping phase; semantically similar.
+Action,"entry / stopAL",0.5,stopAL action is on transition to StoppingAtStation rather than as entry action; behavior is similar.
+Transition,"stopped (ApproachingStation ⇒ AtStation)",1,Transition from StoppingAtStation to AtStation on stoppedConfirmed event exists.
+History State,"History State for TrainMovement",1,History state H exists in TrainOperation region for emergency recovery.
+State,"Emergency",1,EmergencyStopped state exists representing emergency condition.
+Transition,"emergency (TrainMovement ⇒ Emergency)",1,Multiple transitions to EmergencyStopped on emergencyDetected event exist from various states.
+Action,"eStop;",1,eStop() action is present on transitions to EmergencyStopped.
+Transition,"clear (Emergency ⇒ History State)",1,Transition from EmergencyStopped to history state H on emergencyCleared event exists.
+Region,"SDS",1,SDS region exists as parallel region within Active state.
+State,"Initial state (SDS → SDSActive)",1,Initial state in SDS region transitions to SDSMonitoring.
+State,"SDSActive",1,SDSMonitoring state exists in SDS region.
+Transition,"after 1 sec (SDSActive ⇒ SDSActive)",0,No explicit self-transition with timing and segment change detection in SDSMonitoring.
+Guard,"[hasSegmentChanged()]",0,No guard checking for segment change in SDS region.
+Action,"setCS; enteringSegment()",0,No actions for setCS or enteringSegment in SDS region; SDS is passive monitoring only.
+Transition,"after 1 sec (SDSActive ⇒ SDSActive)",0,No explicit self-transition with timing in SDSMonitoring.
+Guard,"[!hasSegmentChanged()]",0,No guard for unchanged segment in SDS region.
+Region,"MDS",1,MDS region exists as parallel region within Active state.
+State,"Initial state (MDS → Stopped)",1,Initial state in MDS region transitions to MDSMonitoring.
+State,"Stopped",0,No explicit Stopped state in MDS; only MDSMonitoring state exists.
+Transition,"after 1 sec (Stopped ⇒ Moving)",0,No transition between Stopped and Moving states in MDS region.
+Guard,"[speed > 0]",0,No speed-based guards in MDS region.
+Transition,"after 1 sec (Stopped ⇒ Stopped)",0,No self-transition on Stopped state in MDS region.
+Guard,"[speed == 0]",0,No speed-based guards in MDS region.
+Action,"stopped()",0,No stopped() action in MDS region.
+State,"Moving",0,No Moving state in MDS region; only MDSMonitoring exists.
+Transition,"after 1 sec (Moving ⇒ Stopped)",0,No transition from Moving to Stopped in MDS region.
+Guard,"[speed == 0]",0,No speed-based guards in MDS region.
+Action,"stopped()",0,No stopped() action in MDS region.
+Transition,"after 1 sec (Moving ⇒ Moving)",0,No self-transition on Moving state in MDS region.
+Guard,"[speed > 0]",0,No speed-based guards in MDS region.
+Region,"ODS",1,ODS region exists as parallel region within Active state.
+State,"Initial state (ODS → ODSActive)",1,Initial state in ODS region transitions to ODSMonitoring.
+State,"ODSActive",1,ODSMonitoring state exists in ODS region.
+Transition,"after 1 sec (ODSActive ⇒ ODSActive)",0,No explicit self-transition with timing in ODSMonitoring.
+Guard,"[obstacleDetected()]",0,No guard checking for obstacle detection in ODS region.
+Action,"emergency()",0,No emergency() action in ODS region; emergency is handled in TrainOperation.
+Transition,"after 1 sec (ODSActive ⇒ ODSActive)",0,No explicit self-transition with timing in ODSMonitoring.
+Guard,"[!obstacleDetected()]",0,No guard for no obstacle in ODS region.
+State,"Arrived",0,No Arrived state; student uses Off state as final destination.
+State,"additional elements",0,No fundamentally incorrect additional states; WaitingAtFirstStation and other states are reasonable modeling choices.
+Transition,"additional elements",0,No fundamentally incorrect additional transitions; all transitions align with system description.
+Guard,"additional elements",0,No fundamentally incorrect additional guards; all guards are reasonable.
+Action,"additional elements",0,No fundamentally incorrect additional actions; all actions align with system description.
+Composite State,"additional elements",0,No fundamentally incorrect additional composite states.
+Region,"additional elements",0,No fundamentally incorrect additional regions.
+History State,"additional elements",0,No fundamentally incorrect additional history states.

@@ -1,0 +1,78 @@
+Type,Element,Grading,Notes
+State,"Initial state (→ Scheduled)",0,Student model starts with Off state instead of Scheduled; no Scheduled state exists
+State,"Scheduled",0,No Scheduled state in student submission
+Transition,"at beginningStopDuration (Scheduled ⇒ Active)",0,No Scheduled state or corresponding transition exists
+Action,"pOn; setCS;",0.5,pOn() exists on Off→On transition but setCS is in WaitingAtFirstStation entry action not on transition
+Composite State,"Active",1,On state serves as the active composite state containing all train operations
+Region,"TrainControl",1,Journey region contains train control logic
+Composite State,"TrainMovement",1,Moving composite state represents train movement behavior
+State,"Initial state (TrainMovement → AtStation)",0,Initial state in Journey region goes to WaitingAtFirstStation not AtStation
+State,"AtStation",0.5,StoppedAtStation exists but represents intermediate stations; WaitingAtFirstStation represents first station
+Action,"entry / openDoors()",1,DoorsOpening state with entry/openDoors() in StoppedAtStation composite
+Action,"exit / closeDoors()",0.5,DoorsClosing state exists but not modeled as exit action of parent state
+Transition,"after stopDuration (AtStation ⇒ StopNotRequired)",0.5,WaitingAtStation→DoorsClosing uses afterStopDuration but goes to Moving not a separate StopNotRequired state
+Guard,"[!isLastStop()]",1,Guard [segmentType==station && !finalStation] on Moving→StoppedAtStation transition
+Transition,"after stopDuration (AtStation ⇒ Arrived)",0.5,StoppedAtFinalStation→Off uses afterStopDuration but no explicit Arrived state
+Guard,"[isLastStop()]",1,Guard [segmentType==station && finalStation] on Moving→StoppedAtFinalStation transition
+Action,"pOff;",1,pOff() action on StoppedAtFinalStation→Off transition
+State,"StopNotRequired",0,No explicit StopNotRequired state; Traveling state exists but serves different purpose
+Action,"entry / setSpeed()",0.5,setSpeed() called on transitions but not as entry action of a state
+Transition,"enteringSegment (StopNotRequired ⇒ StopNotRequired)",0.5,Self-transitions on Moving for regular segments exist but no StopNotRequired state
+Guard,"[isRegularSegment()]",1,Guard [segmentType==regular] on Moving self-transition
+Transition,"enteringSegment (StopNotRequired ⇒ ApproachingRedLight)",0,No ApproachingRedLight state; transition goes directly to StoppedAtTrafficLight
+Guard,"[isTrafficLightSegment() && isRed()]",1,Guard [segmentType==trafficLight && lightRed] on Moving→StoppedAtTrafficLight
+Transition,"enteringSegment (StopNotRequired ⇒ StopNotRequired)",1,Self-transition on Moving with guard [segmentType==trafficLight && !lightRed]
+Guard,"[isTrafficLightSegment() && !isRed()]",1,Guard [segmentType==trafficLight && !lightRed] present
+Transition,"enteringSegment (StopNotRequired ⇒ ApproachingStation)",0,No ApproachingStation state; transition goes directly to StoppedAtStation
+Guard,"[isStationSegment() && stopRequired()]",1,Guard [segmentType==station && !finalStation] captures station stop requirement
+State,"ApproachingRedLight",0,No ApproachingRedLight state; stopping handled directly in StoppedAtTrafficLight
+Action,"entry / stopAL",1,stopAL(segment.location) called on transition to StoppedAtTrafficLight
+Transition,"stopped (ApproachingRedLight ⇒ AtRedTrafficLight)",0,No separate approaching and stopped states for traffic light
+State,"AtRedTrafficLight",1,StoppedAtTrafficLight state represents waiting at red light
+Transition,"green (AtRedTrafficLight ⇒ StopNotRequired)",0.5,lightTurnedGreen transition from StoppedAtTrafficLight to Moving exists but no StopNotRequired state
+State,"ApproachingStation",0,No ApproachingStation state; stopping handled directly in StoppedAtStation
+Action,"entry / stopAL",1,stopAL(segment.location) called on transition to StoppedAtStation
+Transition,"stopped (ApproachingStation ⇒ AtStation)",0,No separate approaching and stopped states for station
+History State,"History State for TrainMovement",1,History state H exists within Moving composite state
+State,"Emergency",1,EmergencyStopped state represents emergency condition
+Transition,"emergency (TrainMovement ⇒ Emergency)",1,obstructionDetected transition from Moving to EmergencyStopped
+Action,"eStop;",1,eStop() action on Moving→EmergencyStopped transition
+Transition,"clear (Emergency ⇒ History State)",1,cleared transition from EmergencyStopped to H history state
+Region,"SDS",1,SDS region exists with correct structure
+State,"Initial state (SDS → SDSActive)",1,Initial state correctly points to SDSActive
+State,"SDSActive",1,SDSActive state exists
+Transition,"after 1 sec (SDSActive ⇒ SDSActive)",1,after1sec self-transition on SDSActive exists
+Guard,"[hasSegmentChanged()]",0.5,No explicit guard shown but checkSegment() action implies segment checking
+Action,"setCS; enteringSegment()",0.5,checkSegment() action exists but not explicit setCS and enteringSegment calls
+Transition,"after 1 sec (SDSActive ⇒ SDSActive)",1,Self-transition with after1sec exists
+Guard,"[!hasSegmentChanged()]",0.5,Implicit in single self-transition but not explicitly shown
+Region,"MDS",1,MDS region exists with correct structure
+State,"Initial state (MDS → Stopped)",0,Initial state goes to MDSActive not a Stopped state
+State,"Stopped",0,No explicit Stopped state; only MDSActive with self-transition
+Transition,"after 1 sec (Stopped ⇒ Moving)",0,No separate Stopped and Moving states in MDS region
+Guard,"[speed > 0]",0,No speed guards shown in MDS region
+Transition,"after 1 sec (Stopped ⇒ Stopped)",0.5,Self-transition on MDSActive exists but no speed guard
+Guard,"[speed == 0]",0,No speed guards shown in MDS region
+Action,"stopped()",0.5,checkMovement() action exists but not explicit stopped() call
+State,"Moving",0,No Moving state in MDS region; only MDSActive
+Transition,"after 1 sec (Moving ⇒ Stopped)",0,No separate Moving and Stopped states
+Guard,"[speed == 0]",0,No speed guards in MDS region
+Action,"stopped()",0.5,checkMovement() implies movement detection but no explicit stopped() action
+Transition,"after 1 sec (Moving ⇒ Moving)",0.5,Self-transition on MDSActive exists but no speed guard
+Guard,"[speed > 0]",0,No speed guards shown
+Region,"ODS",1,ODS region exists with correct structure
+State,"Initial state (ODS → ODSActive)",1,Initial state correctly points to ODSActive
+State,"ODSActive",1,ODSActive state exists
+Transition,"after 1 sec (ODSActive ⇒ ODSActive)",1,after1sec self-transition exists
+Guard,"[obstacleDetected()]",0.5,checkObstruction() action implies checking but no explicit guard shown
+Action,"emergency()",0.5,checkObstruction() exists but not explicit emergency() call
+Transition,"after 1 sec (ODSActive ⇒ ODSActive)",1,Self-transition with after1sec exists
+Guard,"[!obstacleDetected()]",0.5,Implicit in single self-transition but not explicitly shown
+State,"Arrived",0,No explicit Arrived state; Off state serves as final state
+State,"additional elements",0,No fundamentally incorrect additional states
+Transition,"additional elements",0,No fundamentally incorrect additional transitions
+Guard,"additional elements",0,No fundamentally incorrect additional guards
+Action,"additional elements",0,No fundamentally incorrect additional actions
+Composite State,"additional elements",0,No fundamentally incorrect additional composite states
+Region,"additional elements",0,No fundamentally incorrect additional regions
+History State,"additional elements",0,No fundamentally incorrect additional history states

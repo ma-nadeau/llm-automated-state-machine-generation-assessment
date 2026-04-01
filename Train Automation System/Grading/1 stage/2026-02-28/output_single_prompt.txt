@@ -1,0 +1,69 @@
+stateDiagram-v2
+    
+    state PoweredOff
+    [*] --> PoweredOff
+    
+    PoweredOff --> PoweredOn : scheduledDeparture / pOn(), setCS(firstSegment)
+    
+    state PoweredOn {
+        --
+        state TrainControl {
+            state Idle
+            [*] --> Idle
+            
+            state Moving
+            state StoppingAtLight
+            state WaitingAtLight
+            state StoppingAtStation
+            state EmergencyStopped
+            
+            Idle --> Moving : afterStopDuration / setSpeed(currentSegment.speed)
+            
+            Moving --> Moving : enteredNewSegment [isRegular(segment) || (isTrafficLight(segment) && lightIsGreen(segment))] / setCS(segment), setSpeed(segment.speed)
+            Moving --> StoppingAtLight : enteredNewSegment [isTrafficLight(segment) && lightIsRed(segment)] / setCS(segment), stopAL(segment.location)
+            Moving --> StoppingAtStation : enteredNewSegment [isStation(segment) && onItinerary(segment)] / setCS(segment), stopAL(segment.location)
+            Moving --> EmergencyStopped : obstructionDetected / eStop()
+            
+            StoppingAtLight --> WaitingAtLight : trainStopped
+            StoppingAtLight --> EmergencyStopped : obstructionDetected / eStop()
+            
+            WaitingAtLight --> Moving : lightTurnsGreen / setSpeed(currentSegment.speed)
+            WaitingAtLight --> EmergencyStopped : obstructionDetected / eStop()
+            
+            StoppingAtStation --> AtStation : trainStopped / openDoors()
+            StoppingAtStation --> EmergencyStopped : obstructionDetected / eStop()
+            
+            state AtStation {
+                state DoorsOpening
+                state Waiting
+                state DoorsClosing
+                
+                [*] --> DoorsOpening
+                DoorsOpening --> Waiting : doorsOpen
+                Waiting --> DoorsClosing : afterStopDuration
+                DoorsClosing --> Moving : doorsClosed [!isFinalStation()] / setSpeed(currentSegment.speed)
+                DoorsClosing --> PoweredOff : doorsClosed [isFinalStation()] / pOff()
+            }
+            
+            EmergencyStopped --> Moving : cleared / setSpeed(currentSegment.speed)
+        }
+        --
+        state SDS {
+            state SDSActive
+            [*] --> SDSActive
+            SDSActive --> SDSActive : everySecond / checkSegment()
+        }
+        --
+        state MDS {
+            state MDSActive
+            [*] --> MDSActive
+            MDSActive --> MDSActive : everySecond / checkMovement()
+        }
+        --
+        state ODS {
+            state ODSActive
+            [*] --> ODSActive
+            ODSActive --> ODSActive : everySecond / checkObstruction()
+        }
+    }
+

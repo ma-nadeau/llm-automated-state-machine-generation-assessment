@@ -1,0 +1,45 @@
+Type	Element	Grading	Notes
+State	initial state (Off)	1	Initial state correctly points to Off
+State	Off	1	Off state is present
+Transition	on (Off => On)	1	Transition onOff from Off to On is present
+Composite State	On	1	On is a composite state containing substates
+Transition	off (On => Off)	1	Transition onOff from On to Off is present
+State	initial state (Idle)	0.5	Initial state points to WaitingForLogin instead of Idle within On
+State	Idle	1	Idle state exists within LoggedIn composite state
+Transition	login(cardID) (Idle => Idle)	0	No self-transition on Idle for unauthorized login; handled via separate LoginError state
+Guard	[!idAuthorized(cardID)]	1	Guard [!authorized] present on WaitingForLogin to LoginError transition
+Transition	login(cardID) (Idle => Ready)	0.5	Login transition exists (WaitingForLogin to LoggedIn) but target is composite state not explicit Ready state
+Guard	[idAuthorized(cardID)]	1	Guard [authorized] present on successful login transition
+Action	"action=""none"""	0	No action setting action to none on login transition
+State	Ready	0	No explicit Ready state; student uses Idle within LoggedIn for ready functionality
+Transition	logoff (Ready => Idle)	0.5	Logoff transition exists (LoggedIn to WaitingForLogin) but structure differs from expected
+Transition	start (Ready => Ready)	0	No self-transitions for error cases on start; errors handled via separate error states
+Guard	"[action==""scan"" & !originalLoaded()]"	0.5	Guard [noDocument] present but combined with selectScan on transition to ScanError
+Transition	start (Ready => Ready)	0	No self-transition for print queue empty; handled via separate PrintError state
+Guard	"[action==""print"" & !documentInQueue()]"	0.5	Guard [queueEmpty] present but combined with selectPrint on transition to PrintError
+Transition	scan (Ready => Ready)	0	No separate scan action transition; selectScan combined with start
+Action	"action = ""scan"""	0	No action variable set for scan mode selection
+Transition	print (Ready => Ready)	0	No separate print action transition; selectPrint combined with start
+Action	"action=""print"""	0	No action variable set for print mode selection
+Transition	start (Ready => Scan & Email)	0.5	Transition to Scanning state exists with guards but named Scanning not Scan & Email
+Guard	"[action==""scan"" && originalLoaded()]"	0.5	Guard [documentPresent] present but combined with selectScan event
+Composite State	Busy	0	No explicit Busy composite state; Printing and Scanning are direct substates of LoggedIn
+Transition	stop (Busy => Ready)	0.5	Stop transitions exist from Printing and Scanning to Idle but no Busy composite
+Transition	done (Busy => Ready)	0.5	Complete transitions exist from Printing and Scanning to Idle but no Busy composite
+Transition	jam (Busy => Suspended)	0.5	PaperJam transitions exist from Printing and Scanning but no unified Busy state
+History State	for Busy	1	History state H present and used for resume transitions
+State	Print	1	Printing state exists representing print task
+Transition	start (Ready => Print)	0.5	Transition to Printing exists with guards but from Idle not Ready
+Guard	"[action=""print"" && documentInQueue()]"	0.5	Guard [!queueEmpty] present but combined with selectPrint event
+Transition	outOfPaper (Print => Suspended)	0.5	OutOfPaper transition exists from Printing but target is OutOfPaper state not generic Suspended
+State	Scan & Email	0.5	Scanning state exists but named Scanning not Scan & Email
+State	Suspended	0.5	PaperJam and OutOfPaper states exist but no unified Suspended state
+Transition	resume (Suspended => History State for Busy)	1	Resume transitions from PaperJam and OutOfPaper to history state H exist
+Transition	cancel (Suspended => Ready)	0.5	Cancel transitions exist from PaperJam and OutOfPaper to Idle but no unified Suspended state
+State	additional elements	1	LoginError and error states are reasonable additions but WaitingForLogin adds unnecessary complexity
+Transition	additional elements	0	Transitions are reasonable for the model structure used
+Guard	additional elements	0	Guards are appropriate for the transitions defined
+Action	additional elements	0	No inappropriate actions present
+Composite State	additional elements	0	LoggedIn composite state is a reasonable modeling choice
+Region	additional elements	0	No inappropriate regions present
+History State	additional elements	0	History state usage is appropriate

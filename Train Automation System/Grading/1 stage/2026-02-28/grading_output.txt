@@ -1,0 +1,78 @@
+Type,Element,Grading,Notes
+State,"Initial state (→ Scheduled)",0,Student model starts at PoweredOff instead of Scheduled; does not represent the scheduled state before train activation
+State,"Scheduled",0,No Scheduled state exists in student submission
+Transition,"at beginningStopDuration (Scheduled ⇒ Active)",0.5,Transition exists as scheduledDeparture from PoweredOff to PoweredOn but does not capture the scheduled state or the timing semantics of beginningStopDuration
+Action,"pOn; setCS;",1,Actions pOn() and setCS(firstSegment) are present on the initial transition
+Composite State,"Active",1,PoweredOn composite state serves the same purpose as Active
+Region,"TrainControl",1,TrainControl region exists within PoweredOn
+Composite State,"TrainMovement",0,No TrainMovement composite state; train control logic is flat within TrainControl region
+State,"Initial state (TrainMovement → AtStation)",0,Initial state in TrainControl goes to Idle not AtStation
+State,"AtStation",0.5,AtStation composite state exists but is not the initial state of train movement
+Action,"entry / openDoors()",0.5,openDoors() action exists but on transition to AtStation rather than as entry action
+Action,"exit / closeDoors()",0,No exit action for closeDoors; doors are closed via explicit DoorsClosing state
+Transition,"after stopDuration (AtStation ⇒ StopNotRequired)",0.5,Transition exists from Waiting to DoorsClosing after stopDuration but target is Moving not StopNotRequired
+Guard,"[!isLastStop()]",1,Guard [!isFinalStation()] on transition from DoorsClosing to Moving captures this condition
+Transition,"after stopDuration (AtStation ⇒ Arrived)",0.5,Transition from DoorsClosing to PoweredOff with guard [isFinalStation()] represents this but target is PoweredOff not Arrived
+Guard,"[isLastStop()]",1,Guard [isFinalStation()] on transition from DoorsClosing captures this condition
+Action,"pOff;",1,pOff() action present on transition from DoorsClosing when at final station
+State,"StopNotRequired",0,No StopNotRequired state; Moving state serves a similar purpose but semantics differ
+Action,"entry / setSpeed()",0.5,setSpeed() called on transitions but not as entry action of a dedicated state
+Transition,"enteringSegment (StopNotRequired ⇒ StopNotRequired)",0.5,Self-transition on Moving with enteredNewSegment for regular segments exists but source/target state names differ
+Guard,"[isRegularSegment()]",1,Guard isRegular(segment) present on Moving self-transition
+Transition,"enteringSegment (StopNotRequired ⇒ ApproachingRedLight)",0.5,Transition from Moving to StoppingAtLight for red traffic light exists but state names differ
+Guard,"[isTrafficLightSegment() && isRed()]",1,Guard isTrafficLight(segment) && lightIsRed(segment) present on transition to StoppingAtLight
+Transition,"enteringSegment (StopNotRequired ⇒ StopNotRequired)",1,Self-transition on Moving for green traffic light with appropriate guard exists
+Guard,"[isTrafficLightSegment() && !isRed()]",1,Guard isTrafficLight(segment) && lightIsGreen(segment) present on Moving self-transition
+Transition,"enteringSegment (StopNotRequired ⇒ ApproachingStation)",0.5,Transition from Moving to StoppingAtStation exists but state names differ
+Guard,"[isStationSegment() && stopRequired()]",1,Guard isStation(segment) && onItinerary(segment) present on transition to StoppingAtStation
+State,"ApproachingRedLight",1,StoppingAtLight state represents the approaching red light behavior
+Action,"entry / stopAL",1,stopAL(segment.location) action present on transition to StoppingAtLight
+Transition,"stopped (ApproachingRedLight ⇒ AtRedTrafficLight)",1,Transition trainStopped from StoppingAtLight to WaitingAtLight represents this
+State,"AtRedTrafficLight",1,WaitingAtLight state represents waiting at red traffic light
+Transition,"green (AtRedTrafficLight ⇒ StopNotRequired)",0.5,Transition lightTurnsGreen from WaitingAtLight to Moving exists but target state name differs
+State,"ApproachingStation",1,StoppingAtStation state represents approaching station behavior
+Action,"entry / stopAL",1,stopAL(segment.location) action present on transition to StoppingAtStation
+Transition,"stopped (ApproachingStation ⇒ AtStation)",1,Transition trainStopped from StoppingAtStation to AtStation exists
+History State,"History State for TrainMovement",0,No history state present in student submission
+State,"Emergency",1,EmergencyStopped state represents emergency condition
+Transition,"emergency (TrainMovement ⇒ Emergency)",1,Transitions with obstructionDetected from multiple states to EmergencyStopped capture emergency behavior
+Action,"eStop;",1,eStop() action present on transitions to EmergencyStopped
+Transition,"clear (Emergency ⇒ History State)",0.5,Transition cleared from EmergencyStopped to Moving exists but does not use history state
+Region,"SDS",1,SDS region exists within PoweredOn
+State,"Initial state (SDS → SDSActive)",1,Initial state in SDS region goes to SDSActive
+State,"SDSActive",1,SDSActive state exists in SDS region
+Transition,"after 1 sec (SDSActive ⇒ SDSActive)",1,Self-transition with everySecond trigger exists on SDSActive
+Guard,"[hasSegmentChanged()]",0,No guard for segment change; checkSegment() action called unconditionally
+Action,"setCS; enteringSegment()",0,checkSegment() action present but does not explicitly show setCS or enteringSegment event generation
+Transition,"after 1 sec (SDSActive ⇒ SDSActive)",0,Only one self-transition exists; no separate transition for unchanged segment case
+Guard,"[!hasSegmentChanged()]",0,No guard for unchanged segment condition
+Region,"MDS",1,MDS region exists within PoweredOn
+State,"Initial state (MDS → Stopped)",0,Initial state in MDS goes to MDSActive not Stopped
+State,"Stopped",0,No Stopped state in MDS; only MDSActive state exists
+Transition,"after 1 sec (Stopped ⇒ Moving)",0,No such transition; MDS has only self-transition on MDSActive
+Guard,"[speed > 0]",0,No speed-based guards in MDS region
+Transition,"after 1 sec (Stopped ⇒ Stopped)",0,No such transition exists
+Guard,"[speed == 0]",0,No speed-based guards in MDS region
+Action,"stopped()",0,checkMovement() action exists but does not explicitly show stopped() event generation
+State,"Moving",0,No Moving state in MDS region
+Transition,"after 1 sec (Moving ⇒ Stopped)",0,No such transition exists
+Guard,"[speed == 0]",0,No speed-based guards in MDS region
+Action,"stopped()",0,No stopped() action in MDS region
+Transition,"after 1 sec (Moving ⇒ Moving)",0,No such transition exists
+Guard,"[speed > 0]",0,No speed-based guards in MDS region
+Region,"ODS",1,ODS region exists within PoweredOn
+State,"Initial state (ODS → ODSActive)",1,Initial state in ODS region goes to ODSActive
+State,"ODSActive",1,ODSActive state exists in ODS region
+Transition,"after 1 sec (ODSActive ⇒ ODSActive)",1,Self-transition with everySecond trigger exists on ODSActive
+Guard,"[obstacleDetected()]",0,No guard for obstruction detection; checkObstruction() called unconditionally
+Action,"emergency()",0,checkObstruction() action present but does not explicitly show emergency() event generation
+Transition,"after 1 sec (ODSActive ⇒ ODSActive)",0,Only one self-transition exists; no separate transition for no obstruction case
+Guard,"[!obstacleDetected()]",0,No guard for no obstruction condition
+State,"Arrived",0,No Arrived state; PoweredOff used instead
+State,"additional elements",2,DoorsOpening and DoorsClosing states add unnecessary detail not required by system description; Idle state is unnecessary
+Transition,"additional elements",0,All transitions serve valid purposes in the model
+Guard,"additional elements",0,All guards are reasonable and support correct behavior
+Action,"additional elements",1,doorsOpen and doorsClosed events are unnecessary internal details not in system description
+Composite State,"additional elements",0,AtStation composite state is a reasonable modeling choice
+Region,"additional elements",0,No additional regions beyond those expected
+History State,"additional elements",0,No additional history states present

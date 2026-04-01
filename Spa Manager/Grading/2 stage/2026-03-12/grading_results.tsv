@@ -1,0 +1,52 @@
+Type	Element	Grading	Notes
+Composite State	SpaManager	1	Present as top-level composite state containing both regions
+Region	Jacuzzi	1	Present as JacuzziControl region within SpaManager
+State	initial state (Jacuzzi → Off)	1	Initial transition to JacuzziOff is present
+State	Off	1	JacuzziOff state exists
+Composite State	On (Jacuzzi)	1	JacuzziOn is a composite state containing jet control logic
+Transition	on (Off ⇒ On)	1	turnOn transition from JacuzziOff to JacuzziOn present
+Transition	off (On ⇒ Off)	1	turnOff transition from JacuzziOn to JacuzziOff present
+State	initial state (Level1)	1	Initial transition to Level1 within JetsActive present
+State	Level1	1	Level1 state exists
+Transition	up (Level1 ⇒ Level2)	1	increaseLevel transition from Level1 to Level2 present
+State	Level2	1	Level2 state exists
+Transition	up (Level2 ⇒ Level3)	1	increaseLevel transition from Level2 to Level3 present
+Transition	down (Level2 ⇒ Level1)	1	decreaseLevel transition from Level2 to Level1 present
+State	Level3	1	Level3 state exists
+Transition	down (Level3 ⇒ Level2)	1	decreaseLevel transition from Level3 to Level2 present
+History State	History State for Jacuzzi On	1	History state H is present within JacuzziOn
+Transition	setPattern(PatternType type) (On⇒ History State)	1	selectPattern transitions with guards present on all levels; semantically equivalent to pattern selection
+State	Paused	1	Paused state exists
+Transition	pause (On⇒ Pause)	1	pause transition from JetsActive to Paused present
+Transition	after 2min (Paused ⇒ History State)	1	after(2min) transition from Paused to H present
+Region	Sauna	1	Present as SaunaControl region within SpaManager
+State	initial state (Sauna → Off)	1	Initial transition to SaunaOff is present
+State	Off	1	SaunaOff state exists
+Composite State	On (Sauna)	1	SaunaOn is a composite state containing three regions
+Transition	on (Off ⇒ On)	1	turnOn transition from SaunaOff to SaunaOn present
+Transition	off (On ⇒ Off)	1	turnOff transition from SaunaOn to SaunaOff present
+Region	Heater	1	Present as HeatingControl region within SaunaOn
+State	initial state (Heater → Heat)	1	Initial transition to Heating state present
+State	Heat	1	Heating state exists
+Transition	Heat ⇒ Idle	1	Transition from Heating to Maintaining present
+Guard	[temp ≥ 90°C]	1	Guard [temp >= 90] present on Heating to Maintaining transition
+State	Idle	1	Maintaining state exists (semantically equivalent to Idle)
+Transition	Idle ⇒ Heat	1	Transition from Maintaining to Heating present
+Guard	[temp < 85°C]	1	Guard [temp < 85] present on Maintaining to Heating transition
+Region	Fan	1	Present as FanControl region within SaunaOn
+State	initial state (Fan → Off)	1	Initial transition to FanOff present
+State	Off	1	FanOff state exists
+Transition	after 5min (Off ⇒ On)	0.5	FanOn to FanOff transition with after(5min) exists but Off to On requires humidity>40% for 3min which is modeled via FanMonitoring state
+Guard	[humidity > 40% && exceedTime > 3min]	1	Guard [humidity > 40%] with after(3min) timer captures the exceed time requirement
+Region	Water	1	Present as WaterDispersionControl region within SaunaOn
+State	initial state (Water → Idle)	1	Initial transition to WaterReady present (semantically equivalent to Idle)
+State	Idle	1	WaterReady state exists (semantically equivalent to Idle)
+Transition	Idle ⇒ Idle	1	Self-transition on WaterReady with disperseWater event present
+Guard	disperse [humidity < 40% && !Fan.On && timeSinceLast ≥ 15min]	1	Guard [humidity < 40% && fanOff] with after(15min) cooldown captures the requirements
+State	additional elements	1	FanMonitoring state is an intermediate state not required by system description
+Transition	additional elements	0	No fundamentally incorrect transitions
+Guard	additional elements	0	No fundamentally incorrect guards
+Action	additional elements	0	Actions are reasonable modeling choices
+Composite State	additional elements	1	JetsActive composite state adds unnecessary nesting
+Region	additional elements	0	No fundamentally incorrect regions
+History State	additional elements	0	No fundamentally incorrect history states

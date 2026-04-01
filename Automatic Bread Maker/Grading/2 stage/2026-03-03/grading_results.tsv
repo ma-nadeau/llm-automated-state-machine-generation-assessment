@@ -1,0 +1,56 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Off)	1	Initial state correctly transitions to Off
+State	Off	1	Off state is present
+Transition	on (Off ⇒ On)	1	Transition from Off to On with on event is present
+Composite State	On	1	On composite state is present
+Transition	on => off	1	Transition from On to Off with off event is present
+Composite State	Setup	0.5	Configuration state serves as setup but lacks internal crust selection states
+State	Initial state (Setup → Medium)	0	No Medium state or initial transition to it within setup
+Action	delay=0; selectFirstCourse()	0	No initialization action for delay or course selection
+State	Medium	0	Medium crust state not present
+Transition	setup initial state => medium	0	No transition to Medium state
+Transition	medium => dark	0	No transition between crust states
+State	Dark	0	Dark crust state not present
+Transition	dark => light	0	No transition between crust states
+State	Light	0	Light crust state not present
+History State	H	0	No history state present
+Transition	setup => H	0	No transition to history state
+Action	selectNextCourse()	0	No action for selecting next course on menu button
+Transition	plus (Setup ⇒ Setup)	1	Self-transition on plus with guard and action present
+Guard	[delay <= 17*60+50]	1	Guard [timer < 1080] is equivalent to delay <= 1070 (17*60+50)
+Action	delay = delay + 10	1	Action increaseTimer(10) correctly represents delay increment
+Transition	minus (Setup ⇒ Setup)	1	Self-transition on minus with guard and action present
+Guard	[delay >= 10]	1	Guard [timer > 0] ensures timer is positive before decrement
+Action	delay = delay - 10	1	Action decreaseTimer(10) correctly represents delay decrement
+Transition	start (Setup ⇒ Countdown)	1	Transition from Configuration to Countdown with guard [timer > 0]
+Guard	[delay > 0]	1	Guard [timer > 0] correctly checks for delayed start
+Transition	start (Setup ⇒ Baking)	1	Transition from Configuration to Kneading with guard [timer == 0]
+Guard	[delay == 0]	1	Guard [timer == 0] correctly checks for immediate start
+State	Countdown	1	Countdown state is present
+Action	setCourseTimes()	0	No setCourseTimes action on transitions to baking
+Transition	Countdown => baking	1	Transition from Countdown to Kneading with timerExpired event
+Transition	Countdown => setup	1	Transition from Countdown to Configuration on stop event
+Action	setCourseTimes()	0	No setCourseTimes action on transition from Countdown
+Composite State	Baking	1	BakingProcess composite state represents the baking phases
+State	Initial state	1	Initial state within BakingProcess transitions to Kneading
+State	Kneading	1	Kneading state is present
+Action	startKneading()	1	Entry action startKneading() documented in note
+Action	stopKneading()	1	Exit action stopKneading() documented in note
+Transition	baking initial state => kneading	1	Initial transition to Kneading is present
+Transition	kneading => rising	1	Transition from Kneading to Rising with knead_complete event
+State	Rising	1	Rising state is present
+Transition	rising => baking	1	Transition from Rising to Baking with rise_complete event
+State	Baking	1	Baking state is present
+Action	heat()	1	Entry action heat() documented in note
+Transition	baking => warming	1	Transition from Baking to Warming with bake_complete event
+State	Warming	1	Warming state is present
+Action	warm()	1	Entry action warm() documented in note
+Transition	adter 60min (warming => setup)	1	Transition from Warming to Configuration after 60min
+Transition	baking => setup	1	Transition from BakingProcess to Configuration on stop event
+State	additional elements	0	No additional incorrect states
+Transition	additional elements	0	No additional incorrect transitions
+Guard	additional elements	0	No additional incorrect guards
+Action	additional elements	0	No additional incorrect actions
+Composite State	additional elements	0	No additional incorrect composite states
+Region	additional elements	0	No additional incorrect regions
+History State	additional elements	0	No additional incorrect history states

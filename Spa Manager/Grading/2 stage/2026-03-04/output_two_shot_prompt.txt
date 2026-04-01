@@ -1,0 +1,90 @@
+stateDiagram-v2
+    
+    state SpaManager {
+        --
+        state SaunaRegion {
+            state SaunaOff
+            [*] --> SaunaOff
+            
+            state SaunaOn
+            SaunaOff --> SaunaOn : turnOnSauna
+            SaunaOn --> SaunaOff : turnOffSauna
+            
+            state SaunaOn {
+                --
+                state HeatingControl {
+                    state Heating
+                    state Maintaining
+                    [*] --> Heating
+                    Heating --> Maintaining : tempReached [temp >= 90]
+                    Maintaining --> Heating : tempDropped [temp < 85]
+                }
+                --
+                state FanControl {
+                    state FanOff
+                    state Monitoring
+                    state FanOn
+                    [*] --> FanOff
+                    FanOff --> Monitoring : humidityHigh [humidity > 40]
+                    Monitoring --> FanOff : humidityNormal [humidity <= 40]
+                    Monitoring --> FanOn : after(3min) / activateFan()
+                    FanOn --> FanOff : after(5min) / deactivateFan()
+                }
+                --
+                state WaterControl {
+                    state WaterReady
+                    state WaterCooldown
+                    [*] --> WaterReady
+                    WaterReady --> WaterCooldown : disperseWater [humidity < 40 && fanOff] / dispenseWater()
+                    WaterReady --> WaterReady : disperseWater [humidity >= 40 || fanOn]
+                    WaterCooldown --> WaterReady : after(15min)
+                }
+            }
+            
+            note right of Heating
+                entry / startHeating()
+                exit / stopHeating()
+            end note
+        }
+        --
+        state JacuzziRegion {
+            state JacuzziOff
+            [*] --> JacuzziOff
+            
+            state JacuzziOn
+            JacuzziOff --> JacuzziOn : turnOnJacuzzi
+            JacuzziOn --> JacuzziOff : turnOffJacuzzi
+            
+            state JacuzziOn {
+                --
+                state PressureControl {
+                    state ActivePressure
+                    state Paused
+                    [*] --> ActivePressure
+                    
+                    state ActivePressure {
+                        state Level1
+                        state Level2
+                        state Level3
+                        state H
+                        [*] --> Level1
+                        Level1 --> Level2 : increaseLevel
+                        Level2 --> Level3 : increaseLevel
+                        Level2 --> Level1 : decreaseLevel
+                        Level3 --> Level2 : decreaseLevel
+                    }
+                    
+                    ActivePressure --> Paused : pause
+                    Paused --> H : after(2min)
+                }
+                --
+                state PatternControl {
+                    state Pattern
+                    [*] --> Pattern
+                    Pattern --> Pattern : selectPattern(n) [n >= 1 && n <= 25] / setPattern(n)
+                }
+            }
+        }
+    }
+    
+    [*] --> SpaManager

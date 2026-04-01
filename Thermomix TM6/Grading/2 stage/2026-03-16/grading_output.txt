@@ -1,0 +1,51 @@
+Type,Element,Grading,Notes
+State,"initial state (⇒ TransportationMode)",1,Initial state correctly transitions to TransportationMode
+State,"TransportationMode",1,TransportationMode state is present
+Transition,"selectorPressed (TransportationMode ⇒ On)",1,Transition to HomeScreen (part of On composite) via selectorPressed is correct
+State,"PreparingOff",1,Represented as ShuttingDown state with equivalent behavior
+Transition,"selectorReleased (PreparingOff ⇒ On)",1,ShuttingDown to HomeScreen on selectorReleased is present
+Transition,"after 5sec (PreparingOff ⇒ Off)",1,ShuttingDown to ShutdownReady after 5sec then to Off captures the behavior
+State,"Off",1,Off state is present
+Transition,"selectorPressed (Off ⇒ On)",1,Off to HomeScreen via selectorPressed is correct
+Composite State,"On",0,On is not modeled as a composite state; HomeScreen and other states are at top level
+History State,"History State for On",0,No history state is present in the model
+Transition,"selectorHeld (On ⇒ PreparingOff)",1,HomeScreen to ShuttingDown via selectorHeld is correct
+Transition,"bowlRemoved (On ⇒ On)",1,RecipeExecution to HomeScreen via bowlRemoved captures the behavior
+State,"Initial State (On ⇒ Home)",0.5,HomeScreen exists but not as initial state within On composite
+State,"Home",1,HomeScreen state is present and serves as home
+Transition,"after 14min 30sec (Home ⇒ Preparing Shutdown)",1,HomeScreen to AutoShutdownWarning after 14min30sec is correct
+Transition,"start (Home ⇒ PromptToAdd)",0.5,selectRecipe transition exists but guard and action are missing
+Guard,"[!bowlRemoved()]",0.5,Guard [bowlPlaced] is present on start transition but semantics differ
+Action,"setIngredients()",0,No setIngredients action is present
+State,"Preparing Shutdown",1,AutoShutdownWarning state represents preparing shutdown
+Transition,"after 30sec (Preparing Shutdown ⇒ Off)",1,AutoShutdownWarning to Off after 30sec is correct
+Transition,"cancel (Preparing Shutdown ⇒ Home)",1,AutoShutdownWarning to HomeScreen via cancel is correct
+State,"PromptToAdd",1,AddingIngredients state represents prompting to add ingredients
+Transition,"next (PromptToAdd ⇒ PromptToAdd)",0,No self-loop transition for adding more ingredients
+Guard,"[weightCorrect() && moreIngredientsRequired()]",0,No guard for checking weight and more ingredients on self-loop
+Action,"setIngredients()",0,No setIngredients action on self-loop
+Transition,"next (PromptToAdd ⇒ Chop)",1,AddingIngredients to Chopping via next with correctAmount guard is present
+Guard,"[weightCorrect() && !moreIngredientsRequired()]",0.5,Guard [correctAmount] is present but less specific than expected
+Action,"setChoppingSpeedAndTime()",0,No setChoppingSpeedAndTime action is present
+State,"Chop",1,Chopping state is present
+Transition,"next (Chop ⇒ PromptToAdd)",0,No transition from Chopping back to AddingIngredients
+Guard,"[choppingTimeDone && moreIngredientsRequired()]",0,No guard for this transition as it doesn't exist
+Action,"setIngredients()",0,No setIngredients action on this transition
+Transition,"next (Chop ⇒ Cook)",1,Chopping to Cooking via next is present
+Guard,"[choppingTimeDone && !moreIngredientsRequired()]",0,No guard on Chopping to Cooking transition
+Action,"setCookingSpeedAndTime()",0,No setCookingSpeedAndTime action is present
+State,"Cook",1,Cooking state is present
+Transition,"after choppingTime (Cook ⇒ PromptToAdd)",1,Cooking to AddingIngredients via done with moreSteps guard is present
+Guard,"[choppingTimeDone && moreIngredientsRequired()]",0.5,Guard [moreSteps] is present but less specific
+Action,"setIngredients()",0,No setIngredients action is present
+Transition,"after cookingTime (Cook ⇒ Ready)",1,Cooking to MealReady via done with !moreSteps guard is present
+Guard,"[!moreIngredientsRequired()]",0.5,Guard [!moreSteps] is present but less specific
+State,"Ready",1,MealReady state is present
+Transition,"after 14min 30sec (Ready ⇒ Preparing Shutdown)",0,No transition from MealReady to AutoShutdownWarning
+State,"additional elements",0,No fundamentally incorrect additional states
+Transition,"additional elements",1,ShutdownReady state and transition add unnecessary complexity
+Guard,"additional elements",0,No fundamentally incorrect additional guards
+Action,"additional elements",0,No fundamentally incorrect additional actions
+Composite State,"additional elements",1,RecipeExecution composite state is unnecessary but not incorrect
+Region,"additional elements",0,No additional regions present
+History State,"additional elements",0,No additional history states present

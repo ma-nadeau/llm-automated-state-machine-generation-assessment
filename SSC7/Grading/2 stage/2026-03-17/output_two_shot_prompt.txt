@@ -1,0 +1,58 @@
+stateDiagram-v2
+
+state Active
+[*] --> Active
+
+state Active {
+    state ReadyForNextItem
+    [*] --> ReadyForNextItem
+    
+    state ItemScanned
+    ReadyForNextItem --> ItemScanned : scanBarcode(code) [codeExists] / showItem()
+    ReadyForNextItem --> ReadyForNextItem : scanBarcode(code) [!codeExists] / showError()
+    
+    state EnteringProductCode
+    ReadyForNextItem --> EnteringProductCode : enterProductCode
+    
+    state WeighingItem
+    EnteringProductCode --> WeighingItem : productCodeEntered(code) [codeExists]
+    EnteringProductCode --> ReadyForNextItem : productCodeEntered(code) [!codeExists] / showError()
+    
+    state ItemWeighed
+    WeighingItem --> ItemWeighed : itemWeighed / showItemWithWeight()
+    WeighingItem --> ReadyForNextItem : cancelWeighing
+    
+    state SecurityWeightCheck
+    ItemScanned --> SecurityWeightCheck : placeItemOnSecurityScale
+    ItemWeighed --> SecurityWeightCheck : placeItemOnSecurityScale
+    SecurityWeightCheck --> ReadyForNextItem : securityWeightMatches
+    
+    state WeighingBag
+    ReadyForNextItem --> WeighingBag : addBag
+    WeighingBag --> ReadyForNextItem : bagWeighed / incrementBagCount(), showBagCount()
+    WeighingBag --> ReadyForNextItem : cancelWeighing
+    
+    state WaitingForPayment
+    ReadyForNextItem --> WaitingForPayment : pay [billHasItems] / sendPaymentRequest()
+    ReadyForNextItem --> ReadyForNextItem : pay [!billHasItems] / showError()
+    WaitingForPayment --> ReadyForNextItem : paymentSuccess(authCode) / printBill()
+    WaitingForPayment --> ReadyForNextItem : paymentFail(error) / showError()
+    WaitingForPayment --> ReadyForNextItem : paymentCancel
+    
+    state WaitingForOverride
+    SecurityWeightCheck --> WaitingForOverride : securityWeightMismatch / turnOnLight()
+    ReadyForNextItem --> WaitingForOverride : removeItem [billHasItems] / turnOnLight()
+    ReadyForNextItem --> WaitingForOverride : cancelEverything / turnOnLight()
+    ItemScanned --> WaitingForOverride : cancelEverything / turnOnLight()
+    SecurityWeightCheck --> WaitingForOverride : cancelEverything / turnOnLight()
+    WaitingForOverride --> WaitingForOverride : overrideEntered(code) [!codeCorrect] / showError()
+    WaitingForOverride --> ReadyForNextItem : overrideEntered(code) [codeCorrect and itemOverride] / turnOffLight(), clearItem()
+    WaitingForOverride --> ReadyForNextItem : overrideEntered(code) [codeCorrect and clearAllOverride] / turnOffLight(), clearEverything()
+    
+    state TimeoutWarning
+    ReadyForNextItem --> TimeoutWarning : timeoutWarning / startCountdown()
+    TimeoutWarning --> H : continue
+    TimeoutWarning --> ReadyForNextItem : timeout / clearEverything()
+    
+    state H
+}

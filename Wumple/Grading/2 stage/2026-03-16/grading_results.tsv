@@ -1,0 +1,116 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Watch)	1	Initial state correctly transitions to Watch composite state
+Action	time=0:00:00; alarmTime=0:00:00; alarm=false; flashAlert=false; cdTime=0:00:00	0	No initialization action present in student submission
+Composite State	Watch	1	Watch composite state correctly defined
+Region	Light	1	Backlight region present (named Backlight instead of Light but semantically equivalent)
+State	Initial state (Light → Off)	1	Initial state correctly transitions to BacklightOff
+State	Off	1	BacklightOff state represents the off state
+Action	entry / lightOff()	0.5	turnOffBacklight() action present but not as entry action on Off state
+Transition	D (Off ⇒ On)	1	D button transition from BacklightOff to BacklightOn present
+State	On	1	BacklightOn state present
+Action	entry / lightOn()	0.5	turnOnBacklight() action present but not as entry action on On state
+Transition	D (On ⇒ Off)	1	D button transition from BacklightOn to BacklightOff present
+Transition	after 10sec (On ⇒ Off)	1	after_10sec transition from BacklightOn to BacklightOff present
+Transition	flash (On ⇒ Flash)	0	No flash transition from On to Flash state
+Guard	[flashAlert]	0	No flashAlert guard on flash transition (transition not present)
+State	Flash	0	No Flash state in Backlight region
+Action	do / flash5Sec()	0	No flash5Sec() action (Flash state not present)
+Transition	flash (Flash ⇒ Off)	0	No flash transition from Flash to Off
+Guard	[flashAlert]	0	No flashAlert guard (transition not present)
+Transition	anyButton (Flash ⇒ Off)	0	No anyButton transition from Flash to Off
+Region	WatchMode	1	ModeControl region represents the watch mode region
+State	Initial state (WatchMode → AlarmOff)	0.5	Initial state goes to OperatingModes which contains alarm state management but not directly to AlarmOff composite
+Composite State	AlarmOff	0	No explicit AlarmOff composite state wrapping the modes
+State	Initial state (AlarmOff → TimeKeepingMode)	1	Initial state correctly transitions to Timekeeping mode
+Composite State	TimeKeepingMode	1	Timekeeping composite state present
+State	Initial state (TimeKeepingMode → Idle)	1	Initial state correctly transitions to ShowTime
+State	Idle	1	ShowTime state represents idle state in timekeeping
+Action	do / displayTime()	0	No displayTime() action in ShowTime state
+Transition	B2sec (Idle ⇒ Idle)	1	B_held_2sec self-transition present for flash alert toggle
+Action	toggleFlashAlert()	0	No explicit toggleFlashAlert() action but behavior captured in state transitions
+Transition	B (Idle ⇒ Idle)	1	B self-transition present for alarm toggle
+Action	toggleAlarm()	0	No explicit toggleAlarm() action but behavior captured in state transitions
+Transition	C (Idle ⇒ Seconds)	1	C transition from ShowTime to SettingTime with SettingSeconds as initial state
+Action	flashSeconds()	0	No flashSeconds() action on transition
+Transition	A (TimeKeepingMode ⇒ AlarmMode)	1	A transition from Timekeeping to Alarm present
+State	Seconds	1	SettingSeconds state present
+Transition	B (Seconds ⇒ Seconds)	1	B self-transition on SettingSeconds present
+Action	time+=1sec	0.5	incrementSeconds() action present but not time+=1sec
+Transition	C (Seconds ⇒ Minutes)	1	C transition from SettingSeconds to SettingMinutes present
+Action	flashMinutes()	0	No flashMinutes() action on transition
+State	Minutes	1	SettingMinutes state present
+Transition	B (Minutes ⇒ Minutes)	1	B self-transition on SettingMinutes present
+Action	time+=1min	0.5	incrementMinutes() action present but not time+=1min
+Transition	C (Minutes ⇒ Hours)	1	C transition from SettingMinutes to SettingHours present
+Action	flashHours()	0	No flashHours() action on transition
+State	Hours	1	SettingHours state present
+Transition	B (Hours ⇒ Hours)	1	B self-transition on SettingHours present
+Action	time+=1hr	0.5	incrementHours() action present but not time+=1hr
+Transition	C (Hours ⇒ Seconds)	1	C transition from SettingHours to SettingSeconds present
+Action	flashSeconds()	0	No flashSeconds() action on transition
+Transition	A (TimeKeepingMode ⇒ AlarmMode)	1	A transition from SettingTime to ShowTime then to Alarm mode
+Composite State	AlarmMode	1	Alarm composite state present
+State	Initial state (AlarmMode → Idle)	1	Initial state correctly transitions to ShowAlarm
+State	Idle	1	ShowAlarm state represents idle state in alarm mode
+Action	entry / displayAlarmTime()	0	No displayAlarmTime() entry action
+Transition	C (Idle ⇒ Minutes)	1	C transition from ShowAlarm to SettingAlarm with SettingAlarmMinutes as initial state
+Action	flashMinutes()	0	No flashMinutes() action on transition
+Transition	A (AlarmMode ⇒ CountdownMode)	0	A transition goes from SettingAlarm to Timekeeping not to CountdownMode
+State	Minutes	1	SettingAlarmMinutes state present
+Transition	B (Minutes ⇒ Minutes)	1	B self-transition on SettingAlarmMinutes present
+Action	alarmTime+=1min	0.5	incrementAlarmMinutes() action present but not alarmTime+=1min
+Transition	C (Minutes ⇒ Hours)	1	C transition from SettingAlarmMinutes to SettingAlarmHours present
+Action	flashHours()	0	No flashHours() action on transition
+State	Hours	1	SettingAlarmHours state present
+Transition	B (Hours ⇒ Hours)	1	B self-transition on SettingAlarmHours present
+Action	alarmTime+=1hr	0.5	incrementAlarmHours() action present but not alarmTime+=1hr
+Transition	C (Hours ⇒ Minutes)	1	C transition from SettingAlarmHours to SettingAlarmMinutes present
+Action	flashMinutes()	0	No flashMinutes() action on transition
+Transition	A (AlarmMode ⇒ CountdownMode)	1	A transition from Alarm to Countdown present at OperatingModes level
+Composite State	CountdownMode	1	Countdown composite state present
+State	Initial state (CountdownMode → Idle)	1	Initial state correctly transitions to ShowCountdown
+State	Idle	1	ShowCountdown state represents idle state in countdown mode
+Action	entry / displayCdTime()	0	No displayCdTime() entry action
+Transition	C (Idle ⇒ Seconds)	1	C transition from ShowCountdown to SettingCountdown with SettingCountdownSeconds as initial state
+Action	flashSeconds()	0	No flashSeconds() action on transition
+Transition	B (Idle ⇒ Countdown)	1	B transition from ShowCountdown to CountdownRunning present
+Guard	[cdTime > 0:00:00]	1	Guard [countdownTimeSet] present on transition
+Action	targetTime = time + cdTime	0	No targetTime calculation action on transition
+Transition	A (CountdownMode ⇒ TimeKeepingMode)	1	A transition from Countdown to Timekeeping present
+State	Seconds	1	SettingCountdownSeconds state present
+Transition	B (Seconds ⇒ Seconds)	1	B self-transition on SettingCountdownSeconds present
+Action	cdTime+=1sec	0.5	incrementCountdownSeconds() action present but not cdTime+=1sec
+Transition	C (Seconds ⇒ Minutes)	1	C transition from SettingCountdownSeconds to SettingCountdownMinutes present
+Action	flashMinutes()	0	No flashMinutes() action on transition
+State	Minutes	1	SettingCountdownMinutes state present
+Transition	B (Minutes ⇒ Minutes)	1	B self-transition on SettingCountdownMinutes present
+Action	cdTime+=1min	0.5	incrementCountdownMinutes() action present but not cdTime+=1min
+Transition	C (Minutes ⇒ Hours)	1	C transition from SettingCountdownMinutes to SettingCountdownHours present
+Action	flashHours()	0	No flashHours() action on transition
+State	Hours	1	SettingCountdownHours state present
+Transition	B (Hours ⇒ Hours)	1	B self-transition on SettingCountdownHours present
+Action	cdTime+=1hr	0.5	incrementCountdownHours() action present but not cdTime+=1hr
+Transition	C (Hours ⇒ Seconds)	1	C transition from SettingCountdownHours to SettingCountdownSeconds present
+Action	flashSeconds()	0	No flashSeconds() action on transition
+State	Countdown	1	CountdownRunning state represents countdown state
+Action	do / displayCountdown()	0	No displayCountdown() action in CountdownRunning state
+Transition	(targetTime == time) (Countdown ⇒ CountdownReached)	1	countdownComplete transition from CountdownRunning to CountdownNotifications present
+Action	flash()	0	No flash() action on transition
+State	CountdownReached	1	CountdownNotifications state represents countdown reached state
+Action	do / flashZero&Beep5Sec()	0.5	Entry actions for beeping and flashing present in note but not as do action
+Transition	anyButton (CountdownReached ⇒ CountdownMode)	1	anyButton transition from CountdownNotifications to ShowCountdown present
+History State	H	1	History state H present in Timekeeping and Countdown
+Transition	(alarm && alarmTime == time) (AlarmOff ⇒ AlarmOn)	1	alarmTimeReached transition from OperatingModes to AlarmNotifications present with guard
+Action	saveDisplay()	0	No saveDisplay() action on transition
+Action	flash()	0	No flash() action on transition
+State	AlarmOn	1	AlarmNotifications state represents alarm on state
+Action	do / flashAlarmTime&Beep5Sec()	0.5	Entry actions for beeping and flashing present in note but not as do action
+Action	exit / restoreDisplay()	0.5	returnToPreviousMode() action present but not restoreDisplay()
+Transition	anyButton (AlarmOn ⇒ History State)	1	anyButton transition from AlarmNotifications to history state H present
+State	additional elements	0	No fundamentally incorrect states present
+Transition	additional elements	0	No fundamentally incorrect transitions present
+Guard	additional elements	0	No fundamentally incorrect guards present
+Action	additional elements	0	No fundamentally incorrect actions present
+Composite State	additional elements	0	No fundamentally incorrect composite states present
+Region	additional elements	0	No fundamentally incorrect regions present
+History State	additional elements	0	No fundamentally incorrect history states present

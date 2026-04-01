@@ -1,0 +1,146 @@
+stateDiagram-v2
+
+state Watch {
+    region ModeControl {
+        state OperatingModes {
+            state Timekeeping {
+                state ShowTime {
+                    state AlarmDisabled
+                    [*] --> AlarmDisabled
+                    
+                    state AlarmEnabled {
+                        state FlashAlertOff
+                        [*] --> FlashAlertOff
+                        
+                        state FlashAlertOn
+                        
+                        FlashAlertOff --> FlashAlertOn : B_held_2sec
+                        FlashAlertOn --> FlashAlertOff : B_held_2sec
+                    }
+                    
+                    AlarmDisabled --> AlarmEnabled : B
+                    AlarmEnabled --> AlarmDisabled : B
+                }
+                
+                [*] --> ShowTime
+                
+                state SettingTime {
+                    state SettingSeconds
+                    [*] --> SettingSeconds
+                    
+                    state SettingMinutes
+                    state SettingHours
+                    
+                    SettingSeconds --> SettingMinutes : C
+                    SettingMinutes --> SettingHours : C
+                    SettingHours --> SettingSeconds : C
+                    
+                    SettingSeconds --> SettingSeconds : B / incrementSeconds()
+                    SettingMinutes --> SettingMinutes : B / incrementMinutes()
+                    SettingHours --> SettingHours : B / incrementHours()
+                }
+                
+                ShowTime --> SettingTime : C
+                SettingTime --> ShowTime : A / saveTime()
+                
+                state H
+            }
+            
+            [*] --> Timekeeping
+            
+            state Alarm {
+                state ShowAlarm
+                [*] --> ShowAlarm
+                
+                state SettingAlarm {
+                    state SettingAlarmMinutes
+                    [*] --> SettingAlarmMinutes
+                    
+                    state SettingAlarmHours
+                    
+                    SettingAlarmMinutes --> SettingAlarmHours : C
+                    SettingAlarmHours --> SettingAlarmMinutes : C
+                    
+                    SettingAlarmMinutes --> SettingAlarmMinutes : B / incrementAlarmMinutes()
+                    SettingAlarmHours --> SettingAlarmHours : B / incrementAlarmHours()
+                }
+                
+                ShowAlarm --> SettingAlarm : C
+                SettingAlarm --> Timekeeping : A / saveAlarm()
+            }
+            
+            Timekeeping --> Alarm : A
+            
+            state Countdown {
+                state ShowCountdown
+                [*] --> ShowCountdown
+                
+                state SettingCountdown {
+                    state SettingCountdownSeconds
+                    [*] --> SettingCountdownSeconds
+                    
+                    state SettingCountdownMinutes
+                    state SettingCountdownHours
+                    
+                    SettingCountdownSeconds --> SettingCountdownMinutes : C
+                    SettingCountdownMinutes --> SettingCountdownHours : C
+                    SettingCountdownHours --> SettingCountdownSeconds : C
+                    
+                    SettingCountdownSeconds --> SettingCountdownSeconds : B / incrementCountdownSeconds()
+                    SettingCountdownMinutes --> SettingCountdownMinutes : B / incrementCountdownMinutes()
+                    SettingCountdownHours --> SettingCountdownHours : B / incrementCountdownHours()
+                }
+                
+                ShowCountdown --> SettingCountdown : C
+                SettingCountdown --> ShowCountdown : A / saveCountdown()
+                
+                state CountdownRunning
+                ShowCountdown --> CountdownRunning : B [countdownTimeSet]
+                CountdownRunning --> ShowCountdown : B / stopCountdown()
+                
+                state CountdownNotifications
+                CountdownRunning --> CountdownNotifications : countdownComplete [countdownReachedZero]
+                CountdownNotifications --> ShowCountdown : after_5sec
+                CountdownNotifications --> ShowCountdown : anyButton / stopNotifications()
+                
+                state H
+            }
+            
+            Alarm --> Countdown : A
+            Countdown --> Timekeeping : A
+            
+            state H
+        }
+        
+        [*] --> OperatingModes
+        
+        state AlarmNotifications
+        
+        OperatingModes --> AlarmNotifications : alarmTimeReached [alarmEnabled]
+        AlarmNotifications --> H : after_5sec / returnToPreviousMode()
+        AlarmNotifications --> H : anyButton / stopAlarmNotifications()
+    }
+    
+    region Backlight {
+        state BacklightOff
+        [*] --> BacklightOff
+        
+        state BacklightOn
+        
+        BacklightOff --> BacklightOn : D / turnOnBacklight()
+        BacklightOn --> BacklightOff : D / turnOffBacklight()
+        BacklightOn --> BacklightOff : after_10sec / autoOffBacklight()
+    }
+}
+
+note right of AlarmNotifications
+    entry / startBeeping(), flashAlarmTime()
+    entry / flashBacklight() [flashAlertOn]
+    exit / stopBeeping(), stopFlashing()
+end note
+
+note right of CountdownNotifications
+    entry / startBeeping(), flashZeroTime()
+    entry / flashBacklight() [flashAlertOn]
+    exit / stopBeeping(), stopFlashing()
+end note

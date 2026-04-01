@@ -1,0 +1,53 @@
+Type,Element,Grading,Notes
+State,"initial state (off)",1,Correctly represented with [*] --> Off
+Transition,"initial state (off) => off",1,Initial transition to Off state is present
+State,"Off",1,Off state is correctly defined
+Transition,"off => on",1,Off --> On : onOff transition is present
+Composite State,"On",1,On is correctly defined as a composite state
+State,"initial state (on)",1,[*] --> Setup within On state is present
+Composite State,"GameSetup",0.5,Setup state exists but lacks parallel regions for timing and flip functionality
+Region,"GameSetup Region 1",0,No parallel regions defined in Setup state
+State,"Initial state (region 1)",0,No region 1 initial state since regions are not defined
+State,"TimingSelection",0.5,Setup state handles timing selection but not in a separate region
+Action,"incrTimingProgram()",0,No action for incrementing timing program on plus transition
+Action,"decrTimingProgram()",0,No action for decrementing timing program on minus transition
+Transition,"timing selection => timing selection",1,Setup --> Setup transitions for plus and minus are present
+Transition,"game setup => ready to start",1,Setup --> Ready : select transition is present
+Region,"GameSetup Region 2",0,No parallel regions defined in Setup state
+State,"Initial state (region 2)",0,No region 2 initial state since regions are not defined
+State,"WhiteKingOnLeft",0,No explicit state for white king position
+State,"WhiteKingOnRight",0,No explicit state for white king position
+Transition,"initial state => white king on left",0,No initial transition to white king position state
+Transition,"white king on left => white king on right",0.5,Setup --> Setup : flip exists but without explicit king position states
+Transition,"white king on right => white king on left",0.5,Setup --> Setup : flip exists but without explicit king position states
+State,"ReadyToStart",1,Ready state is correctly defined
+Transition,"ready to start => game running",1,Ready --> Playing : startStop transition is present
+Composite State,"GameRunning",1,Playing is correctly defined as a composite state
+History State,"H",1,History state H is present in Playing state
+State,"WhiteClockRunning",1,WhiteTurn state represents white clock running
+Action,"startTimer(wc)",0,No entry action for starting white timer
+Action,"stopTimer(wc)",0,No exit action for stopping white timer
+Guard,"[wc > 0]",0,No guard condition for white clock countdown
+Action,"decrTimer(wc)",0,No action for decrementing white timer
+Transition,"white clock running => white clock running",0,No self-transition for white clock countdown
+State,"BlackClockRunning",1,BlackTurn state represents black clock running
+Action,"startTimer(bc)",0,No entry action for starting black timer
+Action,"stopTimer(bc)",0,No exit action for stopping black timer
+Guard,"[bc > 0]",0,No guard condition for black clock countdown
+Action,"decrTimer(bc)",0,No action for decrementing black timer
+Transition,"balck clock running => black clock running",0,No self-transition for black clock countdown
+Transition,"game running => game paused",1,Playing --> Paused : startStop transition is present
+Transition,"game running => game finished",0,No transitions from WhiteTurn/BlackTurn to finished state on timeout
+Guard,"[wc == 0]",0,No guard for white clock reaching zero
+Guard,"[bc == 0]",0,No guard for black clock reaching zero
+State,"GamePaused",1,Paused state is correctly defined
+Transition,"game paused => game running",1,Paused --> H : startStop transition resumes game
+State,"GameFinished",0,WhiteTimeout and BlackTimeout states exist but no unified GameFinished state
+Transition,"on => off",1,On --> Off : onOff transition is present
+State,"additional elements",1,WhiteTimeout and BlackTimeout states are not in system description
+Transition,"additional elements",0,No fundamentally incorrect transitions
+Guard,"additional elements",0,No additional guards present
+Action,"additional elements",1,addIncrement actions on flip transitions are reasonable but not specified in system description
+Composite State,"additional elements",0,No additional composite states beyond expected
+Region,"additional elements",0,No additional regions present
+History State,"additional elements",0,No additional history states beyond H

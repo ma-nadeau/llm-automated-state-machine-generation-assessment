@@ -1,0 +1,53 @@
+stateDiagram-v2
+    state TransportationMode
+    state HomeScreen
+    state ShuttingDown
+    state ShutdownReady
+    state Off
+    state AutoShutdownWarning
+    
+    state RecipeExecution {
+        state RecipeSelected
+        state AddingIngredients
+        state Chopping
+        state Cooking
+        state MealReady
+        
+        [*] --> RecipeSelected
+        RecipeSelected --> AddingIngredients : start [bowlPlaced]
+        AddingIngredients --> Chopping : next [correctAmount]
+        Chopping --> Cooking : next
+        Cooking --> AddingIngredients : done [moreSteps]
+        Cooking --> MealReady : done [!moreSteps]
+    }
+    
+    [*] --> TransportationMode
+    
+    TransportationMode --> HomeScreen : selectorPressed / deactivateTransportMode()
+    HomeScreen --> ShuttingDown : selectorHeld
+    ShuttingDown --> ShutdownReady : after(5sec) / showShutdownMessage()
+    ShutdownReady --> Off : selectorReleased
+    ShuttingDown --> HomeScreen : selectorReleased
+    Off --> HomeScreen : selectorPressed / showHomeScreen()
+    HomeScreen --> AutoShutdownWarning : after(14min30sec)
+    AutoShutdownWarning --> HomeScreen : cancel
+    AutoShutdownWarning --> HomeScreen : bowlRemoved
+    AutoShutdownWarning --> Off : after(30sec)
+    HomeScreen --> RecipeExecution : selectRecipe
+    RecipeExecution --> HomeScreen : bowlRemoved
+    
+    note right of AutoShutdownWarning
+        entry / showWarningMessage()
+    end note
+    
+    note right of Chopping
+        entry / startChopping()
+    end note
+    
+    note right of Cooking
+        entry / startCooking()
+    end note
+    
+    note right of MealReady
+        entry / notifyMealReady()
+    end note

@@ -1,0 +1,52 @@
+Type,Element,Grading,Notes
+Composite State,"SpaManager",1,Correctly represented as the top-level composite state containing both sauna and Jacuzzi controls
+Region,"Jacuzzi",1,Represented as JacuzziControl region within SpaManager
+State,"initial state (Jacuzzi → Off)",1,Initial state correctly transitions to JacuzziOff
+State,"Off",1,JacuzziOff state correctly represents the off state
+Composite State,"On (Jacuzzi)",1,JacuzziOn correctly represented as composite state containing levels and pause
+Transition,"on (Off ⇒ On)",1,turnJacuzziOn transition correctly moves from JacuzziOff to JacuzziOn
+Transition,"off (On ⇒ Off)",1,turnJacuzziOff transition correctly moves from JacuzziOn to JacuzziOff
+State,"initial state (Level1)",1,Initial state within JacuzziOn correctly transitions to Level1
+State,"Level1",1,Level1 state correctly represented
+Transition,"up (Level1 ⇒ Level2)",1,increaseLevel transition correctly moves from Level1 to Level2
+State,"Level2",1,Level2 state correctly represented
+Transition,"up (Level2 ⇒ Level3)",1,increaseLevel transition correctly moves from Level2 to Level3
+Transition,"down (Level2 ⇒ Level1)",1,decreaseLevel transition correctly moves from Level2 to Level1
+State,"Level3",1,Level3 state correctly represented
+Transition,"down (Level3 ⇒ Level2)",1,decreaseLevel transition correctly moves from Level3 to Level2
+History State,"History State for Jacuzzi On",1,History state H correctly represented within JacuzziOn
+Transition,"setPattern(PatternType type) (On⇒ History State)",1,selectPattern transitions with guards and actions correctly implement pattern selection behavior on each level
+State,"Paused",1,Paused state correctly represented
+Transition,"pause (On⇒ Pause)",1,pause transitions correctly move from each level to Paused state
+Transition,"after 2min (Paused ⇒ History State)",1,after(2min) transition correctly moves from Paused to history state H
+Region,"Sauna",1,Represented as SaunaControl region within SpaManager
+State,"initial state (Sauna → Off)",1,Initial state correctly transitions to SaunaOff
+State,"Off",1,SaunaOff state correctly represents the off state
+Composite State,"On (Sauna)",1,SaunaOn correctly represented as composite state with parallel regions
+Transition,"on (Off ⇒ On)",1,turnSaunaOn transition correctly moves from SaunaOff to SaunaOn
+Transition,"off (On ⇒ Off)",1,turnSaunaOff transition correctly moves from SaunaOn to SaunaOff
+Region,"Heater",1,HeatingControl region correctly represents heater behavior within SaunaOn
+State,"initial state (Heater → Heat)",1,Initial state within HeatingControl correctly transitions to Heating
+State,"Heat",1,Heating state correctly represents the heating state
+Transition,"Heat ⇒ Idle",1,Transition from Heating to Maintaining correctly represents stopping heating at target temperature
+Guard,"[temp ≥ 90°C]",1,Guard [temperature >= 90] correctly represents the 90°C threshold
+State,"Idle",1,Maintaining state correctly represents the idle/maintaining state
+Transition,"Idle ⇒ Heat",1,Transition from Maintaining to Heating correctly represents resuming heating
+Guard,"[temp < 85°C]",1,Guard [temperature < 85] correctly represents the 85°C threshold
+Region,"Fan",1,HumidityControl region correctly represents fan behavior within SaunaOn
+State,"initial state (Fan → Off)",1,Initial state within HumidityControl correctly transitions to FanOff
+State,"Off",1,FanOff state correctly represented
+Transition,"after 5min (Off ⇒ On)",0.5,Fan turns on after monitoring for 3 minutes and turns off after 5 minutes; the transition structure captures this but the rubric item expects a single transition with combined guard
+Guard,"[humidity > 40% && exceedTime > 3min]",0.5,Humidity threshold and timing are represented through MonitoringHumidity state and after(3min) transition but not as a single combined guard
+Region,"Water",1,WaterControl region correctly represents water dispensing behavior within SaunaOn
+State,"initial state (Water → Idle)",1,Initial state within WaterControl correctly transitions to WaterDispensalReady
+State,"Idle",1,WaterDispensalReady state correctly represents the idle/ready state
+Transition,"Idle ⇒ Idle",1,Self-transition on WaterDispensalReady with disperseWater event correctly represents water dispensing
+Guard,"disperse [humidity < 40% && !Fan.On && timeSinceLast ≥ 15min]",1,Guard [humidity < 40 && !fanActive] and cooldown mechanism correctly capture the constraints; 15min timing enforced through cooldown state
+State,"additional elements",0,No incorrect additional states
+Transition,"additional elements",0,No incorrect additional transitions
+Guard,"additional elements",0,No incorrect additional guards
+Action,"additional elements",0,No incorrect additional actions
+Composite State,"additional elements",0,No incorrect additional composite states
+Region,"additional elements",0,No incorrect additional regions
+History State,"additional elements",0,No incorrect additional history states

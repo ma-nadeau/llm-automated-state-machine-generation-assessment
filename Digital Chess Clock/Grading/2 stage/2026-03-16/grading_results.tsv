@@ -1,0 +1,53 @@
+Type	Element	Grading	Notes
+State	initial state (off)	1	Correctly represented with [*] --> Off
+Transition	initial state (off) => off	1	Correctly represented with [*] --> Off
+State	Off	1	Off state is present
+Transition	off => on	1	Off --> On : onOff transition is present
+Composite State	On	1	On composite state is present
+State	initial state (on)	1	[*] --> Setup within On state
+Composite State	GameSetup	0.5	Setup composite state exists but lacks parallel regions for timing and orientation
+Region	GameSetup Region 1	0	No parallel regions defined; timing selection is within Setup but not as a separate region
+State	Initial state (region 1)	0	No separate region 1 with initial state
+State	TimingSelection	1	TimingSelection state exists within Setup
+Action	incrTimingProgram()	1	selectNextTiming() action on plus event is semantically equivalent
+Action	decrTimingProgram()	1	selectPreviousTiming() action on minus event is semantically equivalent
+Transition	timing selection => timing selection	1	Self-transitions on plus and minus events are present
+Transition	game setup => ready to start	0.5	Setup --> GameActive via startStop exists but no explicit ReadyToStart state
+Region	GameSetup Region 2	0	No parallel region 2 for orientation tracking
+State	Initial state (region 2)	0	No separate region 2 with initial state
+State	WhiteKingOnLeft	0	No explicit state for white king orientation
+State	WhiteKingOnRight	0	No explicit state for white king orientation
+Transition	initial state => white king on left	0	No separate orientation region or initial transition
+Transition	white king on left => white king on right	0	Flip action exists but no separate orientation states
+Transition	white king on right => white king on left	0	Flip action exists but no separate orientation states
+State	ReadyToStart	0.5	TimingSelected state serves similar purpose but not explicitly named ReadyToStart
+Transition	ready to start => game running	1	Setup --> GameActive : startStop transition is present
+Composite State	GameRunning	1	GameActive composite state represents game running
+History State	H	1	History state H is present in GameActive
+State	WhiteClockRunning	1	WhiteTurn state represents white clock running
+Action	startTimer(wc)	1	startWhiteClock() action is semantically equivalent
+Action	stopTimer(wc)	1	stopWhiteClock() action is present
+Guard	[wc > 0]	0	No explicit guard for white clock countdown; timeout handled separately
+Action	decrTimer(wc)	1	countDownWhite() do activity is semantically equivalent
+Transition	white clock running => white clock running	0	No self-transition for countdown; handled via do activity
+State	BlackClockRunning	1	BlackTurn state represents black clock running
+Action	startTimer(bc)	1	startBlackClock() action is semantically equivalent
+Action	stopTimer(bc)	1	stopBlackClock() action is present
+Guard	[bc > 0]	0	No explicit guard for black clock countdown; timeout handled separately
+Action	decrTimer(bc)	1	countDownBlack() do activity is semantically equivalent
+Transition	balck clock running => black clock running	0	No self-transition for countdown; handled via do activity
+Transition	game running => game paused	1	WhiteTurn/BlackTurn --> Paused : startStop transitions present
+Transition	game running => game finished	0.5	Timeout states exist but no explicit GameFinished state
+Guard	[wc == 0]	1	[whiteTime == 0] guard is present on WhiteTurn --> WhiteTimeout
+Guard	[bc == 0]	1	[blackTime == 0] guard is present on BlackTurn --> BlackTimeout
+State	GamePaused	1	Paused state is present
+Transition	game paused => game running	1	Paused --> H : startStop / resumeClock() transition present
+State	GameFinished	0.5	WhiteTimeout and BlackTimeout states represent finished game but no unified GameFinished state
+Transition	on => off	1	On --> Off : onOff transition is present
+State	additional elements	2	WhiteTimeout and BlackTimeout states are extra; system description only mentions flag display not separate states
+Transition	additional elements	0	All transitions are reasonable
+Guard	additional elements	0	All guards are reasonable
+Action	additional elements	1	addIncrementToWhite/Black actions are redundant; increment should be added on exit not on flip
+Composite State	additional elements	0	All composite states are reasonable
+Region	additional elements	0	No additional regions present
+History State	additional elements	0	Only one history state H which is appropriate
