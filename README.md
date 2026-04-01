@@ -75,7 +75,12 @@ Contains evaluation results where the model was prompted with a single prompt wi
 Contains evaluation results where the model was prompted with an initial prompt, then a second refinement prompt to improve generation quality.
 
 ### Date Folders
-Each stage contains date-timestamped folders (format: `YYYY-MM-DD`) representing when the evaluation was run. Multiple dates indicate multiple evaluation runs for the same configuration.
+Each stage contains date-timestamped folders (format: `YYYY-MM-DD`) representing when the evaluation was run. Where multiple date folders exist within the same stage, they represent runs using a different number of few-shot examples in the prompt:
+
+- **Earlier dates** (e.g., `2026-03-03`, `2026-03-04`) used **3 few-shot examples** with a **max output token limit of 8,000**
+- **Later dates** (e.g., `2026-03-12`, `2026-03-16`) used **6 few-shot examples** with a **max output token limit of 15,000**
+
+The number of examples is also reflected in the file naming convention (e.g., `_3-examples_` vs `_6-examples_`). The 1 stage evaluations all used 3 few-shot examples with a max output token limit of 8,000.
 
 ## Output Files
 
