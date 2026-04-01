@@ -11,7 +11,7 @@ The repositories used to generate these results are:
 ## Top-Level Structure
 
 ```
-Evaluations 2/
+llm-automated-state-machine-design-eval/
 ├── [Project Name]/
 │   └── Grading/
 │       ├── 1 stage/           # One stage evaluation results
@@ -220,6 +220,3 @@ The grading results are classified using the following categories:
 - `output_single_prompt.png` - Generated state diagram from one stage (single prompt) - PNG visualization
 - `output_two_stage_prompt.txt` - Generated state diagram from two stage (prompt with refinement) - Mermaid code
 - `output_two_stage_prompt.png` - Generated state diagram from two stage (prompt with refinement) - PNG visualization
-
-
-# llm-automated-state-machine-design-eval
