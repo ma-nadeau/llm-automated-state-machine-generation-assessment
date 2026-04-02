@@ -1,0 +1,46 @@
+stateDiagram-v2
+        
+        state TransportationMode
+        [*] --> TransportationMode
+
+        TransportationMode --> On : selectorPressed
+
+        state PreparingOff
+        PreparingOff --> H : selectorReleased
+        On --> PreparingOff : selectorHeld
+        
+        state Off
+        PreparingOff --> Off : after5sec
+
+        Off --> On : selectorPressed
+
+        state On {
+
+            state Home
+            [*] --> Home
+            
+            state PreparingShutdown
+            Home --> PreparingShutdown : after14min30sec
+            PreparingShutdown --> Home : cancel
+            PreparingShutdown --> Off : after30sec
+            
+            state PromptToAdd
+            Home --> PromptToAdd : start [!bowlRemoved()] / setIngredients()
+            PromptToAdd --> PromptToAdd : next [weightCorrect() && moreIngredientsRequired] / setIngredients()
+    
+            state Chop
+            PromptToAdd --> Chop : next [weightCorrect() && !moreIngredientsRequired] / setChoppingSpeedAndTime()
+            Chop --> PromptToAdd : next [choppingTimeDone && moreIngredientsRequired()] / setIngredients()
+            
+            state Cook
+            Chop --> Cook : next [choppingTimeDone && !moreIngredientsRequired()] / setCookingSpeedAndTime()
+            Cook --> PromptToAdd : afterChoppingTime [moreIngredientsRequired
+            
+            state Ready
+            Cook --> Ready : afterCookingTime [!moreIngredientsRequired]
+            Ready --> PreparingShutdown : after14min30sec
+            
+            state H
+            
+        }
+        On --> On : bowlRemoved

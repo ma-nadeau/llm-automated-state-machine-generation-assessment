@@ -1,0 +1,63 @@
+stateDiagram-v2
+        state Off
+        [*] --> Off
+
+        state On {
+            
+            state GameSetup {
+                region TimingSelection {
+                    state TimingSelectionState
+                    [*] --> TimingSelectionState
+                    TimingSelectionState --> TimingSelectionState : plus / {incrTimingProgram()}
+                    TimingSelectionState --> TimingSelectionState : minus / {decrTimingProgram()}
+                }
+                region WhiteKingStatus {
+                    state WhiteKingOnLeft
+                    state WhiteKingOnRight
+                    [*] --> WhiteKingOnLeft
+                    WhiteKingOnLeft --> WhiteKingOnRight : flip
+                    WhiteKingOnRight --> WhiteKingOnLeft : flip
+                }
+            }
+            [*] --> GameSetup
+            state ReadyToStart
+            GameSetup --> ReadyToStart : select
+            
+            state GameFinished
+            state GamePaused
+            
+            state GameRunning {
+                state WhiteClockRunning
+                [*] --> WhiteClockRunning
+
+                state BlackClockRunning
+                WhiteClockRunning --> WhiteClockRunning : after(1) [wc > 0] / {decrTimer(wc)}
+                WhiteClockRunning --> GameFinished : after(1) [wc == 0] / {flashFlag(white)}
+                WhiteClockRunning --> BlackClockRunning : flip
+                
+                note right of WhiteClockRunning
+                    entry / {startTimer(wc)}
+                    exit / {stopTimer(wc)}
+                end note
+
+                BlackClockRunning --> BlackClockRunning : after(1) [bc > 0] / {decrTimer(bc)}
+                BlackClockRunning --> GameFinished : after(1) [bc == 0] / {flashFlag(black)}
+                BlackClockRunning --> WhiteClockRunning : flip
+                
+                note right of BlackClockRunning
+                    entry / {startTimer(bc)}
+                    exit / {stopTimer(bc)}
+                end note
+                
+                state H
+                H --> WhiteClockRunning : resume
+
+            }
+            ReadyToStart --> GameRunning : startStop
+            GameRunning --> GamePaused : startStop
+            GamePaused --> GameRunning : startStop
+            GamePaused --> H : resume
+
+        }
+        Off --> On : onOff
+        On --> Off : onOff

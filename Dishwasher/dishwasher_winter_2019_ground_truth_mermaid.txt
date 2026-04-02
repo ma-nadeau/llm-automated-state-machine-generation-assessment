@@ -1,0 +1,49 @@
+stateDiagram-v2
+       
+    state DishwasherOn {
+        region Door {
+            State Closed
+            State Open
+            State Locked
+
+            [*] --> Closed
+            Closed --> Open : open
+            Closed --> Locked : lock
+            Open --> Closed : close
+            Locked --> Closed : unlock
+        }
+        region Washer {
+            State Idle
+            [*] --> Idle
+            Idle --> Idle : selectProgram(n) [n >= 1] / [r=n]
+            Idle --> Idle : toggleDryingTime / [if (dT=20) dT=40 else dT = 20]
+            Idle --> Cleaning : start [door.isClosed()] / [door.lock() c=1]
+
+            state Suspended
+            Suspended --> Drying : close
+            Suspended --> Idle : after(5)
+
+            state Drying
+            Drying --> Drying : extendDryingTime / [dT=40]
+            Drying --> Suspended : open
+            Drying --> Idle : after(dT)
+
+            state Cleaning {
+                state Intake
+                state Washing
+                state Drain
+                state FinalCleaning
+                state H
+                
+                [*] --> Intake
+                Intake --> Washing : entry
+                Washing --> Drain : after(10min)
+                Drain --> Intake : [c < r] / [c++]
+                Drain --> FinalCleaning : [c >= r]
+                FinalCleaning --> Drying : entry / [door.unlock()]
+            }
+
+            Cleaning --> H : toggleDryingTime / [if (dT=20) dT=40 else dT = 20]
+            Cleaning --> Drying : / door.unlock()
+        }
+    }

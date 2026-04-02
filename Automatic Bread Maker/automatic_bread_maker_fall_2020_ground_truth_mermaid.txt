@@ -1,0 +1,59 @@
+stateDiagram-v2
+        state Off
+        [*] --> Off
+        Off --> On : on
+        On --> Off : off
+        state On {
+            [*] --> Setup
+            state Setup {
+                state Medium
+                [*] --> Medium : / delay = 0 then selectFirstCourse()
+                state Dark
+                Medium --> Dark : crust
+                state Light 
+                Dark --> Light : crust
+                Light --> Medium 
+                
+                State H
+            }
+            Setup --> H : menu / selectNextCourse()
+            Setup --> H : plus [delay=17*60+50] / delay=delay+10
+            Setup --> H : minus [delay>=10] / delay=delay-10
+            
+            state Countdown
+            Setup --> Countdown : start [delay>0]
+            Countdown --> Setup : stop
+            
+            state Baking {
+                state Kneading
+                [*] --> Kneading
+                
+                note right of Kneading
+                    entry / startKneading()
+                    exit / stopKneading()
+                end note
+                
+                state Rising
+                Kneading --> Rising : after kneadingTime
+                
+                state Bake
+                Rising --> Bake : after risingTime
+                
+                note right of Bake
+                    do: heat()
+                end note
+                
+                state Warming
+                Bake --> Warming : after bakingTime
+                
+                note right of Warming
+                    do: warm()
+                end note
+    
+                Warming --> Setup : after 60min
+            }
+            
+            Countdown --> Baking : after delay / setCourseTime()
+            Baking --> Setup : stop
+            Setup --> Baking : start [delay=0] / setCourseTime()
+        }

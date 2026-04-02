@@ -1,0 +1,143 @@
+stateDiagram-v2
+        
+        [*] --> Watch : test / time=0h00m00s, alarmtime=0h00m00s, alarm=false, flashAlert=false, cdTime=0h00m00s
+
+        state Watch {
+            region Light {
+                [*] --> Off
+                state Off 
+                Off --> On : D
+                Off --> Flash : flash [flashAlert]
+            
+                note right of Off
+                    entry / lightOff()
+                end note
+                
+                state On
+                On --> Off : D
+                On --> Off : after10sec
+                On --> Flash : flash [flashAlert]
+
+                note right of On
+                    entry / lightOn()
+                end note
+                
+                state Flash
+                Flash --> Off : anyButton
+                
+                note right of Flash
+                    do / flash5sec()
+                end note
+                
+                
+            }
+            region WatchMode {
+                [*] --> AlarmOff
+                state AlarmOff {
+
+                    [*] --> TimeKeepingMode
+                    state TimeKeepingMode {
+                        
+                        [*] --> IdleTimeKeeping
+                        state IdleTimeKeeping
+                        IdleTimeKeeping --> IdleTimeKeeping : B2sec / toggleFlashAlert()
+                        IdleTimeKeeping --> IdleTimeKeeping : B / toggleAlarm()
+                        IdleTimeKeeping --> AlarmMode : A
+                        
+                        note right of IdleTimeKeeping
+                            do / displayTime()
+                        end note
+                        
+                        state Seconds
+                        Seconds --> Seconds : B / time+=1sec
+                        IdleTimeKeeping --> Seconds : C / flashSeconds()
+                        
+                        state Minutes
+                        Minutes --> Minutes : B / time+=1min
+                        Seconds --> Minutes : C / flashMinutes()
+                        
+                        state Hours
+                        Hours --> Hours : B / time+=1hr
+                        Minutes --> Hours : C / flashHours()
+                        Hours --> Seconds: C / flashSeconds()
+                    }
+                    TimeKeepingMode --> TimeKeepingMode : A
+                    
+                    state AlarmMode {
+                        
+                        [*] --> IdleAlarm
+                        state IdleAlarm
+                        IdleAlarm --> CountdownMode : A
+                        
+                        note right of IdleAlarm
+                            entry / displayAlarmTime()
+                        end note
+                        
+                        state Minutes
+                        IdleAlarm --> Minutes : C / flashMinutes()
+                        Minutes --> Minutes : B / alarmTime+=1min
+                        
+                        state Hours
+                        Minutes --> Hours : C / flashHours()
+                        Hours --> Hours : B / alarmTime+=1hr
+                        Hours --> Minutes : C / flashMinutes()
+                        
+                    }
+                    
+                    AlarmMode --> TimeKeepingMode : A
+                    
+                    state CountdownMode {
+                        
+                        [*] --> IdleCountdown
+                        state IdleCountdown
+                        IdleCountdown --> Countdown : B [cdTime > 0h00m00s] / targetTime=time+cdTime
+                        
+                        note right of IdleCountdown
+                            entry / displayCdTime()
+                        end note
+                        
+                        state Seconds
+                        IdleCountdown --> Seconds : C / flashSeconds()
+                        Seconds --> Seconds : B / cdTime+=1sec
+                        
+                        state Minutes
+                        Seconds --> Minutes : C / flashMinutes()
+                        Minutes --> Minutes : B / cdTime+=1min
+                        
+                        state Hours
+                        Minutes --> Hours : C / flashHours()
+                        Hours --> Hours : B / cdTime+=1hr
+                        Hours --> Minutes : C / flashMinutes()
+                    }
+                    CountdownMode --> CountdownMode : A
+
+                    state Countdown
+                    Countdown --> IdleCountdown : B / cdTime=targetTime-time
+                    Countdown --> CountdownReached : [targetTime == time] / flash()
+                    
+                    note right of Countdown
+                        do / displayCountdown()
+                    end note
+                    
+                    
+                    state CountdownReached
+                    CountdownReached --> CountdownMode : anyButton
+                    
+                    note right of CountdownReached
+                        do / flashZeroAndBeep5Sec()
+                    end note
+
+                    
+                    state H
+                }
+                
+                state AlarmOn
+                AlarmOff --> AlarmOn : [alarm && alarmTime == time] / saveDisplay(), flash()
+                AlarmOn --> AlarmOff : anyButton
+                
+                note right of AlarmOn
+                    do / flashAlarmTimeAndBeep5Sec()
+                    exit / restoreDisplay()
+                end note
+            }
+        }

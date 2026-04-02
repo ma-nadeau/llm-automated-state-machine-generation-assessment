@@ -1,0 +1,81 @@
+stateDiagram-v2
+        state Scheduled
+        [*] --> Scheduled
+
+        Scheduled --> Active : atBeginningStopDuration / p0n and setCs
+
+        state Arrived
+
+        state Active {
+            region TrainControl {
+                state Emergency
+                [*] --> TrainMovement
+                TrainMovement --> Emergency : emergency / estop
+                Emergency --> H : clear
+                
+                state TrainMovement {
+                    state AtStation
+                    [*] --> AtStation
+                    AtStation --> StopNotRequired : after stopDuration [!stopRequired()]
+                    AtStation --> Arrived : after stopDuration [isLastStop()] / pOff
+                    
+                    note right of AtStation
+                        entry / openDoors()
+                        exit / closeDoors()
+                    end note
+
+                    state StopNotRequired
+                    StopNotRequired --> StopNotRequired : enteringSegment [isStationSegment() && !stopRequired()]
+                    StopNotRequired --> StopNotRequired : enteringSegment [isRegularSegment()]
+                    StopNotRequired --> StopNotRequired : enteringSegment [isTrafficLightSegment() && !isRed()]
+                    
+                    note right of StopNotRequired
+                        entry / setSpeed
+                    end note
+                    
+                    state ApproachingStation
+                    StopNotRequired --> ApproachingStation : enteringSegment [isStationSegment() && stopRequired()]
+                    ApproachingStation --> AtStation : stopped
+                    
+                    state ApproachingRedLight
+                    StopNotRequired --> ApproachingRedLight : enteringSegment [isTrafficLightSegment() && isRed()]
+                    
+                    state AtRedTrafficLight
+                    ApproachingRedLight --> AtRedTrafficLight : stopped
+                    AtRedTrafficLight --> StopNotRequired : green
+                    
+                    state H
+                }
+
+                TrainMovement --> Emergency : emergency / estop
+
+                state Emergency
+                Emergency --> TrainMovement : clear
+                    
+            }
+
+            region SDS {
+                state SDSActive
+                [*] --> SDSActive
+
+                SDSActive --> SDSActive : after1sec [hasSegmentChanged()] / setCs and enteringSegment()
+                SDSActive --> SDSActive : after1sec [!hasSegmentChanged()]
+            }
+            region MDS {
+                state Stopped
+                state Moving
+                [*] --> Stopped
+
+                Stopped --> Stopped : after1sec [speed == 0]
+                Stopped --> Moving : after1sec [speed > 0]
+                Moving --> Moving : after1sec [speed > 0]
+                Moving --> Stopped : after1sec [speed == 0] / stopped()
+            }
+            region ODS {
+                state ODSActive
+                [*] --> ODSActive
+
+                ODSActive --> ODSActive : after1sec [!obstacleDetected()]
+                ODSActive --> ODSActive : after1sec [obstacleDetected()] / emergency()
+            }
+        }

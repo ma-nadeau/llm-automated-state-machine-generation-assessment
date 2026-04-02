@@ -1,0 +1,73 @@
+stateDiagram-v2
+
+    state SpaManager {
+        region Jacuzzi {
+
+            State JacuzziOff
+
+            [*] --> JacuzziOff
+
+            JacuzziOff --> JacuzziOn : on
+
+            state JacuzziOn {
+
+                State Level1
+
+                [*] --> Level1
+
+                State Level2
+                State Level3
+
+                Level1 --> Level2 : up
+                Level2 --> Level3 : up
+                Level2 --> Level1 : down
+                Level3 --> Level2 : down
+                State H
+            }
+
+            JacuzziOn --> H : setPattern(PatternType type)
+
+            JacuzziOn --> JacuzziOff : off
+
+            State Paused
+
+            JacuzziOn --> Paused : pause
+            Paused --> H : after2min
+            Paused --> JacuzziOff : off
+
+        }
+        region Sauna {
+            State SaunaOff
+            [*] --> SaunaOff
+
+            SaunaOff --> SaunaOn : on
+
+            state SaunaOn {
+                region Heater {
+                    State Heat
+                    [*] --> Heat
+
+                    State Idle
+
+                    Heat --> Idle : [temp>=90]
+                    Idle --> Heat : [temp < 85]
+                }
+                region Fan {
+                    State FanOff
+                    [*] --> FanOff
+
+                    State FanOn
+                    FanOff --> FanOn : [humidity > 0.40 && exceedTime>3]
+                    FanOn --> FanOff : after5min
+                }
+                region Water {
+                    State WaterIdle
+                    [*] --> WaterIdle
+
+                    WaterIdle --> WaterIdle : disperse [humidity<0.04 && !Fan.On && timeSinceLast>15]
+                }
+            }
+
+            SaunaOn --> SaunaOff : off
+        }
+    }

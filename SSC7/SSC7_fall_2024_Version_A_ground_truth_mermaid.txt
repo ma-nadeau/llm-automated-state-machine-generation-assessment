@@ -1,0 +1,56 @@
+stateDiagram-v2
+        
+        state TimeoutCountdown
+        
+        note right of TimeoutCountdown
+            do / countFrom60()
+        end note
+        
+        state Override
+        Override --> Override : codeEntered [!codeCorrect()] / error()
+        
+        note right of Override
+            entry / lightOn()
+            exit / lightOff()
+        end note
+        
+        state PayRequested
+        
+    
+        [*] --> Active
+        
+        state Active {
+            state Ready
+            [*] --> Ready
+            Ready --> Ready : scannedNr [!existNr()] / error()
+            Ready --> Ready : productCodeEntered [!existsCode()] / error()
+            Ready --> PayRequested : pay [billHasItem()] / sendPaymentRequest()
+            PayRequested --> Ready : fail / error()
+            PayRequested --> Ready : cancel
+            PayRequested --> Ready : success / printBill(), readyForNextCustomer()
+            Ready --> Override : cancelCheckout / setTypeEverything()
+            Ready --> Override : removeItem [billHasItem()] / setTypeItem()
+            Override --> Ready : codeEntered [codeCorrect() && isTypeItem()] / clearItem()
+            Override --> Ready : codeEntered [codeCorrect() && isTypeEverything()] / clearEverything()
+            
+            state H
+            TimeoutCountdown --> H : continue
+            
+            state WeighItem
+            Ready --> WeighItem : productCodeEntered [existCode()]
+            WeighItem --> Ready : cancel
+            
+            state CheckWeight
+            WeighItem --> CheckWeight : weightedItem / addWeightedItem()
+            Ready --> CheckWeight : scannedNr [existsNr()] / addItem()
+            CheckWeight --> Ready : secWeightedItem [weightMatched()]
+            CheckWeight --> Override : cancelCheckout / setTypeEverything()
+            CheckWeight --> Override : secWeightedItem [!weightMatched()] / setTypeItem()
+            
+            state WeighBag
+            Ready --> WeighBag : broughtOwnBag
+            WeighBag --> Ready : secWeighedItem / addBag()
+            WeighBag --> Ready : cancel
+        }
+        Active --> TimeoutCountdown : timeoutWarning
+        TimeoutCountdown --> Active : / clearEverything(), readyForNextCustomer()
