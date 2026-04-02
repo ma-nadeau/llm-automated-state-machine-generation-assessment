@@ -13,6 +13,8 @@ The repositories used to generate these results are:
 ```
 llm-automated-state-machine-design-eval/
 ├── [Project Name]/
+│   ├── [project_name]_ground_truth_mermaid.txt       # Ground truth state machine in Mermaid syntax
+│   ├── [project_name]_ground_truth_mermaid_compiled.png  # Rendered PNG of the ground truth diagram
 │   └── Grading/
 │       ├── 1 stage/           # One stage evaluation results
 │       │   └── [Date]/
@@ -65,7 +67,19 @@ llm-automated-state-machine-design-eval/
 **Content:** Spreadsheet where elements from the sample solution are broken down into their atomic components, along with inter-rater calculations (Cohen’s kappa and weighted Cohen’s kappa) and evaluation metrics such as F1 score, precision, and recall  
 
 **Usage:** Defines the evaluation framework and metrics used across all evaluation runs  
+#### `[project_name]_ground_truth_mermaid.txt`
+**Purpose:** Ground truth state machine represented in Mermaid syntax, manually authored from the official sample solution
 
+**Content:** Complete Mermaid `stateDiagram-v2` code capturing all states, transitions, guards, actions, composite states, and history states from the reference solution
+
+**Usage:** Provided directly to the LLM grader as input (3) during automatic grading to give it an unambiguous, machine-readable representation of the expected state machine
+
+#### `[project_name]_ground_truth_mermaid_compiled.png`
+**Purpose:** Rendered visualization of the ground truth Mermaid diagram
+
+**Content:** PNG image produced by compiling `[project_name]_ground_truth_mermaid.txt` with the project's Mermaid parser tool
+
+**Usage:** Allows quick visual inspection of the ground truth without a Mermaid renderer; useful for cross-checking that the Mermaid source parses correctly  
 ### Stage Folders
 
 #### `1 stage/` - One Stage Evaluation
@@ -220,3 +234,5 @@ The grading results are classified using the following categories:
 - `output_single_prompt.png` - Generated state diagram from one stage (single prompt) - PNG visualization
 - `output_two_stage_prompt.txt` - Generated state diagram from two stage (prompt with refinement) - Mermaid code
 - `output_two_stage_prompt.png` - Generated state diagram from two stage (prompt with refinement) - PNG visualization
+- `[project_name]_ground_truth_mermaid.txt` - Ground truth state machine in Mermaid syntax (at project root level)
+- `[project_name]_ground_truth_mermaid_compiled.png` - Rendered PNG of the ground truth Mermaid diagram (at project root level)
