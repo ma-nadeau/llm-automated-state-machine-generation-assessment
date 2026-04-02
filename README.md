@@ -13,6 +13,9 @@ The repositories used to generate these results are:
 ```
 llm-automated-state-machine-design-eval/
 ├── [Project Name]/
+│   ├── [Project Name] - Description.pdf              # Problem description fed to the LLM
+│   ├── [Project Name] - Sample Solution.pdf          # Official reference solution
+│   ├── [Project Name] Evaluation - Template.xlsx     # Grading rubric and evaluation template
 │   ├── [project_name]_ground_truth_mermaid.txt       # Ground truth state machine in Mermaid syntax
 │   ├── [project_name]_ground_truth_mermaid_compiled.png  # Rendered PNG of the ground truth diagram
 │   └── Grading/
