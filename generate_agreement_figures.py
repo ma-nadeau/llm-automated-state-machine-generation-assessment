@@ -426,7 +426,9 @@ def main() -> None:
     print("=" * 60)
     df_all = pd.concat(all_frames, ignore_index=True)
     global_cm_dir = BASE_DIR / "global_analysis" / "confusion_matrices"
-    generate_confusion_outputs(df_all, global_cm_dir, title_prefix="All Examples")
+    generate_confusion_outputs(
+        df_all, global_cm_dir, title_prefix="All Examples", file_prefix="all_examples"
+    )
 
     print("\nDone.")
 

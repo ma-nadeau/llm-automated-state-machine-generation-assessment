@@ -17,15 +17,15 @@ Evaluations/
 ├── figures/                               # Reserved for additional top-level figures
 ├── global_analysis/
 │   └── confusion_matrices/                # Aggregated confusion matrices across all files
-│       ├── confusion_matrices.png         # Combined 2×4 grid (all scopes)
-│       ├── global.png
-│       ├── state.png
-│       ├── transition.png
-│       ├── composite_state.png
-│       ├── guard.png
-│       ├── action.png
-│       ├── history_state.png
-│       └── region.png
+│       ├── all_examples_confusion_matrices.png  # Combined 2×4 grid (all scopes)
+│       ├── all_examples_global.png
+│       ├── all_examples_state.png
+│       ├── all_examples_transition.png
+│       ├── all_examples_composite_state.png
+│       ├── all_examples_guard.png
+│       ├── all_examples_action.png
+│       ├── all_examples_history_state.png
+│       └── all_examples_region.png
 └── [Project Name]/
     ├── [Project Name] - Description.pdf              # Problem description fed to the LLM
     ├── [Project Name] - Sample Solution.pdf          # Official reference solution
@@ -144,7 +144,7 @@ The number of examples is also reflected in the file naming convention (e.g., `_
 Where `{file_stem}` mirrors the xlsx filename (without the `.xlsx` extension), e.g.:
 `Printer_Grading_2-stage_2026-03-04_3-examples_CombinedHumanGradingAndLLMGrading_confusion_matrices.png`
 
-**Aggregated outputs** — written into `global_analysis/confusion_matrices/` (same 9 files, but pooling all evaluation runs together).
+**Aggregated outputs** — written into `global_analysis/confusion_matrices/` (same 9 files prefixed with `all_examples_`, pooling all evaluation runs together).
 
 **Usage:**
 ```bash
@@ -345,5 +345,5 @@ The grading results are classified using the following categories:
 - `[project_name]_ground_truth_mermaid_compiled.png` - Rendered PNG of the ground truth Mermaid diagram (at project root level)
 - `confusion_matrices/{file_stem}_confusion_matrices.png` - Combined 2×4 confusion matrix grid for a single evaluation run
 - `confusion_matrices/{file_stem}_global.png`, `{file_stem}_state.png`, … `{file_stem}_region.png` - Individual scope confusion matrices for a single evaluation run
-- `global_analysis/confusion_matrices/confusion_matrices.png` - Combined 2×4 confusion matrix grid aggregated across all evaluation runs
-- `global_analysis/confusion_matrices/global.png`, `state.png`, … `region.png` - Individual scope confusion matrices aggregated across all evaluation runs
+- `global_analysis/confusion_matrices/all_examples_confusion_matrices.png` - Combined 2×4 confusion matrix grid aggregated across all evaluation runs
+- `global_analysis/confusion_matrices/all_examples_global.png`, `all_examples_state.png`, … `all_examples_region.png` - Individual scope confusion matrices aggregated across all evaluation runs
