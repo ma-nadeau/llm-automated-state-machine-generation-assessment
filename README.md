@@ -11,20 +11,37 @@ The repositories used to generate these results are:
 ## Top-Level Structure
 
 ```
-llm-automated-state-machine-design-eval/
-├── [Project Name]/
-│   ├── [Project Name] - Description.pdf              # Problem description fed to the LLM
-│   ├── [Project Name] - Sample Solution.pdf          # Official reference solution
-│   ├── [Project Name] Evaluation - Template.xlsx     # Grading rubric and evaluation template
-│   ├── [project_name]_ground_truth_mermaid.txt       # Ground truth state machine in Mermaid syntax
-│   ├── [project_name]_ground_truth_mermaid_compiled.png  # Rendered PNG of the ground truth diagram
-│   └── Grading/
-│       ├── 1 stage/           # One stage evaluation results
-│       │   └── [Date]/
-│       └── 2 stage/           # Two stage evaluation results
-│           ├── [Date]/
-│           └── [Date]/
-└── README.md
+Evaluations/
+├── generate_agreement_figures.py          # Script: confusion matrix figures (LLM vs Human)
+├── README.md
+├── figures/                               # Reserved for additional top-level figures
+├── global_analysis/
+│   └── confusion_matrices/                # Aggregated confusion matrices across all files
+│       ├── confusion_matrices.png         # Combined 2×4 grid (all scopes)
+│       ├── global.png
+│       ├── state.png
+│       ├── transition.png
+│       ├── composite_state.png
+│       ├── guard.png
+│       ├── action.png
+│       ├── history_state.png
+│       └── region.png
+└── [Project Name]/
+    ├── [Project Name] - Description.pdf              # Problem description fed to the LLM
+    ├── [Project Name] - Sample Solution.pdf          # Official reference solution
+    ├── [Project Name] Evaluation - Template.xlsx     # Grading rubric and evaluation template
+    ├── [project_name]_ground_truth_mermaid.txt       # Ground truth state machine in Mermaid syntax
+    ├── [project_name]_ground_truth_mermaid_compiled.png  # Rendered PNG of the ground truth diagram
+    └── Grading/
+        ├── 1 stage/           # One stage evaluation results
+        │   └── [Date]/
+        │       ├── confusion_matrices/    # Per-run confusion matrix figures
+        │       └── ...
+        └── 2 stage/           # Two stage evaluation results
+            ├── [Date]/
+            │   ├── confusion_matrices/    # Per-run confusion matrix figures
+            │   └── ...
+            └── [Date]/
 ```
 
 ## Projects
@@ -99,6 +116,66 @@ Each stage contains date-timestamped folders (format: `YYYY-MM-DD`) representing
 
 The number of examples is also reflected in the file naming convention (e.g., `_3-examples_` vs `_6-examples_`). The 1 stage evaluations all used 3 few-shot examples with a max output token limit of 8,000.
 
+---
+
+## Agreement Analysis Script
+
+### `generate_agreement_figures.py`
+
+**Purpose:** Generates row-normalized confusion matrix figures comparing LLM grader scores against human grader scores, both per evaluation run and aggregated across all runs.
+
+**How it works:** The script reads the `Weighted Cohens Kappa` sheet (matched by name, case-insensitively) from every `*CombinedHumanGradingAndLLMGrading.xlsx` file it finds under the `Evaluations/` tree. It builds 3×3 confusion matrices (scores: 0, 0.5, 1) for eight scopes:
+
+| Scope | Description |
+|-------|-------------|
+| Global | All elements combined |
+| State | State elements only |
+| Transition | Transition elements only |
+| Composite State | Composite state elements only |
+| Guard | Guard elements only |
+| Action | Action elements only |
+| History State | History state elements only |
+| Region | Region elements only |
+
+**Per-run outputs** — written into `<date_dir>/confusion_matrices/` next to the xlsx file:
+- `{file_stem}_confusion_matrices.png` — combined 2×4 grid showing all 8 scopes at once
+- `{file_stem}_global.png`, `{file_stem}_state.png`, … `{file_stem}_region.png` — one figure per scope
+
+Where `{file_stem}` mirrors the xlsx filename (without the `.xlsx` extension), e.g.:
+`Printer_Grading_2-stage_2026-03-04_3-examples_CombinedHumanGradingAndLLMGrading_confusion_matrices.png`
+
+**Aggregated outputs** — written into `global_analysis/confusion_matrices/` (same 9 files, but pooling all evaluation runs together).
+
+**Usage:**
+```bash
+# All files (both stages)
+python generate_agreement_figures.py
+
+# Only 2-stage files
+python generate_agreement_figures.py --stage 2
+
+# Only 1-stage files
+python generate_agreement_figures.py --stage 1
+
+# Restrict to a specific date
+python generate_agreement_figures.py --date 2026-03-16
+```
+
+**Additional elements handling:** Rows where the element column is `"additional elements"` carry raw false-positive *counts* (not 0/0.5/1 scores). They are mapped to the confusion matrix as follows:
+
+| Condition | Cell updated |
+|-----------|-------------|
+| `human=0` and `llm=0` (both found no extras) | `[0, 0]` += 1 |
+| `llm > human` (LLM hallucinated extra elements) | `[0, 2]` += `llm − human` |
+| `human > llm` (human found extras the LLM missed) | `[2, 0]` += `human − llm` |
+| Both found extras | `[2, 2]` += `min(human, llm)` |
+
+This mirrors the Excel `COUNTIFS`/`MAX`/`MIN` formulas in the `Weighted Cohens Kappa` sheet.
+
+**Reading the figures:** Each cell shows the row-normalized percentage and raw count. Rows represent the human score; columns represent the LLM score. Diagonal cells (outlined in black) are agreements. The title of each heatmap shows the overall agreement rate and total number of graded elements for that scope.
+
+---
+
 ## Output Files
 
 Each date folder contains the following files:
@@ -119,6 +196,22 @@ Each date folder contains the following files:
 - `grading_results.tsv` — Tab-separated, ideal for data analysis and automated processing
 - `grading_output.txt` — Comma-separated (CSV), easier for text editor viewing and spreadsheet import  
 
+
+### Confusion Matrix Figures
+
+#### `confusion_matrices/` (inside each date folder)
+
+**Purpose:** Per-run visual comparison of LLM grader scores vs human grader scores for that specific evaluation run
+
+**Content:**
+- `{file_stem}_confusion_matrices.png` — Combined 2×4 grid showing row-normalized confusion matrices for all 8 scopes (Global, State, Transition, Composite State, Guard, Action, History State, Region)
+- Individual scope figures: `{file_stem}_global.png`, `{file_stem}_state.png`, `{file_stem}_transition.png`, `{file_stem}_composite_state.png`, `{file_stem}_guard.png`, `{file_stem}_action.png`, `{file_stem}_history_state.png`, `{file_stem}_region.png`
+
+Where `{file_stem}` matches the xlsx filename without the `.xlsx` extension (e.g. `Printer_Grading_2-stage_2026-03-04_3-examples_CombinedHumanGradingAndLLMGrading`)
+
+**Source:** Generated by `generate_agreement_figures.py` from the `*CombinedHumanGradingAndLLMGrading.xlsx` file in the same date folder
+
+---
 
 ### Generated State Machine Files
 
@@ -174,10 +267,19 @@ The grading rubric evaluates multiple criteria across **states, transitions, gua
 
 ### Additional Elements (False Positives)
 
-Additional elements are treated as **false positives**:
+Additional elements are treated as **false positives** in the grading metrics:
 
 - Each incorrect extra element counts as **+1**
 - They **lower precision** and therefore **reduce F1-score**
+
+In the confusion matrices they are mapped by comparing the raw human and LLM false-positive counts per element type:
+
+| Condition | Confusion matrix cell |
+|-----------|----------------------|
+| Both graders found **no** extra elements (`human=0`, `llm=0`) | `[0, 0]` — agreement at score 0 |
+| LLM hallucinated more extras than human (`llm > human`) | `[0, 2]` — LLM over-generates |
+| Human found more extras than LLM (`human > llm`) | `[2, 0]` — human found more FPs |
+| Both found extras | `[2, 2]` += `min(human, llm)` — shared agreement on extras |
 
 > **Note:** A global consistency section (evaluating formatting and naming conventions) was initially included but removed as too subjective. The evaluation now focuses on semantic correctness and functional completeness rather than stylistic conventions.
 
@@ -228,6 +330,8 @@ The grading results are classified using the following categories:
 2. **Track Improvements**: Compare across date folders within the same stage to track improvements over time or different model versions
 3. **Analyze Failures**: Review the Notes column in TSV/CSV files to understand what aspects of state machine generation are failing
 4. **Visualize Diagrams**: Use the `output_*.txt` files in Mermaid viewers to see the generated diagrams
+5. **Assess LLM Grader Reliability**: Open any `confusion_matrices/confusion_matrices.png` to see at a glance how closely the LLM grader agreed with the human grader for that run; use `global_analysis/confusion_matrices/` for the pooled view across all runs
+6. **Regenerate Figures**: Run `python generate_agreement_figures.py` from the `Evaluations/` directory whenever new `*CombinedHumanGradingAndLLMGrading.xlsx` files are added
 
 ## File Naming Convention
 
@@ -239,3 +343,7 @@ The grading results are classified using the following categories:
 - `output_two_stage_prompt.png` - Generated state diagram from two stage (prompt with refinement) - PNG visualization
 - `[project_name]_ground_truth_mermaid.txt` - Ground truth state machine in Mermaid syntax (at project root level)
 - `[project_name]_ground_truth_mermaid_compiled.png` - Rendered PNG of the ground truth Mermaid diagram (at project root level)
+- `confusion_matrices/{file_stem}_confusion_matrices.png` - Combined 2×4 confusion matrix grid for a single evaluation run
+- `confusion_matrices/{file_stem}_global.png`, `{file_stem}_state.png`, … `{file_stem}_region.png` - Individual scope confusion matrices for a single evaluation run
+- `global_analysis/confusion_matrices/confusion_matrices.png` - Combined 2×4 confusion matrix grid aggregated across all evaluation runs
+- `global_analysis/confusion_matrices/global.png`, `state.png`, … `region.png` - Individual scope confusion matrices aggregated across all evaluation runs
