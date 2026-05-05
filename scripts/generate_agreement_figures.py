@@ -455,7 +455,9 @@ def main() -> None:
         y_label = "New Grader Score"
         per_file_cm_subdir = "ConfusionMatrices_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration"
         global_cm_dir = (
-            BASE_DIR / "Global Analysis" / "ConfusionMatrices_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration"
+            BASE_DIR
+            / "Global Analysis"
+            / "ConfusionMatrices_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration"
         )
         global_prefix = "AllExamples_Grading_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration"
     else:  # human-vs-llm
