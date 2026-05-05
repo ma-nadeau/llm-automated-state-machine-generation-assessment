@@ -1,28 +1,28 @@
 #!/usr/bin/env python3
 """
-Create grading-comparison Excel templates from existing CombinedHumanGradingVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration.xlsx.
+Create grading-comparison Excel templates from existing CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx.
 
 Experiment type: keep the generated state machines FIXED (Claude 4.5 Sonnet generation)
 and vary the AUTO-GRADER model (e.g. GPT-5.5, Gemini 3.1 Pro Preview), comparing each new grader
-against the Claude 4.5 Sonnet baseline grader.
+against the CombinedHumanGrading baseline.
 
 Output naming convention:
   {Example}_Grading_2-stage_{date}_{N}-examples_
-    {NewGrader}AutoGradingVSClaude4.5SonnetAutoGrading-Claude4.5SonnetGeneration.xlsx
+    CombinedHumanGradingVs{NewGrader}AutoGrading_Claude4.5SonnetGeneration.xlsx
 
 Changes made inside each new workbook:
   • Ground-truth sheet        – unchanged
-  • Human-grading sheet       – renamed to "{New Grader} Grading";
+  • Human-grading sheet       – renamed to "CombinedHumanGrading";
+                                data preserved (human grading is the baseline)
+                                column C header updated
+  • LLM-grading sheet         – renamed to "{New Grader} Grading";
                                 grade column (C) cleared (placeholder for new grader data);
                                 notes column (D) cleared;
                                 column C header updated
-  • LLM-grading sheet         – renamed to "Claude 4.5 Sonnet Grading";
-                                data preserved (Claude 4.5 Sonnet baseline grader)
-                                column C header updated
-  • Metrics                   – A1 = "Graded by {NewGrader}"
-                                A12 = "Graded by Claude 4.5 Sonnet"
+  • Metrics                   – A1 unchanged (CombinedHumanGrading)
+                                A12 = "Graded by {NewGrader}"
                                 column J: J4='Generation LLM', J5='Claude 4.5 Sonnet',
-                                          J7='Grading LLMs', J8={NewGrader}, J9='Claude 4.5 Sonnet'
+                                          J7='Grading LLMs', J8='CombinedHumanGrading', J9={NewGrader}
   • Inter-rater               – column C/D headers updated
   • Weighted Cohens Kappa     – column C/D headers updated
   • All formula strings       – old sheet-name references replaced with new names
@@ -57,7 +57,7 @@ from openpyxl import load_workbook
 # Configuration
 # ---------------------------------------------------------------------------
 
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).parent.parent
 
 # The generation model that is FIXED across all grading-comparison experiments
 GENERATION_LLM_DISPLAY = "Claude 4.5 Sonnet"  # human-readable
@@ -126,7 +126,7 @@ def _find_source_file(example_dir: Path) -> Optional[Path]:
         / "Grading"
         / "2 stage"
         / "**"
-        / "*CombinedHumanGradingVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration.xlsx"
+        / "*CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx"
     )
     candidates = [
         Path(f)
@@ -137,7 +137,7 @@ def _find_source_file(example_dir: Path) -> Optional[Path]:
 
 
 _FNAME_RE = re.compile(
-    r"^(.+?)_Grading_(\d-stage)_(\d{4}-\d{2}-\d{2})_(\d+-examples)_CombinedHumanGradingVsClaude4\.5SonnetGrading_Claude4\.5SonnetGeneration\.xlsx$"
+    r"^(.+?)_Grading_(\d-stage)_(\d{4}-\d{2}-\d{2})_(\d+-examples)_CombinedHumanGradingVsClaude4\.5SonnetAutoGrading_Claude4\.5SonnetGeneration\.xlsx$"
 )
 
 
@@ -160,8 +160,8 @@ def create_grading_comparison_workbook(
     output_dir: Path,
 ) -> Path | None:
     """
-    Build a new workbook comparing *new_grader* auto-grading against Claude 4.5 Sonnet
-    auto-grading, both applied to the same (fixed) Claude 4.5 Sonnet generation.
+    Build a new workbook comparing CombinedHumanGrading against *new_grader* auto-grading,
+    both applied to the same (fixed) Claude 4.5 Sonnet generation.
 
     Returns the path of the saved workbook, or None on failure.
     """
@@ -195,28 +195,43 @@ def create_grading_comparison_workbook(
     # ------------------------------------------------------------------
     # 2. Determine new sheet names (≤31 chars for Excel)
     # ------------------------------------------------------------------
+    # Human grading is kept as the baseline; LLM sheet becomes new grader placeholder
     # e.g. "GPT-5.5 Grading" (15 chars), "Gemini 3.1 Pro Preview Grading" (30 chars)
+    new_human_sheet = "CombinedHumanGrading"  # 20 chars — the fixed human baseline
     new_grader_sheet = f"{new_grader} Grading"
-    new_baseline_sheet = "Claude 4.5 Sonnet Grading"  # 25 chars — the fixed baseline
 
     assert len(new_grader_sheet) <= 31, f"Sheet name too long: {new_grader_sheet!r}"
 
     # ------------------------------------------------------------------
     # 3. Update all formula references BEFORE renaming
     # ------------------------------------------------------------------
-    _update_all_formulas(wb, old_human, new_grader_sheet)
-    _update_all_formulas(wb, old_llm, new_baseline_sheet)
+    _update_all_formulas(wb, old_human, new_human_sheet)
+    _update_all_formulas(wb, old_llm, new_grader_sheet)
 
     # ------------------------------------------------------------------
     # 4. Rename the two grading sheets
     # ------------------------------------------------------------------
-    wb[old_human].title = new_grader_sheet
-    wb[old_llm].title = new_baseline_sheet
+    wb[old_human].title = new_human_sheet
+    wb[old_llm].title = new_grader_sheet
 
     # ------------------------------------------------------------------
-    # 5. Prepare the new grader sheet (template — grade/notes cleared)
-    #    Source: the old human-grading sheet keeps the element list intact,
-    #    which matches the LLM sheet row-for-row. Only grades are cleared.
+    # 5. Update column C header in the human baseline sheet
+    # ------------------------------------------------------------------
+    ws_human = wb[new_human_sheet]
+    human_header = next(ws_human.iter_rows(min_row=1, max_row=1))
+    for cell in human_header:
+        if isinstance(cell.value, str) and cell.value.lower() in (
+            "human grading",
+            "human",
+            "consolidated human grading",
+            "human grader",
+        ):
+            cell.value = "CombinedHumanGrading"
+
+    # ------------------------------------------------------------------
+    # 6. Prepare the new grader sheet (template — grade/notes cleared)
+    #    Source: the old LLM-grading sheet keeps the element list intact,
+    #    which matches the human sheet row-for-row. Only grades are cleared.
     # ------------------------------------------------------------------
     ws_new = wb[new_grader_sheet]
 
@@ -224,14 +239,14 @@ def create_grading_comparison_workbook(
     header_row = next(ws_new.iter_rows(min_row=1, max_row=1))
     for cell in header_row:
         if isinstance(cell.value, str) and cell.value.lower() in (
-            "human grading",
-            "human",
-            "consolidated human grading",
-            "human grader",
+            "llm",
+            "llm grading",
+            "claude 4.5 sonnet grading",
+            "claude 4.5 sonnet",
         ):
             cell.value = f"{new_grader} Grading"
 
-    # Clear grade (col C) and notes (col D) — placeholder for future grader output
+    # Clear grade (col C) and notes (col D) — placeholder for new grader output
     for row in ws_new.iter_rows(min_row=2, min_col=3, max_col=3):
         for cell in row:
             cell.value = None
@@ -240,32 +255,22 @@ def create_grading_comparison_workbook(
             cell.value = None
 
     # ------------------------------------------------------------------
-    # 6. Update column C header in the baseline (Claude 4.5 Sonnet) sheet
-    # ------------------------------------------------------------------
-    ws_baseline = wb[new_baseline_sheet]
-    baseline_header = next(ws_baseline.iter_rows(min_row=1, max_row=1))
-    for cell in baseline_header:
-        if isinstance(cell.value, str) and cell.value.lower() in ("llm", "llm grading"):
-            cell.value = "Claude 4.5 Sonnet Grading"
-
-    # ------------------------------------------------------------------
     # 7. Metrics sheet: table titles + column J metadata
-    #    A1  = "Graded by {new_grader}"
-    #    A12 = "Graded by Claude 4.5 Sonnet"
+    #    A1  unchanged (CombinedHumanGrading)
+    #    A12 = "Graded by {new_grader}"
     #    J4='Generation LLM', J5='Claude 4.5 Sonnet'
-    #    J7='Grading LLMs',   J8={new_grader}, J9='Claude 4.5 Sonnet'
+    #    J7='Grading LLMs',   J8='CombinedHumanGrading', J9={new_grader}
     # ------------------------------------------------------------------
     if roles["metrics"]:
         ws_metrics = wb[roles["metrics"]]
-        ws_metrics["A1"] = f"Graded by {new_grader}"
-        ws_metrics["A12"] = f"Graded by {GENERATION_LLM_DISPLAY}"
+        ws_metrics["A12"] = f"Graded by {new_grader}"
         for row_idx in range(4, 12):
             ws_metrics.cell(row=row_idx, column=10).value = None
         ws_metrics.cell(row=4, column=10).value = "Generation LLM"
         ws_metrics.cell(row=5, column=10).value = GENERATION_LLM_DISPLAY
         ws_metrics.cell(row=7, column=10).value = "Grading LLMs"
-        ws_metrics.cell(row=8, column=10).value = new_grader
-        ws_metrics.cell(row=9, column=10).value = GENERATION_LLM_DISPLAY
+        ws_metrics.cell(row=8, column=10).value = "CombinedHumanGrading"
+        ws_metrics.cell(row=9, column=10).value = new_grader
 
     # ------------------------------------------------------------------
     # 8. Inter-rater and Weighted Cohens Kappa: update column headers
@@ -279,9 +284,9 @@ def create_grading_comparison_workbook(
         for cell in hdr:
             if isinstance(cell.value, str):
                 if cell.value.lower() == "human":
-                    cell.value = new_grader
+                    cell.value = "CombinedHumanGrading"
                 elif cell.value.lower() == "llm":
-                    cell.value = GENERATION_LLM_DISPLAY
+                    cell.value = new_grader
 
     # ------------------------------------------------------------------
     # 9. Construct output file name
@@ -291,8 +296,8 @@ def create_grading_comparison_workbook(
     )  # "GPT-5.5" → "GPT-5.5", "Gemini 3.1 Pro Preview" → "Gemini3.1ProPreview"
     out_name = (
         f"{example_prefix}_Grading_{stage}_{output_date}"
-        f"_{n_examples}_{grader_safe}AutoGradingVSClaude4.5SonnetAutoGrading"
-        f"-Claude4.5SonnetGeneration.xlsx"
+        f"_{n_examples}_CombinedHumanGradingVs{grader_safe}AutoGrading"
+        f"_{GENERATION_LLM_FILE}Generation.xlsx"
     )
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -339,7 +344,7 @@ def main() -> None:
         return
 
     print(f"Found {len(example_dirs)} example(s): {[d.name for d in example_dirs]}")
-    print(f"Graders to compare against Claude 4.5 Sonnet: {args.graders}")
+    print(f"Graders to compare against CombinedHumanGrading: {args.graders}")
     print(f"Output date: {args.date}")
     print(f"Output folder: date-level folder (alongside other xlsx files)\n")
 
@@ -348,14 +353,14 @@ def main() -> None:
         if source is None:
             print(
                 f"[SKIP] {example_dir.name}: "
-                "no 2-stage CombinedHumanGradingVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration.xlsx found"
+                "no 2-stage CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx found"
             )
             continue
 
         print(f"[{example_dir.name}]  source: {source.name}")
         output_dir = (
             source.parent
-        )  # same level as CombinedHumanGradingVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration.xlsx
+        )  # same level as CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx
 
         for grader in args.graders:
             out = create_grading_comparison_workbook(

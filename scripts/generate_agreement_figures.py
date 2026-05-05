@@ -6,15 +6,15 @@ Two modes are supported (--mode flag):
 
   human-vs-llm  (default)
     Compares Human grader scores vs Claude 4.5 Sonnet LLM auto-grader scores.
-    Source files : *CombinedHumanGradingVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration.xlsx  (at date-folder level)
-    Per-file output : <date_dir>/ConfusionMatrices_HumanVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration/
-    Aggregated output : global_analysis/ConfusionMatrices_HumanVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration/
+    Source files : *CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx  (at date-folder level)
+    Per-file output : <date_dir>/ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/
+    Aggregated output : Global Analysis/ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/
 
   grader-vs-grader
     Compares a new LLM grader against the Claude 4.5 Sonnet baseline grader.
     Source files : *AutoGradingVSClaude4.5SonnetAutoGrading.xlsx  (at date-folder level)
-    Per-file output : <date_dir>/ConfusionMatrices_HumanVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration/
-    Aggregated output : global_analysis/grading_comparison_confusion_matrices/
+    Per-file output : <date_dir>/ConfusionMatrices_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/
+    Aggregated output : Global Analysis/ConfusionMatrices_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/
 
 Usage:
   python generate_agreement_figures.py                         # human-vs-llm, all files
@@ -54,7 +54,7 @@ SCOPES: list[tuple[str, str, str | None]] = [
     ("Region", "region", "Region"),
 ]
 
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).parent.parent
 
 # ---------------------------------------------------------------------------
 # Data loading
@@ -65,7 +65,7 @@ def find_xlsx_files(
     base_dir: Path,
     stage_filter: str | None = None,
     date_filter: str | None = None,
-    file_pattern: str = "*CombinedHumanGradingVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration.xlsx",
+    file_pattern: str = "*CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx",
 ) -> list[Path]:
     """Return xlsx files matching *file_pattern* under base_dir (no temp ~$ files)."""
     pattern = str(base_dir / "**" / file_pattern)
@@ -428,9 +428,9 @@ def main() -> None:
         choices=["human-vs-llm", "grader-vs-grader"],
         default="human-vs-llm",
         help=(
-            "human-vs-llm (default): Human grader vs LLM auto-grader "
-            "from *CombinedHumanGradingVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration.xlsx files. "
-            "grader-vs-grader: Two LLM auto-graders on the same generation, "
+            "human-vs-llm (default): Human grader vs Claude 4.5 Sonnet LLM auto-grader "
+            "from *CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx files. "
+            "grader-vs-grader: New LLM auto-grader vs Claude 4.5 Sonnet baseline grader (fixed Claude 4.5 Sonnet generation), "
             "from *AutoGradingVSClaude4.5SonnetAutoGrading.xlsx files (at date-folder level)."
         ),
     )
@@ -453,21 +453,23 @@ def main() -> None:
         comparison_title = "New Grader vs Claude 4.5 Sonnet Grader"
         x_label = "Claude 4.5 Sonnet Score"
         y_label = "New Grader Score"
+        per_file_cm_subdir = "ConfusionMatrices_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration"
         global_cm_dir = (
-            BASE_DIR / "global_analysis" / "grading_comparison_confusion_matrices"
+            BASE_DIR / "Global Analysis" / "ConfusionMatrices_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration"
         )
-        global_prefix = "all_examples_grading"
+        global_prefix = "AllExamples_Grading_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration"
     else:  # human-vs-llm
-        file_pattern = "*CombinedHumanGradingVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration.xlsx"
+        file_pattern = "*CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx"
         comparison_title = "LLM vs Human Grader"
         x_label = "LLM Score"
         y_label = "Human Score"
+        per_file_cm_subdir = "ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration"
         global_cm_dir = (
             BASE_DIR
-            / "global_analysis"
-            / "ConfusionMatrices_HumanVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration"
+            / "Global Analysis"
+            / "ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration"
         )
-        global_prefix = "AllExamples_CombinedHumanGradingVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration"
+        global_prefix = "AllExamples_Grading_CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration"
 
     print(
         f"Mode: {args.mode} | "
@@ -486,7 +488,7 @@ def main() -> None:
         return
 
     # ------------------------------------------------------------------
-    # 1. Per-file: output into <date_dir>/ConfusionMatrices_HumanVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration/
+    # 1. Per-file: output into <date_dir>/ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/
     #    (file names follow the xlsx stem, which now includes the full grading type)
     # ------------------------------------------------------------------
     print("=" * 60)
@@ -499,10 +501,7 @@ def main() -> None:
             print(f"  [SKIP] {xlsx_path.name}")
             continue
         all_frames.append(df)
-        cm_dir = (
-            xlsx_path.parent
-            / "ConfusionMatrices_HumanVsClaude4.5SonnetGrading_Claude4.5SonnetGeneration"
-        )
+        cm_dir = xlsx_path.parent / per_file_cm_subdir
         label = label_from_path(xlsx_path)
         generate_confusion_outputs(
             df,

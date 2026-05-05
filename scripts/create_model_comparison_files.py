@@ -11,7 +11,7 @@ See create_grading_comparison_files.py for the inverse experiment (generation fi
 
 Output naming convention:
   {Example}_Grading_2-stage_{date}_{N}-examples_
-    {NewModel}GenerationVSClaude4.5SonnetGeneration-Claude4.5SonnetAutoGrading.xlsx
+    {NewModel}GenerationVSClaude4.5SonnetGeneration_Claude4.5SonnetAutoGrading.xlsx
 
 Output path: {date_dir}/{filename}.xlsx  (same level as the other xlsx files)
 
@@ -320,11 +320,11 @@ def create_comparison_workbook(
     # ------------------------------------------------------------------
     # 9. Construct output file name following the spec
     # ------------------------------------------------------------------
-    # Spec: {prefix}GenerationVSClaude4.5SonnetGeneration-Claude4.5SonnetAutoGrading
+    # Spec: {prefix}GenerationVSClaude4.5SonnetGeneration_Claude4.5SonnetAutoGrading
     model_safe = new_model.replace(" ", "")  # e.g. "GPT-5.5", "Gemini3.1ProPreview"
     comparison_suffix = (
         f"{model_safe}GenerationVSClaude4.5SonnetGeneration"
-        f"-Claude4.5SonnetAutoGrading"
+        f"_Claude4.5SonnetAutoGrading"
     )
     out_name = (
         f"{example_prefix}_Grading_{stage}_{output_date}"
