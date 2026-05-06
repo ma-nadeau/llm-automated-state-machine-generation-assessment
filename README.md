@@ -18,13 +18,13 @@ The repositories used to generate these results are:
 
 ```
 Evaluations/
-├── scripts/
-│   ├── generate_agreement_figures.py      # Script: confusion matrix figures (--mode flag)
-│   ├── create_model_comparison_files.py   # Script: create generation comparison templates
-│   └── create_grading_comparison_files.py # Script: create grading comparison templates
+├── _scripts/
+│   └── generate_agreement_figures.py      # Script: confusion matrix figures (--mode flag)
+├── _Figures/
+│   └── Confusion Matrices/
+│       └── ConfusionMatrices_CombinedHumanVs<AutoGradingLLM>_<GenerationLLM>/   # Aggregated + per-file human-vs-llm matrices
+├── Grading Summary.xlsx
 ├── README.md
-├── Global Analysis/
-│   └── ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/   # Aggregated human-vs-llm confusion matrices
 └── [Example Name]/
     ├── [Example Name] - Description.pdf
     ├── [Example Name] - Sample Solution.pdf
@@ -33,28 +33,31 @@ Evaluations/
     ├── [example_name]_ground_truth_mermaid_compiled.png
     └── Grading/
         ├── 1 stage/
-        │   └── [Date]/
-        │       ├── [Example]_..._CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx
-        │       ├── [Example]_..._HumanGrading_Claude4.5SonnetGeneration.xlsx
-        │       ├── ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/   ← human-vs-llm figures
+        │   └── 3-examples/          ← earlier run (3 few-shot examples, 8k token limit)
+        │       ├── [Example]_..._CombinedHumanGradingVs<AutoGrader>AutoGrading_<GenerationLLM>Generation.xlsx
+        │       ├── [Example]_..._HumanGrading_<GenerationLLM>Generation.xlsx
         │       └── Generated Files/             ← raw generation & grading outputs
-        │           ├── grading_output__generated-by-claude-4.5-sonnet__graded-by-claude-4.5-sonnet.txt
-        │           ├── grading_results__generated-by-claude-4.5-sonnet__graded-by-claude-4.5-sonnet.tsv
-        │           ├── output_single_prompt__generated-by-claude-4.5-sonnet.txt
-        │           ├── output_single_prompt__generated-by-claude-4.5-sonnet.png
+        │           ├── grading_output__generated-by-<generation-llm>__graded-by-<grading-llm>.txt
+        │           ├── grading_results__generated-by-<generation-llm>__graded-by-<grading-llm>.tsv
+        │           ├── output_single_prompt__generated-by-<generation-llm>.txt
+        │           ├── output_single_prompt__generated-by-<generation-llm>.png
         │           └── ...
         └── 2 stage/
-            └── [Date]/
-                ├── [Example]_..._CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx
-                ├── [Example]_..._HumanGrading_Claude4.5SonnetGeneration.xlsx
-                ├── [Example]_..._{Model}GenerationVSClaude4.5SonnetGeneration_Claude4.5SonnetAutoGrading.xlsx  ← generation comparison
-                ├── [Example]_..._{Grader}AutoGradingVSClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx  ← grading comparison
-                ├── ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/   ← human-vs-llm figures
+            ├── 3-examples/           ← earlier run (3 few-shot examples, 8k token limit)
+            │   ├── [Example]_..._CombinedHumanGradingVs<AutoGrader>AutoGrading_<GenerationLLM>Generation.xlsx
+            │   ├── [Example]_..._HumanGrading_<GenerationLLM>Generation.xlsx
+            │   └── Generated Files/
+            │       └── ...
+            └── 6-examples/           ← latest run (6 few-shot examples, 15k token limit)
+                ├── [Example]_..._CombinedHumanGradingVs<AutoGrader>AutoGrading_<GenerationLLM>Generation.xlsx
+                ├── [Example]_..._HumanGrading_<GenerationLLM>Generation.xlsx
+                ├── [Example]_..._CombinedHumanGradingVs<NewGrader>AutoGrading_<GenerationLLM>Generation.xlsx  ← grading comparison (human vs new grader)
+                ├── [Example]_..._<NewModel>GenerationVS<BaselineModel>Generation_<AutoGrader>AutoGrading.xlsx  ← generation comparison
                 └── Generated Files/             ← raw generation & grading outputs
-                    ├── grading_output__generated-by-claude-4.5-sonnet__graded-by-claude-4.5-sonnet.txt
-                    ├── grading_results__generated-by-claude-4.5-sonnet__graded-by-claude-4.5-sonnet.tsv
-                    ├── output_two_stage_prompt__generated-by-claude-4.5-sonnet.txt
-                    ├── output_two_stage_prompt__generated-by-claude-4.5-sonnet.png
+                    ├── grading_output__generated-by-<generation-llm>__graded-by-<grading-llm>.txt
+                    ├── grading_results__generated-by-<generation-llm>__graded-by-<grading-llm>.tsv
+                    ├── output_two_stage_prompt__generated-by-<generation-llm>.txt
+                    ├── output_two_stage_prompt__generated-by-<generation-llm>.png
                     └── ...
 ```
 
@@ -70,7 +73,7 @@ Evaluations/
 6. **Thermomix TM6** - State machine for a cooking device
 7. **Train Automation System** - State machine for train automation
 
-### Validation Set Examples (2 stage only)
+### Validation Set Examples (2 stage with 6-examples only)
 
 8. **SSC7** - State machine for a Self-Service Checkout
 9. **Wumple** - State machine for a watch called W-UMPLE
@@ -122,35 +125,41 @@ Contains evaluation results where the model was prompted with a single prompt wi
 #### `2 stage/` - Two Stage Evaluation
 Contains evaluation results where the model was prompted with an initial prompt, then a second refinement prompt to improve generation quality.
 
-### Date Folders
-Each stage contains date-timestamped folders (format: `YYYY-MM-DD`) representing when the evaluation was run. Where multiple date folders exist within the same stage, they represent runs using a different number of few-shot examples in the prompt:
+### Example Count Folders
+Each stage sub-directory is named after the number of few-shot examples that
+were supplied to the LLM during that evaluation run:
 
-- **Earlier dates** (e.g., `2026-03-03`, `2026-03-04`) used **3 few-shot examples** with a **max output token limit of 8,000**
-- **Later dates** (e.g., `2026-03-12`, `2026-03-16`) used **6 few-shot examples** with a **max output token limit of 15,000**
+| Folder name   | Stage(s)            | Few-shot examples | Max output tokens |
+|---------------|---------------------|-------------------|-------------------|
+| `3-examples`  | 1 stage and 2 stage | 3                 | 8,000             |
+| `6-examples`  | 2 stage only        | 6                 | 15,000            |
 
-The number of examples is also reflected in the file naming convention (e.g., `_3-examples_` vs `_6-examples_`). The 1 stage evaluations all used 3 few-shot examples with a max output token limit of 8,000.
+**`3-examples`** — the prompt included 3 worked examples (few-shot demonstrations)
+of correctly formatted Mermaid state diagrams.  All 1-stage evaluations and the
+earlier of the two 2-stage evaluation runs used this configuration.
 
+**`6-examples`** — the prompt was extended to include 6 worked examples, giving the
+model more in-context guidance.  This is always the *latest* 2-stage run.  For the
+validation-set examples (SSC7 and Wumple), which were evaluated only once, that
+single 2-stage folder is named `6-examples`.
+
+The example count is also embedded in each file name (e.g., `_3-examples_` vs
+`_6-examples_`) so that individual files remain self-descriptive regardless of
+which folder they reside in.
 ---
 
 ## Agreement Analysis Script
 
 ### `generate_agreement_figures.py`
 
-**Purpose:** Generates row-normalized confusion matrix figures, both per evaluation run and aggregated across all runs. Supports two modes.
+**Purpose:** Generates row-normalized confusion matrix figures, both per evaluation run and aggregated across all runs. All outputs are written under `_Figures/Confusion Matrices/`.
 
-#### Mode: `human-vs-llm` (default)
+#### Mode: `human-vs-llm`
 
-Compares **Human grader** scores vs **Claude 4.5 Sonnet LLM auto-grader** scores.
-- **Source files:** `*CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx` (at each date-folder level)
-- **Per-run output:** `<date_dir>/ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/`
-- **Aggregated output:** `Global Analysis/ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/`
-
-#### Mode: `grader-vs-grader`
-
-Compares a **new LLM grader** (e.g. GPT-5.5, Gemini 3.1 Pro Preview) against the **Claude 4.5 Sonnet baseline grader**, on outputs generated by Claude 4.5 Sonnet.
-- **Source files:** `*AutoGradingVSClaude4.5SonnetAutoGrading.xlsx` (at each date-folder level)
-- **Per-run output:** `<date_dir>/ConfusionMatrices_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/`
-- **Aggregated output:** `Global Analysis/ConfusionMatrices_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/`
+Discovers all `*CombinedHumanGrading*.xlsx` files and generates a separate set of confusion matrices **per AutoGrading LLM found**, aggregated only across files that share the same AutoGrading LLM.
+- **Source files:** `*CombinedHumanGrading*.xlsx` (across all date-folders)
+- **Per-file output:** `_Figures/Confusion Matrices/ConfusionMatrices_CombinedHumanVs<AutoGradingLLM>_<GenerationLLM>/per_file/<Project>_<stage>_<examples>/`
+- **Aggregated output:** `_Figures/Confusion Matrices/ConfusionMatrices_CombinedHumanVs<AutoGradingLLM>_<GenerationLLM>/`
 
 **How it works:** The script reads the `Weighted Cohens Kappa` sheet from matching xlsx files. It builds 3×3 confusion matrices (scores: 0, 0.5, 1) for eight scopes:
 
@@ -165,32 +174,23 @@ Compares a **new LLM grader** (e.g. GPT-5.5, Gemini 3.1 Pro Preview) against the
 | History State | History state elements only |
 | Region | Region elements only |
 
-**Per-run outputs:**
-- `human-vs-llm`: inside `<date_dir>/ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/`
-- `grader-vs-grader`: inside `<date_dir>/ConfusionMatrices_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/`
-- `{file_stem}_confusion_matrices.png` — combined 2×4 grid (all 8 scopes)
-- `{file_stem}_global.png`, `{file_stem}_state.png`, … `{file_stem}_region.png` — one figure per scope
+**Per-file outputs** — written to `<group_dir>/per_file/<Project>_<stage>_<examples>/`:
+- `confusion_matrices.png` — combined 2×4 grid (all 8 scopes)
+- `global.png`, `state.png`, … `region.png` — one figure per scope
 
-**Aggregated outputs** — pooled across all matched files:
-- `human-vs-llm`: prefixed with `AllExamples_Grading_CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration_`
-- `grader-vs-grader`: prefixed with `AllExamples_Grading_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration_`
+**Aggregated outputs** — pooled across all matched files, written to `<group_dir>/`:
+- prefixed with `AllExamples_CombinedHumanVs<AutoGradingLLM>_<GenerationLLM>_`
 
 **Usage:**
 ```bash
-# Human vs LLM grader (default) — all files
-python scripts/generate_agreement_figures.py
+# All files
+python _scripts/generate_agreement_figures.py
 
-# Human vs LLM grader — 2-stage files only
-python scripts/generate_agreement_figures.py --stage 2
+# 2-stage files only
+python _scripts/generate_agreement_figures.py --stage 2
 
-# Human vs LLM grader — specific date
-python scripts/generate_agreement_figures.py --date 2026-03-16
-
-# New grader vs Claude 4.5 Sonnet grader
-python scripts/generate_agreement_figures.py --mode grader-vs-grader
-
-# Grader comparison — 2-stage only
-python scripts/generate_agreement_figures.py --mode grader-vs-grader --stage 2
+# Specific date
+python _scripts/generate_agreement_figures.py --date 2026-03-16
 ```
 
 **Additional elements handling:** Rows where the element column is `"additional elements"` carry raw false-positive *counts* (not 0/0.5/1 scores). They are mapped to the confusion matrix as follows:
@@ -204,85 +204,39 @@ python scripts/generate_agreement_figures.py --mode grader-vs-grader --stage 2
 
 ---
 
-## Scripts
-
-### `create_model_comparison_files.py` — Generation Comparison Templates
-
-**Experiment type:** Generation varies, grader fixed (Claude 4.5 Sonnet).
-
-**Purpose:** Creates Excel comparison workbooks from existing `CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx` files, setting up a template to fill in grades from a new generation model.
-
-**Output path:** `<date_dir}/{filename}.xlsx` (same level as the other xlsx files)
-
-**File naming:**
-```
-{Example}_Grading_2-stage_{date}_{N}-examples_{NewModel}GenerationVSClaude4.5SonnetGeneration_Claude4.5SonnetAutoGrading.xlsx
-```
-
-**Usage:**
-```bash
-python scripts/create_model_comparison_files.py
-```
-
-### `create_grading_comparison_files.py` — Grading Comparison Templates
-
-**Experiment type:** Generation fixed (Claude 4.5 Sonnet), grader varies.
-
-**Purpose:** Creates Excel comparison workbooks from existing `CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx` files, setting up a template to fill in auto-grades from a new grader model.
-
-**Output path:** `<date_dir}/{filename}.xlsx` (same level as the other xlsx files)
-
-**File naming:**
-```
-{Example}_Grading_2-stage_{date}_{N}-examples_{NewGrader}AutoGradingVSClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx
-```
-
-**Usage:**
-```bash
-python scripts/create_grading_comparison_files.py
-```
-
----
-
 ## Output Files
 
-### Excel Files (at date-folder level)
+### Excel Files (at examples level)
 
-- `[Example]_..._CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx` — consolidated human + Claude 4.5 Sonnet auto-grading workbook (baseline)
-- `[Example]_..._HumanGrading_Claude4.5SonnetGeneration.xlsx` — human-only grading workbook (Claude 4.5 Sonnet generation)
-- `[Example]_..._{Model}GenerationVSClaude4.5SonnetGeneration_Claude4.5SonnetAutoGrading.xlsx` — generation comparison workbook (one per new generator)
-- `[Example]_..._{Grader}AutoGradingVSClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx` — grading comparison workbook (one per new grader)
+- `[Example]_..._CombinedHumanGradingVs<AutoGrader>AutoGrading_<GenerationLLM>Generation.xlsx` — consolidated human + auto-grading workbook (baseline)
+- `[Example]_..._HumanGrading_<GenerationLLM>Generation.xlsx` — human-only grading workbook
+- `[Example]_..._<NewModel>GenerationVS<BaselineModel>Generation_<AutoGrader>AutoGrading.xlsx` — generation comparison workbook (one per new generator)
 
 
 ### Confusion Matrix Figures
 
-#### `<date_dir>/ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/`
+All confusion matrix figures are centralized under `_Figures/Confusion Matrices/`, with one sub-folder per comparison type.
 
-**Purpose:** Per-run figures for a specific evaluation run.
+#### `_Figures/Confusion Matrices/ConfusionMatrices_CombinedHumanVs<AutoGradingLLM>_<GenerationLLM>/`
 
-**Source (`human-vs-llm`):** Generated by `generate_agreement_figures.py --mode human-vs-llm` from `*CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx`.
+One folder exists per AutoGrading LLM (e.g. `ConfusionMatrices_CombinedHumanVs<AutoGrader>AutoGrading_<GenerationLLM>Generation/`).
 
-**Source (`grader-vs-grader`):** Generated by `generate_agreement_figures.py --mode grader-vs-grader` from `*AutoGradingVSClaude4.5SonnetAutoGrading.xlsx`.
+**Source:** Generated by `_scripts/generate_agreement_figures.py` from `*CombinedHumanGrading*.xlsx` files.
 
-#### `Global Analysis/ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/`
+**Contents:**
+- `AllExamples_CombinedHumanVs<key>_confusion_matrices.png` — Aggregated 2×4 grid across all examples
+- `AllExamples_CombinedHumanVs<key>_{scope}.png` — Aggregated individual scope figures
+- `per_file/<Project>_<stage>_<examples>/` — Per-file breakdown
+  - `confusion_matrices.png` — 2×4 grid for a single evaluation run
+  - `global.png`, `state.png`, … `region.png` — individual scope figures
 
-Aggregated human-vs-Claude 4.5 Sonnet grading confusion matrices pooled across all evaluation runs.
-
-#### `Global Analysis/ConfusionMatrices_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/`
-
-Aggregated new-grader-vs-Claude 4.5 Sonnet grading matrices pooled across all grading comparison files.
-
-**Content (all figure folders):**
-- `{file_stem}_confusion_matrices.png` — Combined 2×4 grid (all 8 scopes)
-- `{file_stem}_global.png`, `{file_stem}_state.png`, … `{file_stem}_region.png` — one figure per scope
-
-**Reading the figures:** Each cell shows the row-normalized percentage and raw count. Rows = baseline/human score; columns = new model score. Diagonal cells (outlined in black) are agreements. The title shows the overall agreement rate and element count.
+**Reading the figures:** Each cell shows the row-normalized percentage and raw count. Rows = human score; columns = LLM score. Diagonal cells (outlined in black) are agreements. The title shows the overall agreement rate and element count.
 
 
 
 ### Grading Results Files (inside `Generated Files/` subfolder)
 
-#### `grading_results__generated-by-claude-4.5-sonnet__graded-by-claude-4.5-sonnet.tsv` and `grading_output__generated-by-claude-4.5-sonnet__graded-by-claude-4.5-sonnet.txt`
+#### `grading_results__generated-by-<generation-llm>__graded-by-<grading-llm>.tsv` and `grading_output__generated-by-<generation-llm>__graded-by-<grading-llm>.txt`
 
 **Grading Methodology:** The LLM was provided a CSV version of the evaluation template containing atomic components of the ground truth state machine (from the Sample Solution). The LLM then graded the generated Mermaid diagram by comparing it against three inputs: (1) the generated state machine, (2) the original problem description, and (3) the Mermaid representation of the solution.
 
@@ -293,13 +247,13 @@ Aggregated new-grader-vs-Claude 4.5 Sonnet grading matrices pooled across all gr
 - **Notes**: Explanation of assessment (expected vs. actual)
 
 **Format Differences:**
-- `grading_results__generated-by-claude-4.5-sonnet__graded-by-claude-4.5-sonnet.tsv` — Tab-separated, ideal for data analysis and automated processing
-- `grading_output__generated-by-claude-4.5-sonnet__graded-by-claude-4.5-sonnet.txt` — Comma-separated (CSV), easier for text editor viewing and spreadsheet import  
+- `grading_results__generated-by-<generation-llm>__graded-by-<grading-llm>.tsv` — Tab-separated, ideal for data analysis and automated processing
+- `grading_output__generated-by-<generation-llm>__graded-by-<grading-llm>.txt` — Comma-separated (CSV), easier for text editor viewing and spreadsheet import
 
 ---
 
 ### Generated State Machine Files (inside `Generated Files/` subfolder)
-#### `output_two_stage_prompt__generated-by-claude-4.5-sonnet.txt` / `output_two_stage_prompt__generated-by-claude-4.5-sonnet.png` (Two Stage)
+#### `output_two_stage_prompt__generated-by-<generation-llm>.txt` / `output_two_stage_prompt__generated-by-<generation-llm>.png` (Two Stage)
 
 **Purpose:** The generated state machine diagram produced by the LLM based on the problem description
 
@@ -325,11 +279,11 @@ stateDiagram-v2
 
 ### Human Grading Process
 
-Ground truth state machines were evaluated by **two independent graders** using a standardized rubric (i.e., the provided `[Example Name] Evaluation - Template.xlsx`). Each grader independently assessed the generated diagrams against the atomic components defined in the sample solution. The two evaluations were then consolidated into a single grading sheet to produce the final human assessment.
+Generated state machines by Claude Sonnet 4.5 were evaluated by **two independent graders** using a standardized rubric (i.e., the provided `[Example Name] Evaluation - Template.xlsx`). Each grader independently assessed the generated diagrams against the atomic components defined in the sample solution. The two evaluations were then consolidated into a single grading sheet to produce the final human assessment.
 
-### LLM-Based Grading
+### LLM-Based Grading (Automatic Grading)
 
-Following the human evaluation, the LLM grader (**Claude 4.5 Sonnet**) was used to replicate the same grading methodology. It evaluated each generated Mermaid diagram using four inputs:  
+Following the human evaluation, the LLM grader was used to replicate the same grading methodology. It evaluated each generated Mermaid diagram using four inputs:  
 1. the original system description,  
 2. the structured evaluation rubric containing atomic components (provided as a CSV derived from `[Example Name] Evaluation - Template.xlsx`, without computed metrics),  
 3. the ground truth Mermaid diagram, and  
@@ -372,11 +326,10 @@ The final output is a completed grading sheet where each element is scored and j
 
 ### `Grading Summary.xlsx`
 
-**Purpose:** Consolidated summary file containing aggregate evaluation metrics and performance analysis across all evaluated diagrams for a project
+**Purpose:** Consolidated summary file containing aggregate evaluation metrics from human grading of the generated state machine using Claude Sonnet 4.5, as well as automatic grading across all stages of the automatic grader using Claude Sonnet 4.5, including performance analysis across all evaluated diagrams for the project.
 
 **Content:** The summary includes computed metrics derived from the grading results, specifically:
 - **Precision, Recall, and F1-Score** for overall performance assessment
-- **Confusion matrix values** showing distribution of correct/incorrect classifications
 - **Statistical summaries** aggregating results across multiple evaluation runs
 
 ### Performance Metrics Explanation
@@ -407,45 +360,32 @@ The grading results are classified using the following categories:
 
 ---
 
-## How to Use This Data
-
-1. **Compare Prompting Strategies**: Compare results between `1 stage/` and `2 stage/` folders to evaluate effectiveness of prompt refinement
-2. **Track Improvements**: Compare across date folders within the same stage to track improvements over time or different model versions
-3. **Analyze Failures**: Review the Notes column in TSV/CSV files to understand what aspects of state machine generation are failing
-4. **Visualize Diagrams**: Use the `output_*.txt` files in Mermaid viewers to see the generated diagrams
-5. **Assess LLM Grader Reliability (human-vs-llm)**: Open any `ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/` folder to see how closely the LLM grader agreed with the human grader; use `Global Analysis/ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/` for the pooled view
-6. **Compare Generation Models**: Open generation comparison xlsx files at the date-folder level to see how a new generator compares to Claude 4.5 Sonnet
-7. **Compare Grading Models**: Open grading comparison xlsx files at the date-folder level to see how a new grader compares to Claude 4.5 Sonnet; use `--mode grader-vs-grader` for confusion matrices
-8. **Regenerate Human-vs-LLM Figures**: `python Evaluations/generate_agreement_figures.py`
-9. **Regenerate Grader-vs-Grader Figures**: `python Evaluations/generate_agreement_figures.py --mode grader-vs-grader`
-
 ## File Naming Convention
 
 **Raw outputs (inside `Generated Files/`):**
-- `grading_output__generated-by-claude-4.5-sonnet__graded-by-claude-4.5-sonnet.txt` — Claude 4.5 Sonnet auto-grading in CSV format
-- `grading_results__generated-by-claude-4.5-sonnet__graded-by-claude-4.5-sonnet.tsv` — Claude 4.5 Sonnet auto-grading in TSV format
-- `output_single_prompt__generated-by-claude-4.5-sonnet.txt/.png` — Generated state diagram (1 stage, Claude 4.5 Sonnet)
-- `output_two_stage_prompt__generated-by-claude-4.5-sonnet.txt/.png` — Generated state diagram (2 stage, Claude 4.5 Sonnet)
+- `grading_output__generated-by-<generation-llm>__graded-by-<grading-llm>.txt` — auto-grading output in CSV format
+- `grading_results__generated-by-<generation-llm>__graded-by-<grading-llm>.tsv` — auto-grading output in TSV format
+- `output_single_prompt__generated-by-<generation-llm>.txt/.png` — Generated state diagram (1 stage)
+- `output_two_stage_prompt__generated-by-<generation-llm>.txt/.png` — Generated state diagram (2 stage)
 
-**Baseline xlsx files (at date-folder level):**
-- `[Example]_..._CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx` — consolidated human + Claude 4.5 Sonnet auto-grading
-- `[Example]_..._HumanGrading_Claude4.5SonnetGeneration.xlsx` — human-only grading of Claude 4.5 Sonnet generation
+**Baseline xlsx files (at examples level):**
+- `[Example]_..._CombinedHumanGradingVs<grading-llm>AutoGrading_<GenerationLLM>Generation.xlsx` — consolidated human + auto-grading workbook
+- `[Example]_..._HumanGrading_<GenerationLLM>Generation.xlsx` — human-only grading workbook
 
-**Generation comparison xlsx files (at date-folder level):**
-- `[Example]_Grading_2-stage_{date}_{N}-examples_{Model}GenerationVSClaude4.5SonnetGeneration_Claude4.5SonnetAutoGrading.xlsx`
+**Generation comparison xlsx files (at examples level):**
+- `[Example]_Grading_<stage>_{date}_{N}-examples_<NewModel>GenerationVS<BaselineModel>Generation_<AutoGrader>AutoGrading.xlsx`
 
-**Grading comparison xlsx files (at date-folder level):**
-- `[Example]_Grading_2-stage_{date}_{N}-examples_{Grader}AutoGradingVSClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx`
+**Grading comparison xlsx files (at examples level):**
+- `[Example]_Grading_<stage>_{date}_{N}-examples_<NewGrader>AutoGradingVS<BaselineGrader>AutoGrading_<GenerationLLM>Generation.xlsx`
 
 **Ground truth (at project root level):**
 - `[example_name]_ground_truth_mermaid.txt`
 - `[example_name]_ground_truth_mermaid_compiled.png`
 
-**Confusion matrix figures (per-run, inside `<date_dir>/ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/`):**
-- `{file_stem}_confusion_matrices.png` — combined 2×4 grid for a single run
-- `{file_stem}_{scope}.png` — individual scope figure (e.g. `_global.png`, `_state.png`)
+**Confusion matrix figures (per-file, inside `_Figures/Confusion Matrices/<group>/per_file/<Project>_<stage>_<examples>/`):**
+- `confusion_matrices.png` — combined 2×4 grid for a single evaluation run
+- `{scope}.png` — individual scope figure (e.g. `global.png`, `state.png`)
 
-**Confusion matrix figures (aggregated, inside `Global Analysis/`):**
-- `ConfusionMatrices_HumanVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/AllExamples_Grading_CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration_{scope}.png` — aggregated human-vs-Claude 4.5 Sonnet grading
-- `ConfusionMatrices_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration/AllExamples_Grading_NewGraderVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration_{scope}.png` — aggregated new-grader-vs-Claude 4.5 Sonnet grading
+**Confusion matrix figures (aggregated, inside `_Figures/Confusion Matrices/<group>/`):**
+- `AllExamples_CombinedHumanVs<AutoGradingLLM>_<GenerationLLM>_{scope}.png`
 
