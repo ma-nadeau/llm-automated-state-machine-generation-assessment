@@ -1,0 +1,63 @@
+stateDiagram-v2
+    state Off
+    state On
+    
+    [*] --> Off
+    Off --> On : switchOn
+    On --> Off : switchOff
+    
+    state On {
+        state LoggedOut
+        state LoggedIn
+        
+        [*] --> LoggedOut
+        LoggedOut --> LoggedIn : tapCard [authorized]
+        LoggedOut --> LoggedOut : tapCard [!authorized] / showLoginError()
+        
+        state LoggedIn {
+            state Idle
+            state PrintReady
+            state Printing
+            state PrintSuspendedJam
+            state PrintSuspendedPaper
+            state ScanReady
+            state Scanning
+            state ScanSuspendedJam
+            
+            [*] --> Idle
+            
+            Idle --> PrintReady : choosePrint
+            Idle --> ScanReady : chooseScan
+            
+            PrintReady --> ScanReady : chooseScan
+            ScanReady --> PrintReady : choosePrint
+            
+            PrintReady --> Printing : start [queueNotEmpty]
+            PrintReady --> PrintReady : start [queueEmpty] / showQueueError()
+            
+            Printing --> PrintReady : done
+            Printing --> PrintReady : stop
+            Printing --> PrintSuspendedJam : paperJam
+            Printing --> PrintSuspendedPaper : outOfPaper
+            
+            PrintSuspendedJam --> Printing : resume
+            PrintSuspendedJam --> PrintReady : cancel
+            
+            PrintSuspendedPaper --> Printing : resume
+            PrintSuspendedPaper --> PrintReady : cancel
+            
+            ScanReady --> Scanning : start [documentDetected]
+            ScanReady --> ScanReady : start [!documentDetected] / showScanError()
+            
+            Scanning --> ScanReady : done / sendToEmail()
+            Scanning --> ScanReady : stop
+            Scanning --> ScanSuspendedJam : paperJam
+            
+            ScanSuspendedJam --> Scanning : resume
+            ScanSuspendedJam --> ScanReady : cancel
+            
+            Idle --> LoggedOut : logoff
+            PrintReady --> LoggedOut : logoff
+            ScanReady --> LoggedOut : logoff
+        }
+    }

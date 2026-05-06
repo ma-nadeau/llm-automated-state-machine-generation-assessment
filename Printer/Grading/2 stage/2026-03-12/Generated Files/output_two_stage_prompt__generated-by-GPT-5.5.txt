@@ -1,0 +1,67 @@
+stateDiagram-v2
+    state Off
+    state On
+    state On {
+        state LoggedOut
+        state UserSession
+        state UserSession {
+            state TaskSelection
+            state ActiveTask
+            state PaperJamRecovery
+            state OutOfPaperRecovery
+
+            state ActiveTask {
+                state Printing
+                state Scanning
+                state H
+                [*] --> Printing
+                Printing --> TaskSelection : printDone / finishPrintJob()
+                Scanning --> TaskSelection : scanDone / sendScanToEmail()
+                Printing --> OutOfPaperRecovery : outOfPaper / suspendPrintingTask()
+            }
+
+            state TaskSelection {
+                state AwaitingOption
+                state PrintChosen
+                state ScanChosen
+                [*] --> AwaitingOption
+                AwaitingOption --> PrintChosen : choosePrint
+                AwaitingOption --> ScanChosen : chooseScan
+                PrintChosen --> ScanChosen : chooseScan
+                ScanChosen --> PrintChosen : choosePrint
+                PrintChosen --> Printing : pressStart [hasQueuedDocument()] / startPrintingFirstQueuedDocument()
+                PrintChosen --> PrintChosen : pressStart [!hasQueuedDocument()] / showNoQueuedDocumentError()
+                ScanChosen --> Scanning : pressStart [originalDetected()] / startScanningOriginal()
+                ScanChosen --> ScanChosen : pressStart [!originalDetected()] / showNoOriginalError()
+            }
+
+            state PaperJamRecovery {
+                state ClearingPaperJam
+                state JamClearedAwaitingDecision
+                [*] --> ClearingPaperJam
+                ClearingPaperJam --> JamClearedAwaitingDecision : clearPaperJam / confirmPaperJamCleared()
+                JamClearedAwaitingDecision --> H : resume [paperJamCleared()] / resumeTask()
+                JamClearedAwaitingDecision --> TaskSelection : cancel / cancelTask()
+            }
+
+            state OutOfPaperRecovery {
+                state ResupplyingPaper
+                state PaperResuppliedAwaitingDecision
+                [*] --> ResupplyingPaper
+                ResupplyingPaper --> PaperResuppliedAwaitingDecision : resupplyPaper / confirmPaperAvailable()
+                PaperResuppliedAwaitingDecision --> H : resume [paperAvailable()] / resumeTask()
+                PaperResuppliedAwaitingDecision --> TaskSelection : cancel / cancelTask()
+            }
+
+            [*] --> TaskSelection
+            TaskSelection --> LoggedOut : logoff / logoutUser()
+            ActiveTask --> TaskSelection : pressStop / stopTask()
+            ActiveTask --> PaperJamRecovery : paperJam / suspendTask()
+        }
+        [*] --> LoggedOut
+        LoggedOut --> UserSession : tapCard(cardId) [authorized(cardId)] / loginUser(cardId)
+        LoggedOut --> LoggedOut : tapCard(cardId) [!authorized(cardId)] / showLoginError()
+    }
+    [*] --> Off
+    Off --> On : masterOn / powerUpPrinter()
+    On --> Off : masterOff / powerDownPrinter()

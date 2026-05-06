@@ -1,0 +1,78 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Scheduled)	1	Present as [*] --> Scheduled
+State	Scheduled	1	Present in student submission
+Transition	at beginningStopDuration (Scheduled ⇒ Active)	1	Present as atStartOfStopDuration transition from Scheduled to Active
+Action	pOn; setCS;	1	Both actions present: pOn() and setCS(firstSegment)
+Composite State	Active	1	Present as composite state with regions
+Region	TrainControl	1	Present as ControlRegion containing train control logic
+Composite State	TrainMovement	1	Present as Control composite state containing movement states
+State	Initial state (TrainMovement → AtStation)	1	Present as [*] --> AtStation within Control
+State	AtStation	1	Present in student submission
+Action	entry / openDoors()	1	Present as entry action in AtStation note
+Action	exit / closeDoors()	1	Present as closeDoors() action on transition from AtStation
+Transition	after stopDuration (AtStation ⇒ StopNotRequired)	1	Present as transition from AtStation to Moving after stopDuration
+Guard	[!isLastStop()]	1	Present as [!finalStation] guard on transition from AtStation
+Transition	after stopDuration (AtStation ⇒ Arrived)	0	No explicit Arrived state; final station handled by transition to Off
+Guard	[isLastStop()]	1	Present as [finalStation] guard on transition to Off
+Action	pOff;	1	Present as pOff() on transition to Off
+State	StopNotRequired	1	Represented by Moving state which handles non-stop movement
+Action	entry / setSpeed()	1	Present as setSpeed action on transitions entering Moving state
+Transition	enteringSegment (StopNotRequired ⇒ StopNotRequired)	1	Present as self-transition on Moving for regular segments
+Guard	[isRegularSegment()]	1	Present as [regular] guard on Moving self-transition
+Transition	enteringSegment (StopNotRequired ⇒ ApproachingRedLight)	1	Present as transition from Moving to StoppingAtLight
+Guard	[isTrafficLightSegment() && isRed()]	1	Present as [trafficLight && red] guard
+Transition	enteringSegment (StopNotRequired ⇒ StopNotRequired)	1	Present as self-transition on Moving for green traffic lights
+Guard	[isTrafficLightSegment() && !isRed()]	1	Present as [trafficLight && green] guard
+Transition	enteringSegment (StopNotRequired ⇒ ApproachingStation)	1	Present as transition from Moving to StoppingAtStation
+Guard	[isStationSegment() && stopRequired()]	1	Present as [station] guard (station implies stop required per system description)
+State	ApproachingRedLight	1	Present as StoppingAtLight state
+Action	entry / stopAL	1	Present as stopAL action on transition to StoppingAtLight
+Transition	stopped (ApproachingRedLight ⇒ AtRedTrafficLight)	1	Present as transition from StoppingAtLight to WaitingAtLight on stopped event
+State	AtRedTrafficLight	1	Present as WaitingAtLight state
+Transition	green (AtRedTrafficLight ⇒ StopNotRequired)	1	Present as transition from WaitingAtLight to Moving on green event
+State	ApproachingStation	1	Present as StoppingAtStation state
+Action	entry / stopAL	1	Present as stopAL action on transition to StoppingAtStation
+Transition	stopped (ApproachingStation ⇒ AtStation)	1	Present as transition from StoppingAtStation to AtStation on stopped event
+History State	History State for TrainMovement	1	Present as H state in Control
+State	Emergency	1	Present in ControlRegion
+Transition	emergency (TrainMovement ⇒ Emergency)	1	Present as transition from Control to Emergency on obstructed event
+Action	eStop;	1	Present as eStop() action on transition to Emergency
+Transition	clear (Emergency ⇒ History State)	1	Present as transition from Emergency to H on cleared event
+Region	SDS	1	Present as SDSRegion
+State	Initial state (SDS → SDSActive)	1	Present as [*] --> SDS_Running
+State	SDSActive	1	Present as SDS_Running state
+Transition	after 1 sec (SDSActive ⇒ SDSActive)	1	Present as self-transition with after(1s) trigger
+Guard	[hasSegmentChanged()]	1	Present as [newSegmentDetected] guard
+Action	setCS; enteringSegment()	0.5	setCS present but enteringSegment event not explicitly generated
+Transition	after 1 sec (SDSActive ⇒ SDSActive)	0.5	Self-transition present but no explicit else-branch without segment change guard
+Guard	[!hasSegmentChanged()]	0	No explicit guard for when segment has not changed
+Region	MDS	1	Present as MDSRegion
+State	Initial state (MDS → Stopped)	0	Initial state goes to MDS_Running not to a Stopped state
+State	Stopped	0	No explicit Stopped state; MDS_Running performs checks but does not model stopped/moving distinction
+Transition	after 1 sec (Stopped ⇒ Moving)	0	No transition between Stopped and Moving states
+Guard	[speed > 0]	0	No speed-based guards in MDS region
+Transition	after 1 sec (Stopped ⇒ Stopped)	0	No self-transition on Stopped state
+Guard	[speed == 0]	0	No speed-based guards in MDS region
+Action	stopped()	0	No stopped() event generation in MDS region
+State	Moving	0	No Moving state in MDS region (Moving exists in Control region but not in MDS)
+Transition	after 1 sec (Moving ⇒ Stopped)	0	No transition from Moving to Stopped in MDS region
+Guard	[speed == 0]	0	No speed-based guards in MDS region
+Action	stopped()	0	No stopped() event generation in MDS region
+Transition	after 1 sec (Moving ⇒ Moving)	0	No self-transition on Moving in MDS region
+Guard	[speed > 0]	0	No speed-based guards in MDS region
+Region	ODS	1	Present as ODSRegion
+State	Initial state (ODS → ODSActive)	1	Present as [*] --> ODS_Running
+State	ODSActive	1	Present as ODS_Running state
+Transition	after 1 sec (ODSActive ⇒ ODSActive)	1	Present as self-transition with after(1s) trigger
+Guard	[obstacleDetected()]	0.5	Implicit in checkObstruction() but not explicit guard shown
+Action	emergency()	0.5	Emergency triggered via obstructed event to Control region but not shown as action in ODS
+Transition	after 1 sec (ODSActive ⇒ ODSActive)	0.5	Self-transition present but no explicit else-branch
+Guard	[!obstacleDetected()]	0	No explicit guard for when no obstacle detected
+State	Arrived	0	No explicit Arrived state; final station handled by transition to Off
+State	additional elements	0	No fundamentally incorrect additional states
+Transition	additional elements	0	No fundamentally incorrect additional transitions
+Guard	additional elements	0	No fundamentally incorrect additional guards
+Action	additional elements	0	No fundamentally incorrect additional actions
+Composite State	additional elements	0	No fundamentally incorrect additional composite states
+Region	additional elements	0	No fundamentally incorrect additional regions
+History State	additional elements	0	No fundamentally incorrect additional history states

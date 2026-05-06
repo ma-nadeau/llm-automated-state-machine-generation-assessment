@@ -1,0 +1,78 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Scheduled)	0	Student model starts with Inactive state instead of Scheduled; initial state points to Inactive not Scheduled.
+State	Scheduled	0	No Scheduled state exists in student submission; uses Inactive state which does not represent the scheduled waiting period.
+Transition	at beginningStopDuration (Scheduled ⇒ Active)	0.5	Transition exists from Inactive to Active with scheduledStopBegins event but does not match the expected atBeginningStopDuration semantics exactly.
+Action	pOn; setCS;	1	Actions pOn() and setCS(firstSegment) are present on the Inactive to Active transition.
+Composite State	Active	1	Active composite state is present and contains the required regions.
+Region	TrainControl	0.5	Student has Operation region which serves similar purpose but is named differently; contains Journey and EmergencyStopped states.
+Composite State	TrainMovement	1	Journey composite state in student submission represents the train movement logic equivalent to TrainMovement.
+State	Initial state (TrainMovement → AtStation)	1	Initial state in Journey points to InitialStationStop which represents the station stop behavior.
+State	AtStation	1	InitialStationStop and DwellingAtStation states together represent AtStation behavior; doors open and close appropriately.
+Action	entry / openDoors()	1	openDoors() action is present when entering DwellingAtStation after stoppedDetected.
+Action	exit / closeDoors()	1	closeDoors() action is present when leaving DwellingAtStation and InitialStationStop states.
+Transition	after stopDuration (AtStation ⇒ StopNotRequired)	1	Transition from InitialStationStop and DwellingAtStation to Running after stopDuration with setSpeed action.
+Guard	[!isLastStop()]	1	Student uses separate states for final station vs intermediate stations; StoppingAtStation handles non-final stations.
+Transition	after stopDuration (AtStation ⇒ Arrived)	0.5	Transition from FinalStationDwelling to Inactive after stopDuration exists but goes to Inactive rather than separate Arrived state.
+Guard	[isLastStop()]	1	Guard finalStation() is used to distinguish final station in transition from Running to StoppingAtFinalStation.
+Action	pOff;	1	pOff() action is present on transition from FinalStationDwelling to Inactive.
+State	StopNotRequired	1	Running state represents the normal running behavior equivalent to StopNotRequired.
+Action	entry / setSpeed()	1	setSpeed action is present on transitions entering Running state from various sources.
+Transition	enteringSegment (StopNotRequired ⇒ StopNotRequired)	1	Self-transition on Running with segmentUpdated event and guard for regular segment type with setSpeed action.
+Guard	[isRegularSegment()]	1	Guard currentSegment.type==regular checks for regular segment type.
+Transition	enteringSegment (StopNotRequired ⇒ ApproachingRedLight)	1	Transition from Running to StoppingAtRedLight when segmentUpdated with trafficLight type and lightRed() guard.
+Guard	[isTrafficLightSegment() && isRed()]	1	Guard currentSegment.type==trafficLight && lightRed() correctly checks for red traffic light.
+Transition	enteringSegment (StopNotRequired ⇒ StopNotRequired)	1	Self-transition on Running for traffic light segment when not red with setSpeed action.
+Guard	[isTrafficLightSegment() && !isRed()]	1	Guard currentSegment.type==trafficLight && !lightRed() correctly checks for green traffic light.
+Transition	enteringSegment (StopNotRequired ⇒ ApproachingStation)	1	Transition from Running to StoppingAtStation when station segment and stationOnItinerary() and not final station.
+Guard	[isStationSegment() && stopRequired()]	1	Guard currentSegment.type==station && stationOnItinerary() checks if stop is required at station.
+State	ApproachingRedLight	1	StoppingAtRedLight state represents the approaching red light behavior.
+Action	entry / stopAL	1	stopAL action is present on transition to StoppingAtRedLight state.
+Transition	stopped (ApproachingRedLight ⇒ AtRedTrafficLight)	1	Transition from StoppingAtRedLight to WaitingAtRedLight on stoppedDetected event.
+State	AtRedTrafficLight	1	WaitingAtRedLight state represents waiting at red traffic light.
+Transition	green (AtRedTrafficLight ⇒ StopNotRequired)	1	Transition from WaitingAtRedLight to Running on lightGreen event with setSpeed action.
+State	ApproachingStation	1	StoppingAtStation state represents approaching station behavior.
+Action	entry / stopAL	1	stopAL action is present on transition to StoppingAtStation state.
+Transition	stopped (ApproachingStation ⇒ AtStation)	1	Transition from StoppingAtStation to DwellingAtStation on stoppedDetected event with openDoors action.
+History State	History State for TrainMovement	1	History state H is present in Journey composite state for resuming after emergency.
+State	Emergency	1	EmergencyStopped state represents emergency stop behavior.
+Transition	emergency (TrainMovement ⇒ Emergency)	1	Transition from Journey to EmergencyStopped on obstructionDetected event with eStop action.
+Action	eStop;	1	eStop() action is present on transition to EmergencyStopped state.
+Transition	clear (Emergency ⇒ History State)	1	Transition from EmergencyStopped to history state H on obstructionCleared event.
+Region	SDS	1	SegmentDetection region represents the SDS functionality.
+State	Initial state (SDS → SDSActive)	1	Initial state in SegmentDetection region points to MonitoringSegment.
+State	SDSActive	1	MonitoringSegment state represents the active segment detection behavior.
+Transition	after 1 sec (SDSActive ⇒ SDSActive)	1	Self-transition on MonitoringSegment with after(1s) trigger and guard for segment change.
+Guard	[hasSegmentChanged()]	1	Guard enteredNewSegment(segment) checks if segment has changed.
+Action	setCS; enteringSegment()	1	Actions setCS(segment) and raiseSegmentUpdated() are present; raiseSegmentUpdated serves as enteringSegment event.
+Transition	after 1 sec (SDSActive ⇒ SDSActive)	1	Self-transition on MonitoringSegment with after(1s) trigger when no segment change detected.
+Guard	[!hasSegmentChanged()]	1	Guard !enteredNewSegment(segment) checks if segment has not changed.
+Region	MDS	1	MovementDetection region represents the MDS functionality.
+State	Initial state (MDS → Stopped)	1	Initial state in MovementDetection region points to Stopped.
+State	Stopped	1	Stopped state is present in MovementDetection region.
+Transition	after 1 sec (Stopped ⇒ Moving)	1	Transition from Stopped to Moving with after(1s) trigger and trainMoving() guard.
+Guard	[speed > 0]	1	Guard trainMoving() represents speed > 0 condition.
+Transition	after 1 sec (Stopped ⇒ Stopped)	1	Self-transition on Stopped with after(1s) trigger when not moving.
+Guard	[speed == 0]	1	Guard !trainMoving() represents speed == 0 condition.
+Action	stopped()	0.5	Student raises stoppedDetected event on Moving to Stopped transition but not on Stopped self-loop; partial coverage.
+State	Moving	1	Moving state is present in MovementDetection region.
+Transition	after 1 sec (Moving ⇒ Stopped)	1	Transition from Moving to Stopped with after(1s) trigger and raiseStoppedDetected action.
+Guard	[speed == 0]	1	Guard !trainMoving() represents speed == 0 condition.
+Action	stopped()	1	raiseStoppedDetected() action is present on Moving to Stopped transition.
+Transition	after 1 sec (Moving ⇒ Moving)	1	Self-transition on Moving with after(1s) trigger when still moving.
+Guard	[speed > 0]	1	Guard trainMoving() represents speed > 0 condition.
+Region	ODS	1	ObstructionDetection region represents the ODS functionality.
+State	Initial state (ODS → ODSActive)	1	Initial state in ObstructionDetection region points to TracksClear.
+State	ODSActive	1	TracksClear and TracksObstructed states together represent the ODS active monitoring behavior.
+Transition	after 1 sec (ODSActive ⇒ ODSActive)	1	Transition from TracksClear to TracksObstructed with after(1s) trigger and tracksObstructed() guard with raiseObstructionDetected action.
+Guard	[obstacleDetected()]	1	Guard tracksObstructed() checks for obstacle detection.
+Action	emergency()	1	raiseObstructionDetected() action triggers emergency transition in Operation region.
+Transition	after 1 sec (ODSActive ⇒ ODSActive)	1	Self-transitions on TracksClear and TracksObstructed when conditions remain unchanged.
+Guard	[!obstacleDetected()]	1	Guard !tracksObstructed() checks for no obstacle.
+State	Arrived	0	No separate Arrived state; train goes directly to Inactive after final station dwelling.
+State	additional elements	0	No fundamentally incorrect additional states present.
+Transition	additional elements	0	No fundamentally incorrect additional transitions present.
+Guard	additional elements	0	No fundamentally incorrect additional guards present.
+Action	additional elements	0	No fundamentally incorrect additional actions present.
+Composite State	additional elements	0	No fundamentally incorrect additional composite states present.
+Region	additional elements	0	No fundamentally incorrect additional regions present.
+History State	additional elements	0	No fundamentally incorrect additional history states present.

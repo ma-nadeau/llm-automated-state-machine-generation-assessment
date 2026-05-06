@@ -1,0 +1,52 @@
+Type,Element,Grading,Notes
+Composite State,"SpaManager",1,Present as the top-level composite state containing both SaunaController and JacuzziController regions.
+Region,"Jacuzzi",1,Present as JacuzziController region within SpaManager.
+State,"initial state (Jacuzzi → Off)",1,Initial state correctly transitions to JacuzziOff.
+State,"Off",1,JacuzziOff state is present.
+Composite State,"On (Jacuzzi)",1,JacuzziOn composite state is present with nested regions.
+Transition,"on (Off ⇒ On)",1,Transitions centralTurnJacuzziOn and panelTurnJacuzziOn correctly turn on the Jacuzzi.
+Transition,"off (On ⇒ Off)",1,Transitions centralTurnJacuzziOff and panelTurnJacuzziOff correctly turn off the Jacuzzi.
+State,"initial state (Level1)",1,Initial state in PressureControl region correctly transitions to Level1.
+State,"Level1",1,Level1 state is present in PressureControl region.
+Transition,"up (Level1 ⇒ Level2)",1,Transitions centralIncreasePressure and panelIncreasePressure correctly move from Level1 to Level2.
+State,"Level2",1,Level2 state is present in PressureControl region.
+Transition,"up (Level2 ⇒ Level3)",1,Transitions centralIncreasePressure and panelIncreasePressure correctly move from Level2 to Level3.
+Transition,"down (Level2 ⇒ Level1)",1,Transitions centralDecreasePressure and panelDecreasePressure correctly move from Level2 to Level1.
+State,"Level3",1,Level3 state is present in PressureControl region.
+Transition,"down (Level3 ⇒ Level2)",1,Transitions centralDecreasePressure and panelDecreasePressure correctly move from Level3 to Level2.
+History State,"History State for Jacuzzi On",0,No history state is present in the student submission.
+Transition,"setPattern(PatternType type) (On⇒ History State)",0.5,Pattern selection is modeled as internal transitions within PatternConfigured state rather than transitions to history state.
+State,"Paused",1,JetsPaused state is present in JetOperation region.
+Transition,"pause (On⇒ Pause)",1,Transitions centralPauseJets and panelPauseJets correctly move from JetsRunning to JetsPaused.
+Transition,"after 2min (Paused ⇒ History State)",0.5,After 2min transition returns to JetsRunning but not via history state.
+Region,"Sauna",1,Present as SaunaController region within SpaManager.
+State,"initial state (Sauna → Off)",1,Initial state correctly transitions to SaunaOff.
+State,"Off",1,SaunaOff state is present.
+Composite State,"On (Sauna)",1,SaunaOn composite state is present with nested regions.
+Transition,"on (Off ⇒ On)",1,Transition centralTurnSaunaOn correctly turns on the sauna.
+Transition,"off (On ⇒ Off)",1,Transition centralTurnSaunaOff correctly turns off the sauna.
+Region,"Heater",1,Present as TemperatureControl region within SaunaOn.
+State,"initial state (Heater → Heat)",1,Initial state correctly transitions to TemperatureHeating.
+State,"Heat",1,TemperatureHeating state is present.
+Transition,"Heat ⇒ Idle",1,Transition from TemperatureHeating to TemperatureIdle is present.
+Guard,"[temp ≥ 90°C]",1,Guard temperatureAtOrAbove90C correctly represents the 90 degree threshold.
+State,"Idle",1,TemperatureIdle state is present.
+Transition,"Idle ⇒ Heat",1,Transition from TemperatureIdle to TemperatureHeating is present.
+Guard,"[temp < 85°C]",1,Guard temperatureBelow85C correctly represents the 85 degree threshold.
+Region,"Fan",1,Present as HumidityControl region within SaunaOn.
+State,"initial state (Fan → Off)",1,Initial state correctly transitions to HumiditySafe.
+State,"Off",1,HumiditySafe state represents the fan off condition.
+Transition,"after 5min (Off ⇒ On)",0.5,Fan activation logic is present but modeled with intermediate HumidityAboveLimitTiming state and 3min timer before activation.
+Guard,"[humidity > 40% && exceedTime > 3min]",1,Guard after3min with humidityPercent > 40 correctly represents the humidity and time conditions.
+Region,"Water",1,Present as WaterDispersal region within SaunaOn.
+State,"initial state (Water → Idle)",1,Initial state correctly transitions to WaterReady.
+State,"Idle",1,WaterReady state is present.
+Transition,"Idle ⇒ Idle",1,Self-transition on WaterReady with centralDisperseWaterRequest is present.
+Guard,"disperse [humidity < 40% && !Fan.On && timeSinceLast ≥ 15min]",1,Guard humidityPercent < 40 && fanInactive correctly represents the conditions; 15min cooldown is enforced via WaterCooldown state.
+State,"additional elements",0,No fundamentally incorrect states are present.
+Transition,"additional elements",0,No fundamentally incorrect transitions are present.
+Guard,"additional elements",0,No fundamentally incorrect guards are present.
+Action,"additional elements",0,Actions are reasonable modeling choices for entry/exit/do behaviors.
+Composite State,"additional elements",0,Additional composite states are reasonable modeling choices.
+Region,"additional elements",0,No fundamentally incorrect regions are present.
+History State,"additional elements",0,No history states are present in the student submission.

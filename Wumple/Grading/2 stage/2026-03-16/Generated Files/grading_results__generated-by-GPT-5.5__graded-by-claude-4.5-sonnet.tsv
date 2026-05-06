@@ -1,0 +1,116 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Watch)	1	Represented as [*] --> Watch
+Action	time=0:00:00; alarmTime=0:00:00; alarm=false; flashAlert=false; cdTime=0:00:00	0	No initialization action on the initial transition to Watch
+Composite State	Watch	1	Watch is correctly modeled as a composite state with multiple regions
+Region	Light	0.5	Represented as region Backlight which captures similar functionality but differs in structure (missing Flash state)
+State	Initial state (Light → Off)	1	Represented as [*] --> BacklightOff in Backlight region
+State	Off	1	Represented as BacklightOff state
+Action	entry / lightOff()	1	Represented as entry / turnBacklightOff() which is semantically equivalent
+Transition	D (Off ⇒ On)	1	Represented as BacklightOff --> BacklightOn : D
+State	On	1	Represented as BacklightOn state
+Action	entry / lightOn()	1	Represented as entry / turnBacklightOn() which is semantically equivalent
+Transition	D (On ⇒ Off)	1	Represented as BacklightOn --> BacklightOff : D
+Transition	after 10sec (On ⇒ Off)	1	Represented as BacklightOn --> BacklightOff : after10sec
+Transition	flash (On ⇒ Flash)	0	No Flash state or transition to Flash state in Backlight region
+Guard	[flashAlert]	0	No guard condition for flash transition (Flash state not present)
+State	Flash	0	No Flash state in the Backlight region
+Action	do / flash5Sec()	0	No flash5Sec() action (Flash state not present)
+Transition	flash (Flash ⇒ Off)	0	No transition from Flash to Off (Flash state not present)
+Guard	[flashAlert]	0	No guard condition for flash transition (Flash state not present)
+Transition	anyButton (Flash ⇒ Off)	0	No anyButton transition from Flash (Flash state not present)
+Region	WatchMode	1	Represented as region UserInterface which contains the watch mode logic
+State	Initial state (WatchMode → AlarmOff)	0.5	Initial state goes to NormalOperation which contains modes but no explicit AlarmOff composite state
+Composite State	AlarmOff	0	No AlarmOff composite state; alarm on/off is modeled in separate AlarmSwitch region
+State	Initial state (AlarmOff → TimeKeepingMode)	1	NormalOperation starts with [*] --> TimekeepingMode
+Composite State	TimeKeepingMode	1	Represented as TimekeepingMode composite state
+State	Initial state (TimeKeepingMode → Idle)	1	TimekeepingMode starts with [*] --> TimeDisplay
+State	Idle	1	Represented as TimeDisplay state
+Action	do / displayTime()	1	Represented as do: showCurrentTime() which is semantically equivalent
+Transition	B2sec (Idle ⇒ Idle)	0.5	B held for 2 seconds is in FlashAlertSwitch region as Bheld2sec but not as self-transition on TimeDisplay
+Action	toggleFlashAlert()	0.5	B press for alarm toggle is in AlarmSwitch region but not as self-transition on TimeDisplay
+Transition	B (Idle ⇒ Idle)	1	Represented as enableFlashAlert() / disableFlashAlert() in FlashAlertSwitch region
+Action	toggleAlarm()	1	Represented as enableAlarm() / disableAlarm() in AlarmSwitch region
+Transition	C (Idle ⇒ Seconds)	1	Represented as TimeDisplay --> TimeSetSeconds : C
+Action	flashSeconds()	1	Represented as do: flashCurrentSeconds() in TimeSetSeconds state
+Transition	A (TimeKeepingMode ⇒ AlarmMode)	1	Represented as TimeDisplay --> AlarmMode : A
+State	Seconds	1	Represented as TimeSetSeconds state
+Transition	B (Seconds ⇒ Seconds)	1	Represented as TimeSetSeconds --> TimeSetSeconds : B / incrementCurrentSeconds()
+Action	time+=1sec	1	Represented as incrementCurrentSeconds() which is semantically equivalent
+Transition	C (Seconds ⇒ Minutes)	1	Represented as TimeSetSeconds --> TimeSetMinutes : C
+Action	flashMinutes()	1	Represented as do: flashCurrentMinutes() in TimeSetMinutes state
+State	Minutes	1	Represented as TimeSetMinutes state
+Transition	B (Minutes ⇒ Minutes)	1	Represented as TimeSetMinutes --> TimeSetMinutes : B / incrementCurrentMinutes()
+Action	time+=1min	1	Represented as incrementCurrentMinutes() which is semantically equivalent
+Transition	C (Minutes ⇒ Hours)	1	Represented as TimeSetMinutes --> TimeSetHours : C
+Action	flashHours()	1	Represented as do: flashCurrentHours() in TimeSetHours state
+State	Hours	1	Represented as TimeSetHours state
+Transition	B (Hours ⇒ Hours)	1	Represented as TimeSetHours --> TimeSetHours : B / incrementCurrentHours()
+Action	time+=1hr	1	Represented as incrementCurrentHours() which is semantically equivalent
+Transition	C (Hours ⇒ Seconds)	1	Represented as TimeSetHours --> TimeSetSeconds : C
+Action	flashSeconds()	1	Represented as do: flashCurrentSeconds() in TimeSetSeconds state
+Transition	A (TimeKeepingMode ⇒ AlarmMode)	1	Represented as transitions from TimeSet states to TimeDisplay : A then TimeDisplay --> AlarmMode : A
+Composite State	AlarmMode	1	Represented as AlarmMode composite state
+State	Initial state (AlarmMode → Idle)	1	AlarmMode starts with [*] --> AlarmDisplay
+State	Idle	1	Represented as AlarmDisplay state
+Action	entry / displayAlarmTime()	1	Represented as do: showAlarmTime() which is semantically equivalent
+Transition	C (Idle ⇒ Minutes)	1	Represented as AlarmDisplay --> AlarmSetMinutes : C
+Action	flashMinutes()	1	Represented as do: flashAlarmMinutes() in AlarmSetMinutes state
+Transition	A (AlarmMode ⇒ CountdownMode)	1	Represented as AlarmDisplay --> CountdownMode : A
+State	Minutes	1	Represented as AlarmSetMinutes state
+Transition	B (Minutes ⇒ Minutes)	1	Represented as AlarmSetMinutes --> AlarmSetMinutes : B / incrementAlarmMinutes()
+Action	alarmTime+=1min	1	Represented as incrementAlarmMinutes() which is semantically equivalent
+Transition	C (Minutes ⇒ Hours)	1	Represented as AlarmSetMinutes --> AlarmSetHours : C
+Action	flashHours()	1	Represented as do: flashAlarmHours() in AlarmSetHours state
+State	Hours	1	Represented as AlarmSetHours state
+Transition	B (Hours ⇒ Hours)	1	Represented as AlarmSetHours --> AlarmSetHours : B / incrementAlarmHours()
+Action	alarmTime+=1hr	1	Represented as incrementAlarmHours() which is semantically equivalent
+Transition	C (Hours ⇒ Minutes)	1	Represented as AlarmSetHours --> AlarmSetMinutes : C
+Action	flashMinutes()	1	Represented as do: flashAlarmMinutes() in AlarmSetMinutes state
+Transition	A (AlarmMode ⇒ CountdownMode)	1	Represented as transitions from AlarmSet states to TimekeepingMode : A then AlarmDisplay --> CountdownMode : A
+Composite State	CountdownMode	1	Represented as CountdownMode composite state
+State	Initial state (CountdownMode → Idle)	1	CountdownMode starts with [*] --> CountdownDisplay
+State	Idle	1	Represented as CountdownDisplay state
+Action	entry / displayCdTime()	1	Represented as do: showCountdownTime() which is semantically equivalent
+Transition	C (Idle ⇒ Seconds)	1	Represented as CountdownDisplay --> CountdownSetSeconds : C
+Action	flashSeconds()	1	Represented as do: flashCountdownSeconds() in CountdownSetSeconds state
+Transition	B (Idle ⇒ Countdown)	1	Represented as CountdownDisplay --> CountdownRunning : B [countdownTimeSet()] / startCountdown()
+Guard	[cdTime > 0:00:00]	1	Represented as [countdownTimeSet()] which is semantically equivalent
+Action	targetTime = time + cdTime	1	Represented as startCountdown() which implies setting target time
+Transition	A (CountdownMode ⇒ TimeKeepingMode)	1	Represented as CountdownDisplay --> TimekeepingMode : A
+State	Seconds	1	Represented as CountdownSetSeconds state
+Transition	B (Seconds ⇒ Seconds)	1	Represented as CountdownSetSeconds --> CountdownSetSeconds : B / incrementCountdownSeconds()
+Action	cdTime+=1sec	1	Represented as incrementCountdownSeconds() which is semantically equivalent
+Transition	C (Seconds ⇒ Minutes)	1	Represented as CountdownSetSeconds --> CountdownSetMinutes : C
+Action	flashMinutes()	1	Represented as do: flashCountdownMinutes() in CountdownSetMinutes state
+State	Minutes	1	Represented as CountdownSetMinutes state
+Transition	B (Minutes ⇒ Minutes)	1	Represented as CountdownSetMinutes --> CountdownSetMinutes : B / incrementCountdownMinutes()
+Action	cdTime+=1min	1	Represented as incrementCountdownMinutes() which is semantically equivalent
+Transition	C (Minutes ⇒ Hours)	1	Represented as CountdownSetMinutes --> CountdownSetHours : C
+Action	flashHours()	1	Represented as do: flashCountdownHours() in CountdownSetHours state
+State	Hours	1	Represented as CountdownSetHours state
+Transition	B (Hours ⇒ Hours)	1	Represented as CountdownSetHours --> CountdownSetHours : B / incrementCountdownHours()
+Action	cdTime+=1hr	1	Represented as incrementCountdownHours() which is semantically equivalent
+Transition	C (Hours ⇒ Seconds)	1	Represented as CountdownSetHours --> CountdownSetSeconds : C
+Action	flashSeconds()	1	Represented as do: flashCountdownSeconds() in CountdownSetSeconds state
+State	Countdown	1	Represented as CountdownRunning state
+Action	do / displayCountdown()	1	Represented as do: showCountdownTime() in CountdownRunning state
+Transition	(targetTime == time) (Countdown ⇒ CountdownReached)	1	Represented as CountdownRunning --> CountdownNotification : after1sec [countdownRemaining() <= 1] / setCountdownZero()
+Action	flash()	1	Represented as do: flashCountdownZero() in CountdownNotification state
+State	CountdownReached	1	Represented as CountdownNotification state
+Action	do / flashZero&Beep5Sec()	1	Represented as entry / startCountdownBeep() and do: flashCountdownZero() which captures the behavior
+Transition	anyButton (CountdownReached ⇒ CountdownMode)	1	Represented as multiple button transitions from CountdownNotification to CountdownDisplay
+History State	H	1	Represented as state H in NormalOperation
+Transition	(alarm && alarmTime == time) (AlarmOff ⇒ AlarmOn)	1	Represented as NormalOperation --> AlarmNotification : alarmDue [alarmEnabled()]
+Action	saveDisplay()	0	No explicit saveDisplay() action; history state H is used instead
+Action	flash()	1	Represented as do: flashAlarmTime() in AlarmNotification state
+State	AlarmOn	1	Represented as AlarmNotification state
+Action	do / flashAlarmTime&Beep5Sec()	1	Represented as entry / startAlarmBeep() and do: flashAlarmTime() which captures the behavior
+Action	exit / restoreDisplay()	0	No explicit restoreDisplay() action; transitions to H handle return
+Transition	anyButton (AlarmOn ⇒ History State)	1	Represented as multiple button transitions from AlarmNotification to H
+State	additional elements	0	No fundamentally incorrect states present
+Transition	additional elements	0	No fundamentally incorrect transitions present
+Guard	additional elements	0	No fundamentally incorrect guards present
+Action	additional elements	0	No fundamentally incorrect actions present
+Composite State	additional elements	0	No fundamentally incorrect composite states present
+Region	additional elements	2	AlarmSwitch and FlashAlertSwitch regions are unnecessary separate regions; Clock region is also unnecessary
+History State	additional elements	0	No fundamentally incorrect history states present

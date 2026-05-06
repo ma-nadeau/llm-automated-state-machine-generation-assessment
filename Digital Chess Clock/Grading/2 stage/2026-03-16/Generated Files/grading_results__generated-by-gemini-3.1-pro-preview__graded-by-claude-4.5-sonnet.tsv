@@ -1,0 +1,53 @@
+Type	Element	Grading	Notes
+State	initial state (off)	1	Represented by [*] --> Off
+Transition	initial state (off) => off	1	Transition from [*] to Off is present
+State	Off	1	Off state is present
+Transition	off => on	1	Off --> On : onOff transition is present
+Composite State	On	1	On is a composite state containing substates
+State	initial state (on)	1	Represented by [*] --> Configuring within On state
+Composite State	GameSetup	0.5	Configuring and ReadyToStart states exist but not grouped as a composite GameSetup state with parallel regions
+Region	GameSetup Region 1	0	No parallel regions for timing selection within GameSetup
+State	Initial state (region 1)	0	No region 1 initial state as regions are not present
+State	TimingSelection	0.5	Configuring state handles timing selection but not as a separate state within a region
+Action	incrTimingProgram()	0.5	nextTiming() action is present on plus transitions which is semantically similar
+Action	decrTimingProgram()	0.5	prevTiming() action is present on minus transitions which is semantically similar
+Transition	timing selection => timing selection	1	Self-transitions on Configuring with plus/minus are present
+Transition	game setup => ready to start	1	Configuring --> ReadyToStart : select transition is present
+Region	GameSetup Region 2	0	No parallel region for white king status
+State	Initial state (region 2)	0	No region 2 initial state as regions are not present
+State	WhiteKingOnLeft	0	No explicit state for white king position
+State	WhiteKingOnRight	0	No explicit state for white king position
+Transition	initial state => white king on left	0	No such transition as white king states are not present
+Transition	white king on left => white king on right	0.5	flip action swapColors() is present in Configuring and ReadyToStart but not as transitions between explicit states
+Transition	white king on right => white king on left	0.5	flip action swapColors() is present in Configuring and ReadyToStart but not as transitions between explicit states
+State	ReadyToStart	1	ReadyToStart state is present
+Transition	ready to start => game running	1	ReadyToStart --> ActiveGame : startStop transition is present
+Composite State	GameRunning	1	ActiveGame is a composite state representing the running game
+History State	H	1	History state H is present within ActiveGame
+State	WhiteClockRunning	1	WhiteTurn state represents white clock running
+Action	startTimer(wc)	0	No explicit entry action for starting white timer
+Action	stopTimer(wc)	0	No explicit exit action for stopping white timer
+Guard	[wc > 0]	1	[whiteTime > 0] guard is present on WhiteTurn self-transition
+Action	decrTimer(wc)	1	decrementWhite() action is present on WhiteTurn self-transition
+Transition	white clock running => white clock running	1	WhiteTurn --> WhiteTurn self-transition with after1sec is present
+State	BlackClockRunning	1	BlackTurn state represents black clock running
+Action	startTimer(bc)	0	No explicit entry action for starting black timer
+Action	stopTimer(bc)	0	No explicit exit action for stopping black timer
+Guard	[bc > 0]	1	[blackTime > 0] guard is present on BlackTurn self-transition
+Action	decrTimer(bc)	1	decrementBlack() action is present on BlackTurn self-transition
+Transition	balck clock running => black clock running	1	BlackTurn --> BlackTurn self-transition with after1sec is present
+Transition	game running => game paused	1	ActiveGame --> Paused : startStop transition is present
+Transition	game running => game finished	1	WhiteTurn/BlackTurn --> Flagged transitions represent game finishing
+Guard	[wc == 0]	1	[whiteTime == 0] guard is present on WhiteTurn to Flagged transition
+Guard	[bc == 0]	1	[blackTime == 0] guard is present on BlackTurn to Flagged transition
+State	GamePaused	1	Paused state is present
+Transition	game paused => game running	1	Paused --> H : startStop transition resumes game
+State	GameFinished	1	Flagged state represents game finished
+Transition	on => off	1	On --> Off : onOff transition is present
+State	additional elements	0	No additional incorrect states
+Transition	additional elements	0	No additional incorrect transitions
+Guard	additional elements	0	No additional incorrect guards
+Action	additional elements	1	flashFlag() action is used but should specify which player's flag per system description
+Composite State	additional elements	0	No additional incorrect composite states
+Region	additional elements	0	No additional incorrect regions
+History State	additional elements	0	No additional incorrect history states

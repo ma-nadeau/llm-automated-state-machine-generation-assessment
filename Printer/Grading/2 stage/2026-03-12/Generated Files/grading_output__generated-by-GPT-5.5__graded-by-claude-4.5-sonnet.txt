@@ -1,0 +1,45 @@
+Type,Element,Grading,Notes
+State,"initial state (Off)",1,Initial state correctly transitions to Off
+State,"Off",1,Off state is present
+Transition,"on (Off => On)",1,Transition masterOn from Off to On is present
+Composite State,"On",1,On is a composite state containing substates
+Transition,"off (On => Off)",1,Transition masterOff from On to Off is present
+State,"initial state (Idle)",1,Initial state in On correctly transitions to LoggedOut (equivalent to Idle)
+State,"Idle",1,LoggedOut state represents the idle/logged-out state
+Transition,"login(cardID) (Idle => Idle)",1,Transition tapCard with unauthorized guard loops back to LoggedOut
+Guard,"[!idAuthorized(cardID)]",1,Guard !authorized(cardId) is semantically equivalent
+Transition,"login(cardID) (Idle => Ready)",1,Transition tapCard with authorized guard goes to UserSession (Ready equivalent)
+Guard,"[idAuthorized(cardID)]",1,Guard authorized(cardId) is present
+Action,"action=""none""",0,No action setting a variable to track mode is present
+State,"Ready",1,UserSession with TaskSelection represents the ready state
+Transition,"logoff (Ready => Idle)",1,Transition logoff from TaskSelection to LoggedOut is present
+Transition,"start (Ready => Ready)",1,Self-transition on PrintChosen with !hasQueuedDocument guard shows error
+Guard,"[action==""scan"" & !originalLoaded()]",1,Guard !originalDetected() on ScanChosen self-transition is equivalent
+Transition,"start (Ready => Ready)",1,Self-transition on PrintChosen with !hasQueuedDocument guard is present
+Guard,"[action==""print"" & !documentInQueue()]",1,Guard !hasQueuedDocument() is semantically equivalent
+Transition,"scan (Ready => Ready)",1,Transition chooseScan within TaskSelection changes option
+Action,"action = ""scan""",0,No explicit action variable assignment for scan mode
+Transition,"print (Ready => Ready)",1,Transition choosePrint within TaskSelection changes option
+Action,"action=""print""",0,No explicit action variable assignment for print mode
+Transition,"start (Ready => Scan & Email)",1,Transition from ScanChosen to Scanning with originalDetected guard is present
+Guard,"[action==""scan"" && originalLoaded()]",1,Guard originalDetected() on ScanChosen to Scanning transition is equivalent
+Composite State,"Busy",1,ActiveTask composite state represents the busy state
+Transition,"stop (Busy => Ready)",1,Transition pressStop from ActiveTask to TaskSelection is present
+Transition,"done (Busy => Ready)",1,Transitions printDone and scanDone from Printing/Scanning to TaskSelection are present
+Transition,"jam (Busy => Suspended)",1,Transition paperJam from ActiveTask to PaperJamRecovery is present
+History State,"for Busy",1,History state H is present in ActiveTask
+State,"Print",1,Printing state is present
+Transition,"start (Ready => Print)",1,Transition from PrintChosen to Printing with hasQueuedDocument guard is present
+Guard,"[action=""print"" && documentInQueue()]",1,Guard hasQueuedDocument() is semantically equivalent
+Transition,"outOfPaper (Print => Suspended)",1,Transition outOfPaper from Printing to OutOfPaperRecovery is present
+State,"Scan & Email",1,Scanning state represents scan and email functionality
+State,"Suspended",1,PaperJamRecovery and OutOfPaperRecovery represent suspended states
+Transition,"resume (Suspended => History State for Busy)",1,Transitions resume from recovery states to history state H are present
+Transition,"cancel (Suspended => Ready)",1,Transitions cancel from recovery states to TaskSelection are present
+State,"additional elements",0,No fundamentally incorrect states present
+Transition,"additional elements",0,No fundamentally incorrect transitions present
+Guard,"additional elements",0,No fundamentally incorrect guards present
+Action,"additional elements",0,No fundamentally incorrect actions present
+Composite State,"additional elements",0,Additional composite states are reasonable modeling choices
+Region,"additional elements",0,No incorrect regions present
+History State,"additional elements",0,No incorrect history states present

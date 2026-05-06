@@ -1,0 +1,209 @@
+stateDiagram-v2
+    state Watch {
+        region UserInterface {
+            state AlarmNotification
+            note right of AlarmNotification
+                entry / startAlarmBeep()
+                do: flashAlarmTime()
+                do: flashBacklightIfFlashAlertOn()
+                exit / stopAlarmNotification()
+            end note
+
+            state CountdownNotification
+            note right of CountdownNotification
+                entry / startCountdownBeep()
+                do: flashCountdownZero()
+                do: flashBacklightIfFlashAlertOn()
+                exit / stopCountdownNotification()
+            end note
+
+            state NormalOperation {
+                state H
+
+                state TimekeepingMode {
+                    state TimeDisplay
+                    note right of TimeDisplay
+                        do: showCurrentTime()
+                    end note
+
+                    state TimeSetSeconds
+                    note right of TimeSetSeconds
+                        do: flashCurrentSeconds()
+                    end note
+
+                    state TimeSetMinutes
+                    note right of TimeSetMinutes
+                        do: flashCurrentMinutes()
+                    end note
+
+                    state TimeSetHours
+                    note right of TimeSetHours
+                        do: flashCurrentHours()
+                    end note
+
+                    [*] --> TimeDisplay
+
+                    TimeDisplay --> TimeSetSeconds : C
+                    TimeSetSeconds --> TimeSetMinutes : C
+                    TimeSetMinutes --> TimeSetHours : C
+                    TimeSetHours --> TimeSetSeconds : C
+
+                    TimeSetSeconds --> TimeSetSeconds : B / incrementCurrentSeconds()
+                    TimeSetMinutes --> TimeSetMinutes : B / incrementCurrentMinutes()
+                    TimeSetHours --> TimeSetHours : B / incrementCurrentHours()
+
+                    TimeSetSeconds --> TimeDisplay : A / saveCurrentTime()
+                    TimeSetMinutes --> TimeDisplay : A / saveCurrentTime()
+                    TimeSetHours --> TimeDisplay : A / saveCurrentTime()
+                }
+
+                state AlarmMode {
+                    state AlarmDisplay
+                    note right of AlarmDisplay
+                        do: showAlarmTime()
+                    end note
+
+                    state AlarmSetMinutes
+                    note right of AlarmSetMinutes
+                        do: flashAlarmMinutes()
+                    end note
+
+                    state AlarmSetHours
+                    note right of AlarmSetHours
+                        do: flashAlarmHours()
+                    end note
+
+                    [*] --> AlarmDisplay
+
+                    AlarmDisplay --> AlarmSetMinutes : C
+                    AlarmSetMinutes --> AlarmSetHours : C
+                    AlarmSetHours --> AlarmSetMinutes : C
+
+                    AlarmSetMinutes --> AlarmSetMinutes : B / incrementAlarmMinutes()
+                    AlarmSetHours --> AlarmSetHours : B / incrementAlarmHours()
+
+                    AlarmSetMinutes --> TimekeepingMode : A / saveAlarmTime()
+                    AlarmSetHours --> TimekeepingMode : A / saveAlarmTime()
+                }
+
+                state CountdownMode {
+                    state CountdownDisplay
+                    note right of CountdownDisplay
+                        do: showCountdownTime()
+                    end note
+
+                    state CountdownSetSeconds
+                    note right of CountdownSetSeconds
+                        do: flashCountdownSeconds()
+                    end note
+
+                    state CountdownSetMinutes
+                    note right of CountdownSetMinutes
+                        do: flashCountdownMinutes()
+                    end note
+
+                    state CountdownSetHours
+                    note right of CountdownSetHours
+                        do: flashCountdownHours()
+                    end note
+
+                    state CountdownRunning
+                    note right of CountdownRunning
+                        do: runCountdown()
+                        do: showCountdownTime()
+                    end note
+
+                    [*] --> CountdownDisplay
+
+                    CountdownDisplay --> CountdownSetSeconds : C
+                    CountdownSetSeconds --> CountdownSetMinutes : C
+                    CountdownSetMinutes --> CountdownSetHours : C
+                    CountdownSetHours --> CountdownSetSeconds : C
+
+                    CountdownSetSeconds --> CountdownSetSeconds : B / incrementCountdownSeconds()
+                    CountdownSetMinutes --> CountdownSetMinutes : B / incrementCountdownMinutes()
+                    CountdownSetHours --> CountdownSetHours : B / incrementCountdownHours()
+
+                    CountdownSetSeconds --> CountdownDisplay : A / saveCountdownTime()
+                    CountdownSetMinutes --> CountdownDisplay : A / saveCountdownTime()
+                    CountdownSetHours --> CountdownDisplay : A / saveCountdownTime()
+
+                    CountdownDisplay --> CountdownRunning : B [countdownTimeSet()] / startCountdown()
+                    CountdownRunning --> CountdownDisplay : B / stopCountdown()
+                    CountdownRunning --> CountdownRunning : after1sec [countdownRemaining() > 1] / decrementCountdown()
+                    CountdownRunning --> CountdownNotification : after1sec [countdownRemaining() <= 1] / setCountdownZero()
+                }
+
+                [*] --> TimekeepingMode
+
+                TimeDisplay --> AlarmMode : A
+                AlarmDisplay --> CountdownMode : A
+                CountdownDisplay --> TimekeepingMode : A
+            }
+
+            [*] --> NormalOperation
+
+            NormalOperation --> AlarmNotification : alarmDue [alarmEnabled()]
+            AlarmNotification --> H : after5sec
+            AlarmNotification --> H : A
+            AlarmNotification --> H : B
+            AlarmNotification --> H : C
+            AlarmNotification --> H : D
+
+            CountdownNotification --> CountdownDisplay : after5sec
+            CountdownNotification --> CountdownDisplay : A
+            CountdownNotification --> CountdownDisplay : B
+            CountdownNotification --> CountdownDisplay : C
+            CountdownNotification --> CountdownDisplay : D
+        }
+
+        region Backlight {
+            state BacklightOff
+            note right of BacklightOff
+                entry / turnBacklightOff()
+            end note
+
+            state BacklightOn
+            note right of BacklightOn
+                entry / turnBacklightOn()
+                exit / turnBacklightOff()
+            end note
+
+            [*] --> BacklightOff
+
+            BacklightOff --> BacklightOn : D
+            BacklightOn --> BacklightOff : D
+            BacklightOn --> BacklightOff : after10sec
+        }
+
+        region AlarmSwitch {
+            state AlarmOff
+            state AlarmOn
+
+            [*] --> AlarmOff
+
+            AlarmOff --> AlarmOn : B [inTimeDisplay()] / enableAlarm()
+            AlarmOn --> AlarmOff : B [inTimeDisplay()] / disableAlarm()
+        }
+
+        region FlashAlertSwitch {
+            state FlashAlertOff
+            state FlashAlertOn
+
+            [*] --> FlashAlertOff
+
+            FlashAlertOff --> FlashAlertOn : Bheld2sec [inTimeDisplay()] / enableFlashAlert()
+            FlashAlertOn --> FlashAlertOff : Bheld2sec [inTimeDisplay()] / disableFlashAlert()
+        }
+
+        region Clock {
+            state ClockActive
+
+            [*] --> ClockActive
+
+            ClockActive --> ClockActive : after1sec [alarmEnabled() && currentTimeEqualsAlarm()] / incrementCurrentTimeAndRaiseAlarmDue()
+            ClockActive --> ClockActive : after1sec [!alarmEnabled() || !currentTimeEqualsAlarm()] / incrementCurrentTime()
+        }
+    }
+
+    [*] --> Watch

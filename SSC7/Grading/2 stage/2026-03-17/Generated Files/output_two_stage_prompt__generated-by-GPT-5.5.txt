@@ -1,0 +1,68 @@
+stateDiagram-v2
+    state OverrideRequired {
+        state OverrideClearItem
+        state OverrideClearAll
+
+        [*] --> OverrideClearItem
+
+        OverrideClearItem --> OverrideClearItem : staffCodeEntered(code) [!overrideCodeValid(code)] / showError()
+        OverrideClearAll --> OverrideClearAll : staffCodeEntered(code) [!overrideCodeValid(code)] / showError()
+    }
+
+    note right of OverrideRequired
+        entry / turnLightOn()
+        exit / turnLightOff()
+    end note
+
+    state PaymentProcessing
+
+    note right of PaymentProcessing
+        entry / sendPaymentRequest()
+        do: waitForPaymentTerminalResult()
+    end note
+
+    state TimeoutWarning
+
+    note right of TimeoutWarning
+        entry / startCountdown(60s)
+        exit / stopCountdown()
+    end note
+
+    state Shopping {
+        state ReadyForNextItem
+        state WeighingProductCodeItem
+        state AwaitingSecurityCheck
+        state WeighingBag
+        state H
+
+        [*] --> ReadyForNextItem
+
+        ReadyForNextItem --> ReadyForNextItem : barcodeScanned(code) [!barcodeExists(code)] / showError()
+        ReadyForNextItem --> AwaitingSecurityCheck : barcodeScanned(code) [barcodeExists(code)] / showItem(code)
+        ReadyForNextItem --> ReadyForNextItem : productCodeEntered(code) [!productCodeExists(code)] / showError()
+        ReadyForNextItem --> WeighingProductCodeItem : productCodeEntered(code) [productCodeExists(code)] / requestItemWeight(code)
+        WeighingProductCodeItem --> AwaitingSecurityCheck : itemWeightReceived(weight) / showItemWithWeight(weight)
+        WeighingProductCodeItem --> ReadyForNextItem : cancel / clearPendingItem()
+        ReadyForNextItem --> WeighingBag : ownBags / requestBagWeight()
+        WeighingBag --> ReadyForNextItem : securityWeightReceived(weight) / addBag(weight), showBagCount()
+        WeighingBag --> ReadyForNextItem : cancel / clearPendingBag()
+        AwaitingSecurityCheck --> ReadyForNextItem : securityWeightReceived(weight) [weightMatches(weight)] / confirmItem()
+        AwaitingSecurityCheck --> OverrideClearItem : securityWeightReceived(weight) [!weightMatches(weight)] / showOverrideRequired()
+        ReadyForNextItem --> OverrideClearItem : removeItem [billHasItems()] / showOverrideRequired()
+        ReadyForNextItem --> OverrideClearAll : cancelEverything / showOverrideRequired()
+        AwaitingSecurityCheck --> OverrideClearAll : cancelEverything / showOverrideRequired()
+        ReadyForNextItem --> PaymentProcessing : pay [billHasItems()]
+    }
+
+    [*] --> Shopping
+
+    Shopping --> TimeoutWarning : timeoutWarning
+    TimeoutWarning --> H : continue
+    TimeoutWarning --> ReadyForNextItem : countdownReachedZero / clearEverything(), resetForNextCustomer()
+
+    OverrideClearItem --> ReadyForNextItem : staffCodeEntered(code) [overrideCodeValid(code)] / clearItemFromBill()
+    OverrideClearAll --> ReadyForNextItem : staffCodeEntered(code) [overrideCodeValid(code)] / clearEverything(), resetForNextCustomer()
+
+    PaymentProcessing --> ReadyForNextItem : paymentSuccess(authCode) / printBill(authCode), clearEverything(), resetForNextCustomer()
+    PaymentProcessing --> ReadyForNextItem : paymentFail(error) / showError(error)
+    PaymentProcessing --> ReadyForNextItem : paymentCancel

@@ -1,0 +1,74 @@
+stateDiagram-v2
+    state Off
+    state On {
+        state Setup {
+            region CourseSelection {
+                state CourseSelected
+                [*] --> CourseSelected
+                CourseSelected --> CourseSelected : menu / selectNextCourse()
+            }
+            region CrustSelection {
+                state Medium
+                state Dark
+                state Light
+                [*] --> Medium
+                Medium --> Dark : crust
+                Dark --> Light : crust
+                Light --> Medium : crust
+            }
+            region TimerSetting {
+                state TimerNotSet
+                state TimerSet
+                [*] --> TimerNotSet
+                TimerNotSet --> TimerSet : plus / increaseTimerAndEnableDelayedStart(10min)
+                TimerNotSet --> TimerNotSet : minus [timer == 0]
+                TimerSet --> TimerSet : plus [timer < 18h] / increaseTimer(10min)
+                TimerSet --> TimerSet : plus [timer == 18h]
+                TimerSet --> TimerSet : minus [timer > 10min] / decreaseTimer(10min)
+                TimerSet --> TimerNotSet : minus [timer == 10min] / decreaseTimerAndDisableDelayedStart(10min)
+            }
+        }
+
+        state Countdown
+        note right of Countdown
+            entry / startCountdown(timer)
+            exit / stopCountdown()
+        end note
+
+        state BakingProcess {
+            state Kneading
+            note right of Kneading
+                entry / startKneading()
+                exit / stopKneading()
+            end note
+
+            state Rising
+
+            state Baking
+            note right of Baking
+                do: heat()
+            end note
+
+            state Warming
+            note right of Warming
+                do: warm()
+            end note
+
+            [*] --> Kneading
+            Kneading --> Rising : after(kneadingTime(selectedCourse))
+            Rising --> Baking : after(risingTime(selectedCourse))
+            Baking --> Warming : after(bakingTime(selectedCourse))
+            Warming --> Setup : after(60min) / clearTimer()
+        }
+
+        [*] --> Setup
+        Setup --> Countdown : start [timer > 0]
+        Setup --> BakingProcess : start [timer == 0]
+        Countdown --> BakingProcess : timerElapsed / clearTimer()
+        Countdown --> Setup : stop / clearTimer()
+        BakingProcess --> Setup : stop / clearTimer()
+    }
+
+    [*] --> Off
+    Off --> On : powerOn / initializeDefaults()
+    On --> Off : powerOff

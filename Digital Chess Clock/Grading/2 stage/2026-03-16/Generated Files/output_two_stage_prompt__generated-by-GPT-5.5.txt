@@ -1,0 +1,101 @@
+stateDiagram-v2
+    state Off
+    state On {
+        state Game {
+            state Paused
+            note right of Paused
+                entry / stopBothClocks()
+                exit / resumeActiveClock()
+            end note
+
+            state WhiteFlag
+            note right of WhiteFlag
+                entry / showWhiteFlag()
+                do: flashWhiteFlag()
+            end note
+
+            state BlackFlag
+            note right of BlackFlag
+                entry / showBlackFlag()
+                do: flashBlackFlag()
+            end note
+
+            state GameRunning {
+                state WhiteRunning
+                note right of WhiteRunning
+                    entry / startWhiteCountdown()
+                    exit / stopWhiteCountdown()
+                end note
+
+                state BlackRunning
+                note right of BlackRunning
+                    entry / startBlackCountdown()
+                    exit / stopBlackCountdown()
+                end note
+
+                state H
+
+                [*] --> WhiteRunning
+                WhiteRunning --> WhiteRunning : after1sec [whiteTime > 1] / decrementWhiteClock()
+                WhiteRunning --> WhiteFlag : after1sec [whiteTime <= 1] / setWhiteClockToZero()
+                WhiteRunning --> BlackRunning : flip / addIncrementToWhite()
+
+                BlackRunning --> BlackRunning : after1sec [blackTime > 1] / decrementBlackClock()
+                BlackRunning --> BlackFlag : after1sec [blackTime <= 1] / setBlackClockToZero()
+                BlackRunning --> WhiteRunning : flip / addIncrementToBlack()
+            }
+
+            [*] --> GameRunning
+            GameRunning --> Paused : startStop / stopBothClocks()
+            Paused --> H : startStop / resumeActiveClock()
+        }
+
+        state Setup {
+            state ChoosingTiming {
+                state BrowseWhiteLeft
+                state BrowseWhiteRight
+
+                [*] --> BrowseWhiteLeft
+                BrowseWhiteLeft --> BrowseWhiteLeft : plus / showNextPredefinedTiming()
+                BrowseWhiteLeft --> BrowseWhiteLeft : minus / showPreviousPredefinedTiming()
+                BrowseWhiteLeft --> BrowseWhiteRight : flip / swapWhiteBlackSymbols()
+
+                BrowseWhiteRight --> BrowseWhiteRight : plus / showNextPredefinedTiming()
+                BrowseWhiteRight --> BrowseWhiteRight : minus / showPreviousPredefinedTiming()
+                BrowseWhiteRight --> BrowseWhiteLeft : flip / swapWhiteBlackSymbols()
+            }
+
+            note right of ChoosingTiming
+                do: displayCurrentTimingOption()
+            end note
+
+            state TimingSelected {
+                state ReadyWhiteLeft
+                state ReadyWhiteRight
+
+                [*] --> ReadyWhiteLeft
+                ReadyWhiteLeft --> ReadyWhiteRight : flip / swapWhiteBlackSymbols()
+                ReadyWhiteRight --> ReadyWhiteLeft : flip / swapWhiteBlackSymbols()
+            }
+
+            note right of TimingSelected
+                do: displaySelectedTiming()
+            end note
+
+            [*] --> ChoosingTiming
+            BrowseWhiteLeft --> ReadyWhiteLeft : select / storeSelectedTiming()
+            BrowseWhiteRight --> ReadyWhiteRight : select / storeSelectedTiming()
+            ReadyWhiteLeft --> Game : startStop / initializeClocks(whiteLeft)
+            ReadyWhiteRight --> Game : startStop / initializeClocks(whiteRight)
+        }
+
+        note right of Setup
+            entry / initializeSetup()
+        end note
+
+        [*] --> Setup
+    }
+
+    [*] --> Off
+    Off --> On : onOff / powerOn()
+    On --> Off : onOff / powerOff()

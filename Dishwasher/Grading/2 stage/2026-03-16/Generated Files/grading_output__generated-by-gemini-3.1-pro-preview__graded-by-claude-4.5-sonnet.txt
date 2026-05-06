@@ -1,0 +1,55 @@
+Type,Element,Grading,Notes
+Composite State,"DishwasherOn",0,Student model uses 'Dishwasher' as the top-level composite state but does not model the door locking mechanism as a separate region; door locking is modeled as entry/exit actions on WashingPhase instead of a parallel Door region.
+Region,"Door",0,No separate Door region exists in the student submission; door state is not modeled as a parallel region with states like Closed/Open/Locked.
+State,"initial state (⇒ Closed)",0,No Door region exists; no initial state for door.
+State,"Closed",0,No Closed state in a Door region.
+Transition,"open (Closed ⇒ Open)",0,No transition between Closed and Open states in a Door region.
+Transition,"lock (Closed ⇒ Locked)",0,No lock transition in a Door region; locking is modeled as an action.
+State,"Open",0,No Open state in a Door region.
+Transition,"close (Open ⇒ Closed)",0,No close transition in a Door region.
+State,"Locked",0,No Locked state in a Door region.
+Transition,"unlock (Locked ⇒ Closed)",0,No unlock transition in a Door region; unlocking is modeled as an action.
+Region,"Washer",1,Student has an 'Operation' region that serves the same purpose as the Washer region; it contains the main operational states.
+State,"initial state",1,Initial state exists in the Operation region pointing to Setup.
+Transition,"r =1; dT=20; (initial state ⇒ Idle)",0.5,Initial transition exists to Setup (equivalent to Idle) but does not initialize r and dT variables explicitly.
+State,"Idle",1,Setup state serves as the Idle state where program selection occurs.
+Transition,"selectProgram(n) (Idle ⇒ Idle)",1,Setup --> Setup : selectProgram / setMaxCycles() represents program selection; setMaxCycles() is equivalent to setting r=n.
+Guard,"[n ≥ 1]",0,No explicit guard checking n >= 1 on the selectProgram transition.
+Action,"r = n;",1,setMaxCycles() action is semantically equivalent to r=n.
+Transition,"toggleDryingTime (Idle ⇒ Idle)",0,No toggleDryingTime transition in Setup/Idle state; drying time adjustment is in a separate parallel region.
+Action,"if dT = 20 then dT = 40 else dT = 20;",0.5,Drying time toggle logic exists in the DryingTimeSetting region but not as a self-transition on Idle; the logic is split into two transitions (extend/reduce).
+Transition,"start (Idle ⇒ Cleaning)",1,Setup --> Running : start transition exists; Running contains WashingPhase which is equivalent to Cleaning.
+Guard,"[door.isClosed()]",0,No explicit guard checking door state on the start transition.
+Action,"door.lock(); c = 1;",0.5,cycles = 0 initializes the counter; lockDoor() is called on entry to WashingPhase (not on the start transition itself) which is close but not exact.
+Composite State,"Cleaning",1,WashingPhase composite state represents the cleaning/washing cycle.
+State,"initial state (⇒ Intake)",1,Initial state in WashingPhase points to WaterIntake.
+State,"Intake",1,WaterIntake state exists.
+Transition,"Intake ⇒ Washing",1,WaterIntake --> Washing : waterTaken transition exists.
+State,"Washing",1,Washing state exists.
+Transition,"after 10 min (Washing ⇒ Drain)",1,Washing --> Draining : after 10min transition exists.
+State,"Drain",1,Draining state exists.
+Guard,"[c < r]",1,Guard [cycles < maxCycles] is semantically equivalent to [c < r].
+Transition,"Drain ⇒ Intake",1,Draining --> WaterIntake transition exists with the correct guard.
+Action,"c++",1,cycles++ action is semantically equivalent to c++.
+Transition,"(Drain ⇒ end state)",0.5,Draining --> DryingPhase transition exists with guard [cycles == maxCycles] but does not use an explicit end state; it transitions directly to DryingPhase.
+Guard,"[c ≥ r]",1,Guard [cycles == maxCycles] is semantically equivalent to [c >= r].
+History State,"History State for Cleaning",0,No history state exists in the student submission.
+Transition,"toggleDryingTime (Cleaning ⇒ History State)",0,No toggleDryingTime transition from WashingPhase to a history state.
+Action,"if dT = 20 then dT = 40 else dT = 20;",0,No toggle action in the context of a transition from Cleaning; drying time changes are in a separate region.
+Transition,"Cleaning ⇒ Drying",1,Draining --> DryingPhase transition exists when cycles == maxCycles.
+Action,"door.unlock();",1,unlockDoor() is called on exit from WashingPhase which occurs before entering DryingPhase; semantically equivalent.
+State,"Drying",1,Drying state exists within DryingPhase.
+Transition,"after dT min (Drying ⇒ Idle)",1,Drying --> Setup : after dryingTime transition exists.
+Transition,"extend DryingTime (Drying ⇒ Drying)",0.5,ExtendedDryingTime state change can occur during drying but is modeled in a parallel region rather than as a self-transition on Drying; behavior is similar but structure differs.
+Action,"dT = 40;",1,dryingTime = 40m action exists in the DryingTimeSetting region.
+Transition,"open (Drying ⇒ Suspended)",1,Drying --> DryingSuspended : doorOpened transition exists.
+State,"Suspended",1,DryingSuspended state exists.
+Transition,"close (Suspended ⇒ Drying)",1,DryingSuspended --> Drying : doorClosed transition exists.
+Transition,"after 5 min (Suspended ⇒ Idle)",1,DryingSuspended --> Setup : after 5min transition exists.
+State,"additional elements",0,No fundamentally incorrect additional states.
+Transition,"additional elements",0,No fundamentally incorrect additional transitions.
+Guard,"additional elements",0,No fundamentally incorrect additional guards.
+Action,"additional elements",0,No fundamentally incorrect additional actions.
+Composite State,"additional elements",0,Additional composite states (Dishwasher and Running) are reasonable organizational choices.
+Region,"additional elements",1,DryingTimeSetting region is an alternative modeling approach but does not correctly capture the requirement that drying time can only be reduced before the drying phase starts; the guard [not in DryingPhase] is insufficient.
+History State,"additional elements",0,No additional history states.

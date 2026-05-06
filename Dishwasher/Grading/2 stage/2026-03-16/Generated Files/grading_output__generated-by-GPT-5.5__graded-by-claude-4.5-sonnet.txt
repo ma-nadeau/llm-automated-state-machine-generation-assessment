@@ -1,0 +1,55 @@
+Type,Element,Grading,Notes
+Composite State,"DishwasherOn",0,Student model uses ProgramRunning as the main composite state but does not have a DishwasherOn composite state that encompasses the entire system including door and washer regions.
+Region,"Door",0,Student model does not have a Door region. Door behavior is modeled through transitions and guards but not as a separate parallel region.
+State,"initial state (⇒ Closed)",0,No Door region exists in student model so no initial state for door.
+State,"Closed",0,Door states are not explicitly modeled as separate states in student model.
+Transition,"open (Closed ⇒ Open)",0,Door state transitions are not explicitly modeled; door behavior is handled through events and guards.
+Transition,"lock (Closed ⇒ Locked)",0,Door locking is modeled as an action in Cleaning entry rather than a state transition.
+State,"Open",0,Door Open state is not explicitly modeled as a separate state.
+Transition,"close (Open ⇒ Closed)",0,Door close transition is not explicitly modeled as a state transition.
+State,"Locked",0,Door Locked state is not explicitly modeled as a separate state.
+Transition,"unlock (Locked ⇒ Closed)",0,Door unlocking is modeled as an action in Cleaning exit rather than a state transition.
+Region,"Washer",1,Student model has ProcessRegion which serves as the main washer region containing the cleaning and drying logic.
+State,"initial state",1,ProcessRegion has an initial state that transitions to Cleaning.
+Transition,"r =1; dT=20; (initial state ⇒ Idle)",0.5,Student model initializes in SetupDefaultDrying which handles program selection but does not explicitly show r=1 and dT=20 initialization on the initial transition.
+State,"Idle",1,Student model has SetupDefaultDrying and SetupExtendedDrying states that serve as idle states for program selection.
+Transition,"selectProgram(n) (Idle ⇒ Idle)",1,Student model has selectProgram(program) transitions in both SetupDefaultDrying and SetupExtendedDrying states.
+Guard,"[n ≥ 1]",0.5,Student model uses [programSelected] guard on start transition but does not explicitly show [n>=1] guard on selectProgram transition.
+Action,"r = n;",1,Student model has setProgram(program) action which captures setting the program parameter.
+Transition,"toggleDryingTime (Idle ⇒ Idle)",1,Student model has extendDrying and reduceDrying transitions between SetupDefaultDrying and SetupExtendedDrying states.
+Action,"if dT = 20 then dT = 40 else dT = 20;",1,Student model uses setDryingTime actions with 20min and 40min parameters to toggle drying time.
+Transition,"start (Idle ⇒ Cleaning)",1,Student model has start transitions from SetupDefaultDrying and SetupExtendedDrying to ProgramRunning which contains Cleaning.
+Guard,"[door.isClosed()]",0,Student model uses [programSelected] guard but does not explicitly check door.isClosed() on start transition.
+Action,"door.lock(); c = 1;",1,Student model has lockDoor() in Cleaning entry and initializeProgram action which captures initialization.
+Composite State,"Cleaning",1,Student model has Cleaning composite state with substates WaterIntake Washing and Draining.
+State,"initial state (⇒ Intake)",1,Cleaning state has initial state transitioning to WaterIntake.
+State,"Intake",1,Student model has WaterIntake state which corresponds to Intake.
+Transition,"Intake ⇒ Washing",1,Student model has waterIntakeComplete transition from WaterIntake to Washing.
+State,"Washing",1,Student model has Washing state.
+Transition,"after 10 min (Washing ⇒ Drain)",1,Student model has washTimerElapsed transition from Washing to Draining with 10min timer in entry action.
+State,"Drain",1,Student model has Draining state.
+Guard,"[c < r]",1,Student model has [cyclesRemaining>1] guard which is semantically equivalent to c<r.
+Transition,"Drain ⇒ Intake",1,Student model has waterDrained transition from Draining back to WaterIntake with cyclesRemaining>1 guard.
+Action,"c++",1,Student model has decrementCyclesRemaining() action which updates the cycle counter.
+Transition,"(Drain ⇒ end state)",0.5,Student model transitions from Draining to Drying rather than to an explicit end state but this captures the completion of cleaning.
+Guard,"[c ≥ r]",1,Student model has [cyclesRemaining==1] guard which is semantically equivalent to c>=r.
+History State,"History State for Cleaning",0,Student model does not have a history state for Cleaning.
+Transition,"toggleDryingTime (Cleaning ⇒ History State)",0.5,Student model has extendDrying and reduceDrying transitions in DryingTimeRegion during ProgramRunning but not from Cleaning to a history state.
+Action,"if dT = 20 then dT = 40 else dT = 20;",1,Student model has setOrExtendDryingTime and setDryingTime actions in DryingTimeRegion transitions.
+Transition,"Cleaning ⇒ Drying",1,Student model has waterDrained transition from Draining to Drying when cyclesRemaining==1.
+Action,"door.unlock();",1,Student model has unlockDoor() in Cleaning exit action.
+State,"Drying",1,Student model has Drying composite state.
+Transition,"after dT min (Drying ⇒ Idle)",1,Student model has dryingTimerElapsed transition from HotAirDrying to SetupDefaultDrying with dryingTimer.
+Transition,"extend DryingTime (Drying ⇒ Drying)",1,Student model has extendDrying transition in DryingTimeRegion from RunningDefaultDrying to RunningExtendedDrying.
+Action,"dT = 40;",1,Student model has setOrExtendDryingTime(40min) action.
+Transition,"open (Drying ⇒ Suspended)",1,Student model has doorOpened transition from HotAirDrying to DoorOpenSuspended.
+State,"Suspended",1,Student model has DoorOpenSuspended state.
+Transition,"close (Suspended ⇒ Drying)",1,Student model has doorClosed transition from DoorOpenSuspended to HotAirDrying.
+Transition,"after 5 min (Suspended ⇒ Idle)",1,Student model has doorOpenTimerElapsed transition from DoorOpenSuspended to SetupDefaultDrying with 5min timer.
+State,"additional elements",0,No fundamentally incorrect additional states.
+Transition,"additional elements",0,No fundamentally incorrect additional transitions.
+Guard,"additional elements",0,No fundamentally incorrect additional guards.
+Action,"additional elements",0,No fundamentally incorrect additional actions.
+Composite State,"additional elements",0,Additional composite states like ProgramRunning are reasonable modeling choices.
+Region,"additional elements",0,DryingTimeRegion is a reasonable parallel region for managing drying time adjustments.
+History State,"additional elements",0,No additional history states present.

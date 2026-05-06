@@ -1,0 +1,45 @@
+Type	Element	Grading	Notes
+State	initial state (Off)	1	Initial state correctly transitions to Off
+State	Off	1	Off state is present
+Transition	on (Off => On)	1	Transition switchOn from Off to On is present
+Composite State	On	1	On is a composite state containing substates
+Transition	off (On => Off)	1	Transition switchOff from On to Off is present
+State	initial state (Idle)	0.5	Initial state transitions to LoggedOut instead of Idle; LoggedOut serves as the idle/logged-out state
+State	Idle	0.5	Student uses LoggedOut as the logged-out state and Idle as a substate of LoggedIn; semantically similar but structurally different
+Transition	login(cardID) (Idle => Idle)	1	Transition tapCard with guard [!authorized] from LoggedOut to LoggedOut with showLoginError action is present
+Guard	[!idAuthorized(cardID)]	1	Guard [!authorized] is present on the self-transition for unauthorized card
+Transition	login(cardID) (Idle => Ready)	1	Transition tapCard with guard [authorized] from LoggedOut to LoggedIn is present
+Guard	[idAuthorized(cardID)]	1	Guard [authorized] is present on the transition to LoggedIn
+Action	"action=""none"""	0	No explicit action setting action to none is present
+State	Ready	0.5	Student uses Idle within LoggedIn as the ready state; semantically captures readiness but named differently
+Transition	logoff (Ready => Idle)	1	Logoff transitions from Idle/PrintReady/ScanReady to LoggedOut are present
+Transition	start (Ready => Ready)	1	Self-transitions on PrintReady and ScanReady with error conditions are present
+Guard	"[action==""scan"" & !originalLoaded()]"	1	Guard [!documentDetected] on ScanReady self-transition is present
+Transition	start (Ready => Ready)	1	Self-transition on PrintReady with guard [queueEmpty] is present
+Guard	"[action==""print"" & !documentInQueue()]"	1	Guard [queueEmpty] on PrintReady self-transition is present
+Transition	scan (Ready => Ready)	1	Transition chooseScan between Idle and ScanReady is present
+Action	"action = ""scan"""	0	No explicit action variable assignment is present
+Transition	print (Ready => Ready)	1	Transition choosePrint between Idle and PrintReady is present
+Action	"action=""print"""	0	No explicit action variable assignment is present
+Transition	start (Ready => Scan & Email)	1	Transition start with guard [documentDetected] from ScanReady to Scanning is present
+Guard	"[action==""scan"" && originalLoaded()]"	1	Guard [documentDetected] on transition to Scanning is present
+Composite State	Busy	0	No Busy composite state; Print and Scan states are separate within LoggedIn
+Transition	stop (Busy => Ready)	1	Stop transitions from Printing and Scanning to PrintReady and ScanReady are present
+Transition	done (Busy => Ready)	1	Done transitions from Printing and Scanning to PrintReady and ScanReady are present
+Transition	jam (Busy => Suspended)	1	PaperJam transitions from Printing and Scanning to suspended states are present
+History State	for Busy	0	No history state is present; resume transitions go directly to the active state
+State	Print	1	Printing state is present
+Transition	start (Ready => Print)	1	Transition start with guard [queueNotEmpty] from PrintReady to Printing is present
+Guard	"[action=""print"" && documentInQueue()]"	1	Guard [queueNotEmpty] on transition to Printing is present
+Transition	outOfPaper (Print => Suspended)	1	Transition outOfPaper from Printing to PrintSuspendedPaper is present
+State	Scan & Email	1	Scanning state is present; sendToEmail action on done transition captures email functionality
+State	Suspended	1	Multiple suspended states (PrintSuspendedJam PrintSuspendedPaper ScanSuspendedJam) are present
+Transition	resume (Suspended => History State for Busy)	0.5	Resume transitions go directly to Printing/Scanning instead of through history state; behaviorally similar but not using history mechanism
+Transition	cancel (Suspended => Ready)	1	Cancel transitions from suspended states to PrintReady/ScanReady are present
+State	additional elements	0	No incorrect additional states
+Transition	additional elements	0	No incorrect additional transitions
+Guard	additional elements	0	No incorrect additional guards
+Action	additional elements	0	No incorrect additional actions
+Composite State	additional elements	0	LoggedIn composite state is a reasonable modeling choice
+Region	additional elements	0	No incorrect additional regions
+History State	additional elements	0	No incorrect additional history states

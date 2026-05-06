@@ -1,0 +1,75 @@
+stateDiagram-v2
+    state SetupDefaultDrying
+    state SetupExtendedDrying
+    state ProgramRunning {
+        region ProcessRegion {
+            state Drying {
+                state HotAirDrying
+                note right of HotAirDrying
+                    entry / startHotAir()
+                    do: dryWithHotAir()
+                    exit / stopHotAir()
+                end note
+                state DoorOpenSuspended
+                note right of DoorOpenSuspended
+                    entry / pauseDryingTimer()
+                    entry / startDoorOpenTimer(5min)
+                    do: keepDryingSuspended()
+                    exit / stopDoorOpenTimer()
+                end note
+                [*] --> HotAirDrying
+                HotAirDrying --> DoorOpenSuspended : doorOpened / suspendDrying()
+                HotAirDrying --> SetupDefaultDrying : dryingTimerElapsed / endProgram()
+                DoorOpenSuspended --> HotAirDrying : doorClosed [doorOpenTime<=5min] / resumeDrying()
+                DoorOpenSuspended --> SetupDefaultDrying : doorOpenTimerElapsed [doorIsOpen] / endProgram()
+            }
+            note right of Drying
+                entry / startDryingTimer(dryingTime)
+                exit / stopDryingTimer()
+            end note
+            state Cleaning {
+                state WaterIntake
+                note right of WaterIntake
+                    entry / openWaterIntakeValve()
+                    do: takeWaterFromIntakePipe()
+                    exit / closeWaterIntakeValve()
+                end note
+                state Washing
+                note right of Washing
+                    entry / startWashTimer(10min)
+                    do: washDishes()
+                    exit / stopWashTimer()
+                end note
+                state Draining
+                note right of Draining
+                    entry / startDrainPump()
+                    do: drainWater()
+                    exit / stopDrainPump()
+                end note
+                [*] --> WaterIntake
+                WaterIntake --> Washing : waterIntakeComplete
+                Washing --> Draining : washTimerElapsed
+                Draining --> WaterIntake : waterDrained [cyclesRemaining>1] / decrementCyclesRemaining()
+                Draining --> Drying : waterDrained [cyclesRemaining==1] / markDryingPhaseStarted()
+            }
+            note right of Cleaning
+                entry / lockDoor()
+                exit / unlockDoor()
+            end note
+            [*] --> Cleaning
+        }
+        region DryingTimeRegion {
+            state RunningDefaultDrying
+            state RunningExtendedDrying
+            [*] --> RunningDefaultDrying
+            RunningDefaultDrying --> RunningExtendedDrying : extendDrying / setOrExtendDryingTime(40min)
+            RunningExtendedDrying --> RunningDefaultDrying : reduceDrying [dryingPhaseNotStarted] / setDryingTime(20min)
+        }
+    }
+    [*] --> SetupDefaultDrying
+    SetupDefaultDrying --> SetupDefaultDrying : selectProgram(program) / setProgram(program)
+    SetupDefaultDrying --> SetupExtendedDrying : extendDrying / setDryingTime(40min)
+    SetupDefaultDrying --> ProgramRunning : start [programSelected] / initializeProgram(selectedProgram,20min)
+    SetupExtendedDrying --> SetupExtendedDrying : selectProgram(program) / setProgram(program)
+    SetupExtendedDrying --> SetupDefaultDrying : reduceDrying / setDryingTime(20min)
+    SetupExtendedDrying --> RunningExtendedDrying : start [programSelected] / initializeProgram(selectedProgram,40min)

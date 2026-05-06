@@ -1,0 +1,74 @@
+Type,Element,Grading,Notes
+State,"Initial state (→ Active)",1,Represented as [*] --> Shopping where Shopping is the main composite state equivalent to Active
+Composite State,"Active",1,Represented by Shopping composite state which contains all main operational substates
+State,"Initial state (Active → Ready)",1,Represented as [*] --> ReadyForNextItem within Shopping composite state
+State,"Ready",1,Represented as ReadyForNextItem state
+Transition,"scannedNr (Ready ⇒ Ready)",1,Represented as barcodeScanned(code) [!barcodeExists(code)] / showError() self-transition on ReadyForNextItem
+Guard,"[!existsNr()]",1,Represented as [!barcodeExists(code)] guard condition
+Action,"error()",1,Represented as showError() action
+Transition,"productCodeEntered (Ready ⇒ Ready)",1,Represented as productCodeEntered(code) [!productCodeExists(code)] / showError() self-transition
+Guard,"[!existsCode()]",1,Represented as [!productCodeExists(code)] guard condition
+Action,"error()",1,Represented as showError() action
+Transition,"productCodeEntered (Ready ⇒ WeighItem)",1,Represented as productCodeEntered(code) [productCodeExists(code)] / requestItemWeight(code) to WeighingProductCodeItem
+Guard,"[existsCode()]",1,Represented as [productCodeExists(code)] guard condition
+Transition,"scannedNr (Ready ⇒ CheckWeight)",1,Represented as barcodeScanned(code) [barcodeExists(code)] / showItem(code) to AwaitingSecurityCheck
+Guard,"[existsNr()]",1,Represented as [barcodeExists(code)] guard condition
+Action,"addItem()",1,Represented as showItem(code) which displays the item after adding it
+Transition,"cancelCheckout (Ready ⇒ Override)",1,Represented as cancelEverything transition from ReadyForNextItem to OverrideClearAll
+Action,"setTypeEverything()",1,Represented by routing to OverrideClearAll substate which handles clearing everything
+Transition,"removeItem (Ready ⇒ Override)",1,Represented as removeItem transition from ReadyForNextItem to OverrideClearItem
+Guard,"[billHasItem()]",1,Represented as [billHasItems()] guard condition
+Action,"setTypeItem()",1,Represented by routing to OverrideClearItem substate which handles clearing a single item
+Transition,"broughtOwnBag (Ready ⇒ WeighBag)",1,Represented as ownBags transition from ReadyForNextItem to WeighingBag
+Transition,"pay (Ready ⇒ PayRequested)",1,Represented as pay transition from ReadyForNextItem to PaymentProcessing
+Guard,"[billHasItem()]",1,Represented as [billHasItems()] guard condition
+Action,"sendPaymentRequest()",1,Represented as entry action in PaymentProcessing state note
+State,"WeighItem",1,Represented as WeighingProductCodeItem state
+Transition,"cancel (WeighItem ⇒ Ready)",1,Represented as cancel transition from WeighingProductCodeItem to ReadyForNextItem
+Transition,"weighedItem (WeighItem ⇒ CheckWeight)",1,Represented as itemWeightReceived(weight) transition from WeighingProductCodeItem to AwaitingSecurityCheck
+Action,"addWeighedItem()",1,Represented as showItemWithWeight(weight) action which displays the weighed item
+State,"CheckWeight",1,Represented as AwaitingSecurityCheck state
+Transition,"secWeighedItem (CheckWeight ⇒ Ready)",1,Represented as securityWeightReceived(weight) [weightMatches(weight)] transition from AwaitingSecurityCheck to ReadyForNextItem
+Guard,"[weightMatched()]",1,Represented as [weightMatches(weight)] guard condition
+Transition,"secWeighedItem (CheckWeight ⇒ Override)",1,Represented as securityWeightReceived(weight) [!weightMatches(weight)] transition from AwaitingSecurityCheck to OverrideClearItem
+Guard,"[!weightMatched()]",1,Represented as [!weightMatches(weight)] guard condition
+Action,"setTypeItem()",1,Represented by routing to OverrideClearItem substate which handles clearing a single item
+Transition,"cancelCheckout (CheckWeight ⇒ Override)",1,Represented as cancelEverything transition from AwaitingSecurityCheck to OverrideClearAll
+Action,"setTypeEverything()",1,Represented by routing to OverrideClearAll substate which handles clearing everything
+State,"WeighBag",1,Represented as WeighingBag state
+Transition,"secWeighedItem (WeighBag ⇒ Ready)",1,Represented as securityWeightReceived(weight) transition from WeighingBag to ReadyForNextItem
+Action,"addBag()",1,Represented as addBag(weight) action in the transition
+Transition,"cancel (WeighBag ⇒ Ready)",1,Represented as cancel transition from WeighingBag to ReadyForNextItem
+State,"Override",1,Represented as OverrideRequired composite state containing OverrideClearItem and OverrideClearAll substates
+Action,"entry / lightOn()",1,Represented as entry / turnLightOn() in OverrideRequired state note
+Action,"exit / lightOff()",1,Represented as exit / turnLightOff() in OverrideRequired state note
+Transition,"codeEntered (Override ⇒ Ready)",1,Represented as staffCodeEntered(code) [overrideCodeValid(code)] / clearItemFromBill() from OverrideClearItem to ReadyForNextItem
+Guard,"[codeCorrect() && isTypeItem()]",1,Represented by transition from OverrideClearItem substate with [overrideCodeValid(code)] guard
+Action,"clearItem()",1,Represented as clearItemFromBill() action
+Transition,"codeEntered (Override ⇒ Ready)",1,Represented as staffCodeEntered(code) [overrideCodeValid(code)] / clearEverything() from OverrideClearAll to ReadyForNextItem
+Guard,"[codeCorrect() && isTypeEverything()]",1,Represented by transition from OverrideClearAll substate with [overrideCodeValid(code)] guard
+Action,"clearEverything()",1,Represented as clearEverything() action
+Transition,"codeEntered (Override ⇒ Override)",1,Represented as self-transitions on both OverrideClearItem and OverrideClearAll with [!overrideCodeValid(code)] guard
+Guard,"[!codeCorrect()]",1,Represented as [!overrideCodeValid(code)] guard condition
+Transition,"timeoutWarning (Active ⇒ TimeoutCountdown)",1,Represented as timeoutWarning transition from Shopping to TimeoutWarning
+Action,"error()",1,Represented as showError() action in self-transitions on override substates
+History State,"H (Active)",1,Represented as H history state within Shopping composite state
+State,"TimeoutCountdown",1,Represented as TimeoutWarning state
+Action,"do / countFrom60()",1,Represented as entry / startCountdown(60s) in TimeoutWarning state note
+Transition,"(TimeoutCountdown ⇒ Active)",1,Represented as countdownReachedZero transition from TimeoutWarning to ReadyForNextItem
+Action,"clearEverything()",1,Represented as clearEverything() action in the transition
+Action,"readyForNextCustomer()",1,Represented as resetForNextCustomer() action in the transition
+State,"PayRequested",1,Represented as PaymentProcessing state
+Transition,"fail (PayRequested ⇒ Ready)",1,Represented as paymentFail(error) transition from PaymentProcessing to ReadyForNextItem
+Action,"error()",1,Represented as showError(error) action
+Transition,"cancel (PayRequested ⇒ Ready)",1,Represented as paymentCancel transition from PaymentProcessing to ReadyForNextItem
+Transition,"success (PayRequested ⇒ Ready)",1,Represented as paymentSuccess(authCode) transition from PaymentProcessing to ReadyForNextItem
+Action,"printBill()",1,Represented as printBill(authCode) action
+Action,"readyForNextCustomer()",1,Represented as resetForNextCustomer() action
+State,"additional elements",0,No additional incorrect states present
+Transition,"additional elements",0,No additional incorrect transitions present
+Guard,"additional elements",0,No additional incorrect guards present
+Action,"additional elements",0,No additional incorrect actions present
+Composite State,"additional elements",0,No additional incorrect composite states present
+Region,"additional elements",0,No additional incorrect regions present
+History State,"additional elements",0,No additional incorrect history states present

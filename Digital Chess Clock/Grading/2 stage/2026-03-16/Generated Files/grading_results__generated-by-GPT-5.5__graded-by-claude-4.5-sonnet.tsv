@@ -1,0 +1,53 @@
+Type	Element	Grading	Notes
+State	initial state (off)	1	Represented by [*] --> Off at the top level
+Transition	initial state (off) => off	1	Transition [*] --> Off is present
+State	Off	1	Off state is explicitly defined
+Transition	off => on	1	Off --> On : onOff / powerOn() transition is present
+Composite State	On	1	On composite state is defined with nested states
+State	initial state (on)	1	[*] --> Setup within On state serves as initial state
+Composite State	GameSetup	1	Represented by Setup composite state which handles timing selection and orientation
+Region	GameSetup Region 1	1	ChoosingTiming handles timing selection functionality as a region-equivalent structure
+State	Initial state (region 1)	1	[*] --> ChoosingTiming serves as initial state for timing selection
+State	TimingSelection	1	ChoosingTiming with BrowseWhiteLeft and BrowseWhiteRight represents timing selection
+Action	incrTimingProgram()	1	showNextPredefinedTiming() action on plus button captures increment behavior
+Action	decrTimingProgram()	1	showPreviousPredefinedTiming() action on minus button captures decrement behavior
+Transition	timing selection => timing selection	1	Self-transitions on BrowseWhiteLeft and BrowseWhiteRight with plus/minus events
+Transition	game setup => ready to start	1	BrowseWhiteLeft/Right --> ReadyWhiteLeft/Right : select transitions present
+Region	GameSetup Region 2	1	TimingSelected with ReadyWhiteLeft and ReadyWhiteRight handles orientation as region-equivalent
+State	Initial state (region 2)	1	[*] --> ReadyWhiteLeft in TimingSelected serves as initial state
+State	WhiteKingOnLeft	1	BrowseWhiteLeft and ReadyWhiteLeft represent white king on left orientation
+State	WhiteKingOnRight	1	BrowseWhiteRight and ReadyWhiteRight represent white king on right orientation
+Transition	initial state => white king on left	1	[*] --> BrowseWhiteLeft serves as initial transition to white king on left
+Transition	white king on left => white king on right	1	flip transitions between BrowseWhiteLeft and BrowseWhiteRight and between ReadyWhiteLeft and ReadyWhiteRight
+Transition	white king on right => white king on left	1	flip transitions in reverse direction are present
+State	ReadyToStart	1	TimingSelected state with ReadyWhiteLeft and ReadyWhiteRight represents ready to start
+Transition	ready to start => game running	1	ReadyWhiteLeft/Right --> Game : startStop transitions present
+Composite State	GameRunning	1	GameRunning composite state is defined with clock states
+History State	H	1	H history state is defined within GameRunning
+State	WhiteClockRunning	1	WhiteRunning state is present
+Action	startTimer(wc)	1	startWhiteCountdown() entry action captures starting white timer
+Action	stopTimer(wc)	1	stopWhiteCountdown() exit action captures stopping white timer
+Guard	[wc > 0]	1	[whiteTime > 1] guard on self-transition captures clock running condition
+Action	decrTimer(wc)	1	decrementWhiteClock() action captures decrementing white clock
+Transition	white clock running => white clock running	1	WhiteRunning --> WhiteRunning self-transition with after1sec event
+State	BlackClockRunning	1	BlackRunning state is present
+Action	startTimer(bc)	1	startBlackCountdown() entry action captures starting black timer
+Action	stopTimer(bc)	1	stopBlackCountdown() exit action captures stopping black timer
+Guard	[bc > 0]	1	[blackTime > 1] guard on self-transition captures clock running condition
+Action	decrTimer(bc)	1	decrementBlackClock() action captures decrementing black clock
+Transition	balck clock running => black clock running	1	BlackRunning --> BlackRunning self-transition with after1sec event
+Transition	game running => game paused	1	GameRunning --> Paused : startStop transition is present
+Transition	game running => game finished	1	WhiteRunning --> WhiteFlag and BlackRunning --> BlackFlag transitions represent game finishing
+Guard	[wc == 0]	1	[whiteTime <= 1] guard on transition to WhiteFlag captures zero condition
+Guard	[bc == 0]	1	[blackTime <= 1] guard on transition to BlackFlag captures zero condition
+State	GamePaused	1	Paused state is present within Game composite state
+Transition	game paused => game running	1	Paused --> H : startStop transition resumes game
+State	GameFinished	1	WhiteFlag and BlackFlag states represent game finished conditions
+Transition	on => off	1	On --> Off : onOff / powerOff() transition is present
+State	additional elements	0	No fundamentally incorrect states present
+Transition	additional elements	0	All transitions are reasonable and support the system behavior
+Guard	additional elements	0	All guards are appropriate for the modeled behavior
+Action	additional elements	0	All actions are reasonable and support the system requirements
+Composite State	additional elements	0	Game composite state is a reasonable organizational choice
+Region	additional elements	0	No incorrect regions present
+History State	additional elements	0	History state usage is appropriate

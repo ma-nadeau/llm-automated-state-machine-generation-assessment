@@ -1,0 +1,116 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Watch)	1	Present as [*] --> Watch
+Action	time=0:00:00; alarmTime=0:00:00; alarm=false; flashAlert=false; cdTime=0:00:00	0	No initialization action shown on initial transition
+Composite State	Watch	1	Present as composite state containing regions
+Region	Light	0.5	Region named 'Backlight' instead of 'Light' but serves same purpose
+State	Initial state (Light → Off)	1	Present as [*] --> BacklightOff
+State	Off	1	Present as BacklightOff
+Action	entry / lightOff()	0	No entry action shown for BacklightOff
+Transition	D (Off ⇒ On)	1	Present as D transition from BacklightOff to BacklightOn
+State	On	1	Present as BacklightOn
+Action	entry / lightOn()	0	No entry action shown for BacklightOn
+Transition	D (On ⇒ Off)	1	Present as D transition from BacklightOn to BacklightOff
+Transition	after 10sec (On ⇒ Off)	1	Present as after_10s transition from BacklightOn to BacklightOff
+Transition	flash (On ⇒ Flash)	0.5	Transitions to BacklightFlashing exist but triggered by alarmTimeReached/countdownReachedZero events rather than flash event
+Guard	[flashAlert]	1	Present as [flashAlertOn] guard on transitions to BacklightFlashing
+State	Flash	1	Present as BacklightFlashing
+Action	do / flash5Sec()	0	No do action shown for BacklightFlashing
+Transition	flash (Flash ⇒ Off)	0	No flash event transition from BacklightFlashing; uses anyButton and after_5s instead
+Guard	[flashAlert]	0	No guard on exit from BacklightFlashing
+Transition	anyButton (Flash ⇒ Off)	1	Present as anyButton transition from BacklightFlashing to BacklightOff
+Region	WatchMode	1	Present as region 'Main'
+State	Initial state (WatchMode → AlarmOff)	0.5	Initial state goes to NormalOperation composite which contains modes but no explicit AlarmOff state
+Composite State	AlarmOff	0	No AlarmOff composite state; alarm on/off handled differently
+State	Initial state (AlarmOff → TimeKeepingMode)	1	Initial state in NormalOperation goes to Timekeeping
+Composite State	TimeKeepingMode	1	Present as Timekeeping composite state
+State	Initial state (TimeKeepingMode → Idle)	1	Present as [*] --> ShowTime
+State	Idle	1	Present as ShowTime state
+Action	do / displayTime()	0	No do action shown for ShowTime
+Transition	B2sec (Idle ⇒ Idle)	1	Present as B_held_2s self-transition on ShowTime
+Action	toggleFlashAlert()	1	Present as action on B_held_2s transition
+Transition	B (Idle ⇒ Idle)	1	Present as B self-transition on ShowTime
+Action	toggleAlarm()	1	Present as action on B transition
+Transition	C (Idle ⇒ Seconds)	1	Present as C transition from ShowTime to SetTime which starts at SetSeconds
+Action	flashSeconds()	0	No explicit flashSeconds action on transition; flashing shown in note
+Transition	A (TimeKeepingMode ⇒ AlarmMode)	1	Present as A transition from ShowTime to Alarm
+State	Seconds	1	Present as SetSeconds
+Transition	B (Seconds ⇒ Seconds)	1	Present as B self-transition on SetSeconds
+Action	time+=1sec	1	Present as incrementSeconds() action
+Transition	C (Seconds ⇒ Minutes)	1	Present as C transition from SetSeconds to SetMinutes
+Action	flashMinutes()	0	No explicit flashMinutes action on transition
+State	Minutes	1	Present as SetMinutes
+Transition	B (Minutes ⇒ Minutes)	1	Present as B self-transition on SetMinutes
+Action	time+=1min	1	Present as incrementMinutes() action
+Transition	C (Minutes ⇒ Hours)	1	Present as C transition from SetMinutes to SetHours
+Action	flashHours()	0	No explicit flashHours action on transition
+State	Hours	1	Present as SetHours
+Transition	B (Hours ⇒ Hours)	1	Present as B self-transition on SetHours
+Action	time+=1hr	1	Present as incrementHours() action
+Transition	C (Hours ⇒ Seconds)	1	Present as C transition from SetHours to SetSeconds
+Action	flashSeconds()	0	No explicit flashSeconds action on transition
+Transition	A (TimeKeepingMode ⇒ AlarmMode)	1	Present as A transition from SetTime to ShowTime then ShowTime to Alarm
+Composite State	AlarmMode	1	Present as Alarm composite state
+State	Initial state (AlarmMode → Idle)	1	Present as [*] --> ShowAlarm
+State	Idle	1	Present as ShowAlarm
+Action	entry / displayAlarmTime()	0	No entry action shown for ShowAlarm
+Transition	C (Idle ⇒ Minutes)	1	Present as C transition from ShowAlarm to SetAlarm which starts at SetAlarmMinutes
+Action	flashMinutes()	0	No explicit flashMinutes action on transition
+Transition	A (AlarmMode ⇒ CountdownMode)	1	Present as A transition from ShowAlarm to Countdown
+State	Minutes	1	Present as SetAlarmMinutes
+Transition	B (Minutes ⇒ Minutes)	1	Present as B self-transition on SetAlarmMinutes
+Action	alarmTime+=1min	1	Present as incrementMinutes() action
+Transition	C (Minutes ⇒ Hours)	1	Present as C transition from SetAlarmMinutes to SetAlarmHours
+Action	flashHours()	0	No explicit flashHours action on transition
+State	Hours	1	Present as SetAlarmHours
+Transition	B (Hours ⇒ Hours)	1	Present as B self-transition on SetAlarmHours
+Action	alarmTime+=1hr	1	Present as incrementHours() action
+Transition	C (Hours ⇒ Minutes)	1	Present as C transition from SetAlarmHours to SetAlarmMinutes
+Action	flashMinutes()	0	No explicit flashMinutes action on transition
+Transition	A (AlarmMode ⇒ CountdownMode)	1	Present as A transition from SetAlarm to Timekeeping then eventually to Countdown
+Composite State	CountdownMode	1	Present as Countdown composite state
+State	Initial state (CountdownMode → Idle)	1	Present as [*] --> ShowCountdown
+State	Idle	1	Present as ShowCountdown
+Action	entry / displayCdTime()	0	No entry action shown for ShowCountdown
+Transition	C (Idle ⇒ Seconds)	1	Present as C transition from ShowCountdown to SetCountdown which starts at SetCDSeconds
+Action	flashSeconds()	0	No explicit flashSeconds action on transition
+Transition	B (Idle ⇒ Countdown)	1	Present as B transition from ShowCountdown to CountdownRunning
+Guard	[cdTime > 0:00:00]	1	Present as [countdownTimeSet] guard
+Action	targetTime = time + cdTime	1	Present as startCountdown() action which implies setting target time
+Transition	A (CountdownMode ⇒ TimeKeepingMode)	1	Present as A transition from ShowCountdown to Timekeeping
+State	Seconds	1	Present as SetCDSeconds
+Transition	B (Seconds ⇒ Seconds)	1	Present as B self-transition on SetCDSeconds
+Action	cdTime+=1sec	1	Present as incrementSeconds() action
+Transition	C (Seconds ⇒ Minutes)	1	Present as C transition from SetCDSeconds to SetCDMinutes
+Action	flashMinutes()	0	No explicit flashMinutes action on transition
+State	Minutes	1	Present as SetCDMinutes
+Transition	B (Minutes ⇒ Minutes)	1	Present as B self-transition on SetCDMinutes
+Action	cdTime+=1min	1	Present as incrementMinutes() action
+Transition	C (Minutes ⇒ Hours)	1	Present as C transition from SetCDMinutes to SetCDHours
+Action	flashHours()	0	No explicit flashHours action on transition
+State	Hours	1	Present as SetCDHours
+Transition	B (Hours ⇒ Hours)	1	Present as B self-transition on SetCDHours
+Action	cdTime+=1hr	1	Present as incrementHours() action
+Transition	C (Hours ⇒ Seconds)	1	Present as C transition from SetCDHours to SetCDSeconds
+Action	flashSeconds()	0	No explicit flashSeconds action on transition
+State	Countdown	1	Present as CountdownRunning
+Action	do / displayCountdown()	0	No do action shown for CountdownRunning
+Transition	(targetTime == time) (Countdown ⇒ CountdownReached)	1	Present as countdownReachedZero event transition to CountdownRinging
+Action	flash()	0	No flash action on transition to CountdownRinging
+State	CountdownReached	1	Present as CountdownRinging
+Action	do / flashZero&Beep5Sec()	1	Present as beepAndFlashZeros() in note
+Transition	anyButton (CountdownReached ⇒ CountdownMode)	1	Present as anyButton transition from CountdownRinging to Countdown
+History State	H	1	Present as state H in NormalOperation
+Transition	(alarm && alarmTime == time) (AlarmOff ⇒ AlarmOn)	1	Present as alarmTimeReached transition from NormalOperation to AlarmRinging
+Action	saveDisplay()	0	No saveDisplay action on transition
+Action	flash()	0	No flash action on transition to AlarmRinging
+State	AlarmOn	1	Present as AlarmRinging
+Action	do / flashAlarmTime&Beep5Sec()	1	Present as beepAndFlashAlarmTime() in note
+Action	exit / restoreDisplay()	0	No exit action shown for AlarmRinging
+Transition	anyButton (AlarmOn ⇒ History State)	1	Present as anyButton transition from AlarmRinging to H
+State	additional elements	0	No fundamentally incorrect states present
+Transition	additional elements	0	No fundamentally incorrect transitions present
+Guard	additional elements	0	No fundamentally incorrect guards present
+Action	additional elements	0	No fundamentally incorrect actions present
+Composite State	additional elements	0	No fundamentally incorrect composite states present
+Region	additional elements	0	No fundamentally incorrect regions present
+History State	additional elements	0	No fundamentally incorrect history states present

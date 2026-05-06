@@ -1,0 +1,130 @@
+stateDiagram-v2
+    state TransportationMode
+    state Off
+    state On {
+        state AutoShutdownWarning
+        note right of AutoShutdownWarning
+            entry / showAutoShutdownMessage()
+        end note
+
+        state HoldingFromAutoShutdownWarning
+        note right of HoldingFromAutoShutdownWarning
+            entry / startShutdownHoldTimer()
+            exit / stopShutdownHoldTimer()
+        end note
+
+        state ShutdownMessage
+        note right of ShutdownMessage
+            entry / showSwitchingOffMessage()
+        end note
+
+        state Operating {
+            state Home
+            note right of Home
+                entry / showHomeScreen()
+            end note
+
+            state RecipeSelected
+            note right of RecipeSelected
+                entry / showSelectedRecipe()
+            end note
+
+            state RecipeExecution {
+                state AddIngredients
+                note right of AddIngredients
+                    entry / instructAddIngredients(recipeStep)
+                    do: weighIngredients()
+                end note
+
+                state IngredientsAmountConfirmed
+                note right of IngredientsAmountConfirmed
+                    entry / enableNextStep()
+                end note
+
+                state Chopping
+                note right of Chopping
+                    entry / startChopping(recipeSpeed, recipeChopTime)
+                    exit / stopChopping()
+                end note
+
+                state ReadyForCooking
+                note right of ReadyForCooking
+                    entry / waitForNextToCook()
+                end note
+
+                state Cooking
+                note right of Cooking
+                    entry / startCooking(recipeTemperature, recipeCookTime)
+                    exit / stopCooking()
+                end note
+
+                state MealReady
+                note right of MealReady
+                    entry / informMealReady()
+                end note
+
+                state H
+
+                [*] --> AddIngredients
+                AddIngredients --> IngredientsAmountConfirmed : correctAmountAdded / enableNextStep()
+                IngredientsAmountConfirmed --> Chopping : next
+                Chopping --> ReadyForCooking : choppingDone
+                ReadyForCooking --> Cooking : next [bowlPlaced()]
+                ReadyForCooking --> ReadyForCooking : next [!bowlPlaced()] / promptPlaceCookingBowl()
+                Cooking --> AddIngredients : cookingDone [hasMoreRecipeSteps()] / advanceRecipeStep()
+                Cooking --> MealReady : cookingDone [isLastRecipeStep()]
+                MealReady --> Home : bowlRemoved
+            }
+
+            state HoldingFromHome
+            note right of HoldingFromHome
+                entry / startShutdownHoldTimer()
+                exit / stopShutdownHoldTimer()
+            end note
+
+            state HoldingFromRecipeSelected
+            note right of HoldingFromRecipeSelected
+                entry / startShutdownHoldTimer()
+                exit / stopShutdownHoldTimer()
+            end note
+
+            state HoldingFromRecipeExecution
+            note right of HoldingFromRecipeExecution
+                entry / startShutdownHoldTimer()
+                exit / stopShutdownHoldTimer()
+            end note
+
+            [*] --> Home
+            Home --> RecipeSelected : selectRecipe(recipe)
+            RecipeSelected --> RecipeExecution : start [bowlPlaced()] / loadRecipeSteps()
+            RecipeSelected --> RecipeSelected : start [!bowlPlaced()] / promptPlaceCookingBowl()
+
+            Home --> HoldingFromHome : selectorHeld
+            HoldingFromHome --> Home : selectorReleased [heldLessThan5sec()]
+            HoldingFromHome --> ShutdownMessage : after(5sec)
+
+            RecipeSelected --> HoldingFromRecipeSelected : selectorHeld
+            HoldingFromRecipeSelected --> RecipeSelected : selectorReleased [heldLessThan5sec()]
+            HoldingFromRecipeSelected --> ShutdownMessage : after(5sec)
+
+            RecipeExecution --> HoldingFromRecipeExecution : selectorHeld
+            HoldingFromRecipeExecution --> H : selectorReleased [heldLessThan5sec()]
+            HoldingFromRecipeExecution --> ShutdownMessage : after(5sec)
+        }
+
+        [*] --> Operating
+        Operating --> AutoShutdownWarning : after(14min30sec) [notInUse()]
+        AutoShutdownWarning --> Operating : cancel
+        AutoShutdownWarning --> Operating : bowlRemoved
+        AutoShutdownWarning --> Off : after(30sec) / powerOff()
+
+        AutoShutdownWarning --> HoldingFromAutoShutdownWarning : selectorHeld
+        HoldingFromAutoShutdownWarning --> AutoShutdownWarning : selectorReleased [heldLessThan5sec()]
+        HoldingFromAutoShutdownWarning --> ShutdownMessage : after(5sec)
+
+        ShutdownMessage --> Off : selectorReleased / powerOff()
+    }
+
+    [*] --> TransportationMode
+    TransportationMode --> On : selectorPressed / deactivateTransportationMode()
+    Off --> On : selectorPressed

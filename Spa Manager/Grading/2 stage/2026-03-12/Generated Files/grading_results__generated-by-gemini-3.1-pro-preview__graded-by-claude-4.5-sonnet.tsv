@@ -1,0 +1,52 @@
+Type	Element	Grading	Notes
+Composite State	SpaManager	1	Present as the top-level composite state containing both regions.
+Region	Jacuzzi	1	Present as JacuzziRegion containing the Jacuzzi states.
+State	initial state (Jacuzzi → Off)	1	Initial state correctly transitions to JacuzziOff.
+State	Off	1	JacuzziOff state is present.
+Composite State	On (Jacuzzi)	1	JacuzziOn composite state is present with nested regions and states.
+Transition	on (Off ⇒ On)	1	turnOnJacuzzi transition from JacuzziOff to JacuzziOn is present.
+Transition	off (On ⇒ Off)	1	turnOffJacuzzi transition from JacuzziOn to JacuzziOff is present.
+State	initial state (Level1)	1	Initial state in PressureRegion correctly transitions to Level1.
+State	Level1	1	Level1 state is present in PressureRegion.
+Transition	up (Level1 ⇒ Level2)	1	increase transition from Level1 to Level2 is present.
+State	Level2	1	Level2 state is present in PressureRegion.
+Transition	up (Level2 ⇒ Level3)	1	increase transition from Level2 to Level3 is present.
+Transition	down (Level2 ⇒ Level1)	1	decrease transition from Level2 to Level1 is present.
+State	Level3	1	Level3 state is present in PressureRegion.
+Transition	down (Level3 ⇒ Level2)	1	decrease transition from Level3 to Level2 is present.
+History State	History State for Jacuzzi On	1	History state H is present in JacuzziOn.
+Transition	setPattern(PatternType type) (On⇒ History State)	1	selectPattern transition with guard and action handles pattern selection; semantically equivalent to setPattern.
+State	Paused	1	JacuzziPaused state is present.
+Transition	pause (On⇒ Pause)	1	pause transition from JacuzziActive to JacuzziPaused is present.
+Transition	after 2min (Paused ⇒ History State)	1	after(2min) transition from JacuzziPaused to H is present.
+Region	Sauna	1	Present as SaunaRegion containing the Sauna states.
+State	initial state (Sauna → Off)	1	Initial state correctly transitions to SaunaOff.
+State	Off	1	SaunaOff state is present.
+Composite State	On (Sauna)	1	SaunaOn composite state is present with nested regions.
+Transition	on (Off ⇒ On)	1	turnOnSauna transition from SaunaOff to SaunaOn is present.
+Transition	off (On ⇒ Off)	1	turnOffSauna transition from SaunaOn to SaunaOff is present.
+Region	Heater	1	Present as HeatingRegion within SaunaOn.
+State	initial state (Heater → Heat)	1	Initial state in HeatingRegion correctly transitions to HeatingOn.
+State	Heat	1	HeatingOn state is present with do: heat() activity.
+Transition	Heat ⇒ Idle	1	tempUpdate transition from HeatingOn to HeatingOff is present.
+Guard	[temp ≥ 90°C]	1	Guard [temp >= 90] is present on the HeatingOn to HeatingOff transition.
+State	Idle	1	HeatingOff state is present.
+Transition	Idle ⇒ Heat	1	tempUpdate transition from HeatingOff to HeatingOn is present.
+Guard	[temp < 85°C]	1	Guard [temp < 85] is present on the HeatingOff to HeatingOn transition.
+Region	Fan	1	Present as FanRegion within SaunaOn.
+State	initial state (Fan → Off)	1	Initial state in FanRegion correctly transitions to FanOff.
+State	Off	1	FanOff state is present.
+Transition	after 5min (Off ⇒ On)	0.5	FanOn to FanOff transition with after(5min) is present but the direction is reversed from the rubric expectation.
+Guard	[humidity > 40% && exceedTime > 3min]	0.5	Humidity guard is present but the 3-minute timing is modeled via FanMonitoring state and after(3min) rather than a single guard.
+Region	Water	1	Present as WaterRegion within SaunaOn.
+State	initial state (Water → Idle)	1	Initial state in WaterRegion correctly transitions to WaterReady.
+State	Idle	1	WaterReady state is present.
+Transition	Idle ⇒ Idle	1	Self-transition on WaterReady with requestWater event is present.
+Guard	disperse [humidity < 40% && !Fan.On && timeSinceLast ≥ 15min]	1	Guard [humidity < 40 && !fanActive] is present; timeSinceLast is modeled via WaterCooldown state and after(15min).
+State	additional elements	0	No incorrect additional states found.
+Transition	additional elements	0	No incorrect additional transitions found.
+Guard	additional elements	0	No incorrect additional guards found.
+Action	additional elements	0	No incorrect additional actions found.
+Composite State	additional elements	0	JacuzziActive is an additional composite state but it correctly organizes the pressure and pattern regions.
+Region	additional elements	0	No incorrect additional regions found.
+History State	additional elements	0	No incorrect additional history states found.

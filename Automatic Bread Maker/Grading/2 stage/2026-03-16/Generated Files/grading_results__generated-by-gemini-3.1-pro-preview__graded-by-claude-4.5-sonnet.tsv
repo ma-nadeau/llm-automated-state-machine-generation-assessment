@@ -1,0 +1,56 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Off)	1	Initial state correctly transitions to Off
+State	Off	1	Off state is present
+Transition	on (Off ⇒ On)	1	Transition turnOn from Off to On is present
+Composite State	On	1	On composite state is present
+Transition	on => off	1	Transition turnOff from On to Off is present
+Composite State	Setup	1	Setup composite state is present
+State	Initial state (Setup → Medium)	1	Initial state in Setup transitions to Medium in CrustSelection region
+Action	delay=0; selectFirstCourse()	1	Entry actions on Setup include setTimer(0) and setCourse(1) which are semantically equivalent
+State	Medium	1	Medium state is present in CrustSelection region
+Transition	setup initial state => medium	1	Initial transition to Medium is present in CrustSelection region
+Transition	medium => dark	1	Transition from Medium to Dark on crust event is present
+State	Dark	1	Dark state is present
+Transition	dark => light	1	Transition from Dark to Light on crust event is present
+State	Light	1	Light state is present
+History State	H	0	No history state is present in the student submission
+Transition	setup => H	0	No transition to history state as history state is not present
+Action	selectNextCourse()	1	Action nextCourse() is present on menu transition in CourseSelection region
+Transition	plus (Setup ⇒ Setup)	1	Plus transition with increaseTimer action is present in TimerSetup region
+Guard	[delay <= 17*60+50]	1	Guard [timer < 18h] is semantically equivalent to delay <= 1080 minutes
+Action	delay = delay + 10	1	Action increaseTimer(10min) is semantically equivalent
+Transition	minus (Setup ⇒ Setup)	1	Minus transition with decreaseTimer action is present in TimerSetup region
+Guard	[delay >= 10]	1	Guard [timer > 0] is semantically equivalent to delay >= 10
+Action	delay = delay - 10	1	Action decreaseTimer(10min) is semantically equivalent
+Transition	start (Setup ⇒ Countdown)	1	Transition from Setup to Countdown with guard [timer > 0] is present
+Guard	[delay > 0]	1	Guard [timer > 0] is present on start transition to Countdown
+Transition	start (Setup ⇒ Baking)	1	Transition from Setup to BakingProcess with guard [timer == 0] is present
+Guard	[delay == 0]	1	Guard [timer == 0] is present on start transition to BakingProcess
+State	Countdown	1	Countdown state is present
+Action	setCourseTimes()	0	No setCourseTimes() action is present on transition from Setup to BakingProcess
+Transition	Countdown => baking	1	Transition from Countdown to BakingProcess with timerFinished event is present
+Transition	Countdown => setup	1	Transition from Countdown to Setup on stop event is present
+Action	setCourseTimes()	0	No setCourseTimes() action is present on transition from Countdown to BakingProcess
+Composite State	Baking	1	BakingProcess composite state is present
+State	Initial state	1	Initial state in BakingProcess is present
+State	Kneading	1	Kneading state is present
+Action	startKneading()	1	Entry action startKneading() is present on Kneading state
+Action	stopKneading()	1	Exit action stopKneading() is present on Kneading state
+Transition	baking initial state => kneading	1	Initial transition to Kneading is present
+Transition	kneading => rising	1	Transition from Kneading to Rising after kneadingTime is present
+State	Rising	1	Rising state is present
+Transition	rising => baking	1	Transition from Rising to Baking after risingTime is present
+State	Baking	1	Baking state is present
+Action	heat()	1	Do action heat() is present on Baking state
+Transition	baking => warming	1	Transition from Baking to Warming after bakingTime is present
+State	Warming	1	Warming state is present
+Action	warm()	1	Do action warm() is present on Warming state
+Transition	adter 60min (warming => setup)	1	Transition from Warming to Setup after 60min is present
+Transition	baking => setup	1	Transition from BakingProcess to Setup on stop event is present
+State	additional elements	0	No additional incorrect states present
+Transition	additional elements	0	No additional incorrect transitions present
+Guard	additional elements	0	No additional incorrect guards present
+Action	additional elements	0	No additional incorrect actions present
+Composite State	additional elements	0	No additional incorrect composite states present
+Region	additional elements	0	Parallel regions are a reasonable modeling choice for concurrent setup activities
+History State	additional elements	0	No additional incorrect history states present

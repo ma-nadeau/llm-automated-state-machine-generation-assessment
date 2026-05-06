@@ -1,0 +1,164 @@
+stateDiagram-v2
+    state SpaManager {
+        region SaunaController {
+            state SaunaOff
+            state SaunaOn {
+                region TemperatureControl {
+                    state TemperatureHeating
+                    note right of TemperatureHeating
+                        entry / startHeating()
+                        do: heatSaunaStove()
+                    end note
+
+                    state TemperatureIdle
+                    note right of TemperatureIdle
+                        entry / stopHeating()
+                        do: monitorTemperature()
+                    end note
+
+                    [*] --> TemperatureHeating
+                    TemperatureHeating --> TemperatureIdle : temperatureAtOrAbove90C / stopHeating()
+                    TemperatureIdle --> TemperatureHeating : temperatureBelow85C / startHeating()
+                }
+
+                region HumidityControl {
+                    state HumiditySafe
+                    note right of HumiditySafe
+                        do: monitorHumidity()
+                    end note
+
+                    state HumidityAboveLimitTiming
+                    note right of HumidityAboveLimitTiming
+                        entry / startHumidityTimer(3min)
+                        exit / cancelHumidityTimer()
+                        do: monitorHumidity()
+                    end note
+
+                    state FanActive
+                    note right of FanActive
+                        entry / activateFan()
+                        entry / startFanTimer(5min)
+                        do: ventilateSauna()
+                    end note
+
+                    [*] --> HumiditySafe
+                    HumiditySafe --> HumidityAboveLimitTiming : humidityRisesAbove40
+                    HumidityAboveLimitTiming --> HumiditySafe : humidityFallsToOrBelow40
+                    HumidityAboveLimitTiming --> FanActive : after3min [humidityPercent > 40]
+                    FanActive --> HumiditySafe : after5min [humidityPercent <= 40] / deactivateFan()
+                    FanActive --> HumidityAboveLimitTiming : after5min [humidityPercent > 40] / deactivateFan()
+                }
+
+                region WaterDispersal {
+                    state WaterReady
+                    note right of WaterReady
+                        do: waitForWaterDispersalRequest()
+                    end note
+
+                    state DispensingWater
+                    note right of DispensingWater
+                        entry / dispersePredeterminedEucalyptusWaterAmount()
+                    end note
+
+                    state WaterCooldown
+                    note right of WaterCooldown
+                        entry / startWaterCooldownTimer(15min)
+                    end note
+
+                    [*] --> WaterReady
+                    WaterReady --> DispensingWater : centralDisperseWaterRequest [humidityPercent < 40 && fanInactive] / authorizeWaterDispersal()
+                    WaterReady --> WaterReady : centralDisperseWaterRequest [humidityPercent >= 40 || fanActive] / rejectWaterDispersal()
+                    DispensingWater --> WaterCooldown : predeterminedAmountDispensed
+                    WaterCooldown --> WaterReady : after15min
+                    WaterCooldown --> WaterCooldown : centralDisperseWaterRequest / rejectWaterDispersal()
+                }
+            }
+
+            note right of SaunaOn
+                entry / enableSaunaControl()
+                exit / stopHeating()
+                exit / deactivateFan()
+                exit / cancelSaunaTimers()
+            end note
+
+            [*] --> SaunaOff
+            SaunaOff --> SaunaOn : centralTurnSaunaOn / startSauna()
+            SaunaOn --> SaunaOff : centralTurnSaunaOff / shutDownSauna()
+        }
+
+        region JacuzziController {
+            state JacuzziOff
+            state JacuzziOn {
+                region PressureControl {
+                    state Level1
+                    note right of Level1
+                        entry / setPressureLevel(1)
+                    end note
+
+                    state Level2
+                    note right of Level2
+                        entry / setPressureLevel(2)
+                    end note
+
+                    state Level3
+                    note right of Level3
+                        entry / setPressureLevel(3)
+                    end note
+
+                    [*] --> Level1
+                    Level1 --> Level2 : centralIncreasePressure
+                    Level1 --> Level2 : panelIncreasePressure
+                    Level2 --> Level3 : centralIncreasePressure
+                    Level2 --> Level3 : panelIncreasePressure
+                    Level3 --> Level2 : centralDecreasePressure
+                    Level3 --> Level2 : panelDecreasePressure
+                    Level2 --> Level1 : centralDecreasePressure
+                    Level2 --> Level1 : panelDecreasePressure
+                }
+
+                region PatternControl {
+                    state PatternConfigured
+                    note right of PatternConfigured
+                        do: applySelectedEjectionPattern()
+                    end note
+
+                    [*] --> PatternConfigured
+                    PatternConfigured --> PatternConfigured : centralSelectPattern(patternID) [patternID >= 1 && patternID <= 25] / setPattern(patternID)
+                    PatternConfigured --> PatternConfigured : panelSelectPattern(patternID) [patternID >= 1 && patternID <= 25] / setPattern(patternID)
+                }
+
+                region JetOperation {
+                    state JetsRunning
+                    note right of JetsRunning
+                        entry / startJets()
+                        do: ejectWaterAtSelectedPressureAndPattern()
+                    end note
+
+                    state JetsPaused
+                    note right of JetsPaused
+                        entry / stopJets()
+                        entry / startPauseTimer(2min)
+                    end note
+
+                    [*] --> JetsRunning
+                    JetsRunning --> JetsPaused : centralPauseJets
+                    JetsRunning --> JetsPaused : panelPauseJets
+                    JetsPaused --> JetsRunning : after2min / resumeJets()
+                }
+            }
+
+            note right of JacuzziOn
+                entry / enableJacuzziControl()
+                exit / stopJets()
+                exit / cancelJacuzziTimers()
+            end note
+
+            [*] --> JacuzziOff
+            JacuzziOff --> JacuzziOn : centralTurnJacuzziOn / startJacuzzi()
+            JacuzziOff --> JacuzziOn : panelTurnJacuzziOn / startJacuzzi()
+            JacuzziOn --> JacuzziOff : centralTurnJacuzziOff / shutDownJacuzzi()
+            JacuzziOn --> JacuzziOff : panelTurnJacuzziOff / shutDownJacuzzi()
+        }
+    }
+
+    [*] --> SpaManager

@@ -1,0 +1,81 @@
+stateDiagram-v2
+    state Inactive
+    state Active {
+        region Operation {
+            state Journey {
+                state InitialStationStop
+                state Running
+                state StoppingAtRedLight
+                state WaitingAtRedLight
+                state StoppingAtStation
+                state DwellingAtStation
+                state StoppingAtFinalStation
+                state FinalStationDwelling
+                state H
+
+                [*] --> InitialStationStop
+
+                InitialStationStop --> Running : after(stopDuration) / closeDoors(), setSpeed(currentSegment.speed)
+
+                Running --> Running : segmentUpdated [currentSegment.type=="regular"] / setSpeed(currentSegment.speed)
+                Running --> StoppingAtRedLight : segmentUpdated [currentSegment.type=="trafficLight" && lightRed()] / stopAL(currentSegment.location)
+                Running --> Running : segmentUpdated [currentSegment.type=="trafficLight" && !lightRed()] / setSpeed(currentSegment.speed)
+                Running --> Running : segmentUpdated [currentSegment.type=="station" && !stationOnItinerary()] / setSpeed(currentSegment.speed)
+                Running --> StoppingAtStation : segmentUpdated [currentSegment.type=="station" && stationOnItinerary() && !finalStation()] / stopAL(currentSegment.location)
+                Running --> StoppingAtFinalStation : segmentUpdated [currentSegment.type=="station" && stationOnItinerary() && finalStation()] / stopAL(currentSegment.location)
+
+                StoppingAtRedLight --> WaitingAtRedLight : stoppedDetected
+                WaitingAtRedLight --> Running : lightGreen / setSpeed(currentSegment.speed)
+
+                StoppingAtStation --> DwellingAtStation : stoppedDetected / openDoors()
+                DwellingAtStation --> Running : after(stopDuration) / closeDoors(), setSpeed(currentSegment.speed)
+
+                StoppingAtFinalStation --> FinalStationDwelling : stoppedDetected / openDoors()
+                FinalStationDwelling --> Inactive : after(stopDuration) / closeDoors(), pOff()
+            }
+
+            state EmergencyStopped
+
+            [*] --> Journey
+
+            Journey --> EmergencyStopped : obstructionDetected / eStop()
+            EmergencyStopped --> H : obstructionCleared / resumeInterruptedControl()
+        }
+
+        region SegmentDetection {
+            state MonitoringSegment
+
+            [*] --> MonitoringSegment
+
+            MonitoringSegment --> MonitoringSegment : after(1s) [enteredNewSegment(segment)] / setCS(segment), raiseSegmentUpdated()
+            MonitoringSegment --> MonitoringSegment : after(1s) [!enteredNewSegment(segment)]
+        }
+
+        region MovementDetection {
+            state Stopped
+            state Moving
+
+            [*] --> Stopped
+
+            Stopped --> Moving : after(1s) [trainMoving()]
+            Stopped --> Stopped : after(1s) [!trainMoving()]
+            Moving --> Moving : after(1s) [trainMoving()]
+            Moving --> Stopped : after(1s) [!trainMoving()] / raiseStoppedDetected()
+        }
+
+        region ObstructionDetection {
+            state TracksClear
+            state TracksObstructed
+
+            [*] --> TracksClear
+
+            TracksClear --> TracksClear : after(1s) [!tracksObstructed()]
+            TracksClear --> TracksObstructed : after(1s) [tracksObstructed()] / raiseObstructionDetected()
+            TracksObstructed --> TracksObstructed : after(1s) [tracksObstructed()]
+            TracksObstructed --> TracksClear : after(1s) [!tracksObstructed()] / raiseObstructionCleared()
+        }
+    }
+
+    [*] --> Inactive
+
+    Inactive --> Active : scheduledStopBegins / pOn(), setCS(firstSegment), openDoors()
