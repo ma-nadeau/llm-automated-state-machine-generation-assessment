@@ -1,0 +1,45 @@
+Type,Element,Grading,Notes
+State,"initial state (Off)",1,Initial pseudostate enters Off.
+State,"Off",1,Off state is explicitly modeled.
+Transition,"on (Off => On)",1,Power on transition from Off to On is present.
+Composite State,"On",1,On is modeled as a composite state.
+Transition,"off (On => Off)",1,Power off transition from On to Off is present.
+State,"initial state (Idle)",1,Initial state inside On goes to WaitingForLogin which is equivalent to Idle.
+State,"Idle",1,WaitingForLogin represents the unauthenticated idle state.
+Transition,"login(cardID) (Idle => Idle)",1,Unauthorized card tap stays in WaitingForLogin and shows an error.
+Guard,"[!idAuthorized(cardID)]",1,Unauthorized guard is represented as not authorized.
+Transition,"login(cardID) (Idle => Ready)",1,Authorized card tap moves to LoggedIn which is equivalent to Ready.
+Guard,"[idAuthorized(cardID)]",1,Authorized guard is represented.
+Action,"action=""none""",1,No stored mode is used but entering LoggedIn has no active task selected.
+State,"Ready",1,LoggedIn represents the ready state after successful login.
+Transition,"logoff (Ready => Idle)",1,Logoff returns from LoggedIn to WaitingForLogin.
+Transition,"start (Ready => Ready)",1,Start scan with no detected document remains LoggedIn and shows a scan error.
+Guard,"[action==""scan"" & !originalLoaded()]",1,startScan with no document detected captures the scan missing-original guard.
+Transition,"start (Ready => Ready)",1,Start print with an empty queue remains LoggedIn and shows a print error.
+Guard,"[action==""print"" & !documentInQueue()]",1,startPrint with queueEmpty captures the no-document guard.
+Transition,"scan (Ready => Ready)",0.5,Scan option exists only as startScan so the separate selection step is missing.
+Action,"action = ""scan""",0.5,Scan choice is encoded in the event rather than stored as a mode.
+Transition,"print (Ready => Ready)",0.5,Print option exists only as startPrint so the separate selection step is missing.
+Action,"action=""print""",0.5,Print choice is encoded in the event rather than stored as a mode.
+Transition,"start (Ready => Scan & Email)",1,startScan with a detected document begins the scanning process.
+Guard,"[action==""scan"" && originalLoaded()]",1,startScan event encodes scan choice and documentDetected checks the original.
+Composite State,"Busy",1,Busy behavior is split into printing and scanning process composites.
+Transition,"stop (Busy => Ready)",1,Stop from either active process returns to LoggedIn.
+Transition,"done (Busy => Ready)",1,Done from printing or scanning returns to LoggedIn.
+Transition,"jam (Busy => Suspended)",1,Paper jam during printing or scanning moves to a suspended state.
+History State,"for Busy",1,Separate suspended states remember which task to resume without an explicit history node.
+State,"Print",1,Printing state represents the print task.
+Transition,"start (Ready => Print)",1,startPrint with a nonempty queue enters the printing process.
+Guard,"[action=""print"" && documentInQueue()]",1,startPrint encodes print choice and not queueEmpty checks a queued document.
+Transition,"outOfPaper (Print => Suspended)",1,Out of paper during Printing moves to a print suspension state.
+State,"Scan & Email",1,Scanning process with scanToEmail action represents scan and email behavior.
+State,"Suspended",1,Paper jam and out of paper suspension states are explicitly modeled.
+Transition,"resume (Suspended => History State for Busy)",1,Resume from each suspension returns to the corresponding interrupted task.
+Transition,"cancel (Suspended => Ready)",1,Cancel from each suspension returns to LoggedIn.
+State,"additional elements",0,No fundamentally incorrect extra states.
+Transition,"additional elements",0,No fundamentally incorrect extra transitions.
+Guard,"additional elements",0,No fundamentally incorrect extra guards.
+Action,"additional elements",0,No fundamentally incorrect extra actions.
+Composite State,"additional elements",0,Extra process composites are reasonable modeling structure.
+Region,"additional elements",0,No additional regions are used.
+History State,"additional elements",0,No incorrect extra history states.

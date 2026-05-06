@@ -1,0 +1,78 @@
+Type,Element,Grading,Notes
+State,"Initial state (→ Scheduled)",0,Initial state goes to Off rather than a scheduled pre-departure state
+State,"Scheduled",0,No state represents the train being scheduled before activation
+Transition,"at beginningStopDuration (Scheduled ⇒ Active)",0.5,There is an Off to On activation but it is triggered by powerOn rather than the beginning of the scheduled stop duration
+Action,"pOn; setCS;",1,pOn occurs on activation and setCS is performed on entry to the first-station waiting state
+Composite State,"Active",1,On acts as the active composite containing train behavior and the monitoring systems
+Region,"TrainControl",1,Journey region captures the main train control behavior
+Composite State,"TrainMovement",0.5,Normal journey behavior is modeled but not as a clear movement composite with emergency outside it
+State,"Initial state (TrainMovement → AtStation)",0.5,Initial journey state is WaitingAtFirstStation which partly corresponds to being at the first station
+State,"AtStation",1,StoppedAtStation and related station states represent station stops
+Action,"entry / openDoors()",0.5,Doors open for intermediate and final station states but not for the initial first-station wait
+Action,"exit / closeDoors()",0.5,Doors are closed before leaving intermediate stations but not modeled for leaving the first station
+Transition,"after stopDuration (AtStation ⇒ StopNotRequired)",1,Intermediate station stop duration leads back to moving with speed set
+Guard,"[!isLastStop()]",1,Non-final station behavior is separated using a not finalStation guard
+Transition,"after stopDuration (AtStation ⇒ Arrived)",0.5,Final station stop duration leads to power off but no distinct arrived state is reached
+Guard,"[isLastStop()]",1,Final station behavior is selected with a finalStation guard
+Action,"pOff;",1,pOff is executed after the final station stop duration
+State,"StopNotRequired",1,Moving represents travel when no stop is currently required
+Action,"entry / setSpeed()",1,Speed is set when leaving stations or lights and when entering speed-setting segments
+Transition,"enteringSegment (StopNotRequired ⇒ StopNotRequired)",1,Regular segment entry keeps the train moving and sets segment speed
+Guard,"[isRegularSegment()]",1,Regular segment guard is present
+Transition,"enteringSegment (StopNotRequired ⇒ ApproachingRedLight)",0.5,Red light entry initiates stopAL but jumps directly to a stopped-at-light state
+Guard,"[isTrafficLightSegment() && isRed()]",1,Traffic light red guard is present
+Transition,"enteringSegment (StopNotRequired ⇒ StopNotRequired)",1,Non-red traffic light segment keeps the train moving with speed set
+Guard,"[isTrafficLightSegment() && !isRed()]",1,Traffic light not red guard is present
+Transition,"enteringSegment (StopNotRequired ⇒ ApproachingStation)",0.5,Station entry initiates a stop but goes directly to station stopped states and lacks a general stopRequired condition
+Guard,"[isStationSegment() && stopRequired()]",0.5,Uses station and finalStation conditions but does not explicitly distinguish required versus non-required station stops
+State,"ApproachingRedLight",0,No separate state represents approaching a red light before stopped confirmation
+Action,"entry / stopAL",1,stopAL is executed when entering a red traffic light segment
+Transition,"stopped (ApproachingRedLight ⇒ AtRedTrafficLight)",0,No stopped event from MDS confirms arrival at the red light
+State,"AtRedTrafficLight",1,StoppedAtTrafficLight represents waiting at a red traffic light
+Transition,"green (AtRedTrafficLight ⇒ StopNotRequired)",1,Green light transition resumes movement by setting speed
+State,"ApproachingStation",0,No separate state represents approaching a station before stopped confirmation
+Action,"entry / stopAL",1,stopAL is executed when entering a station segment
+Transition,"stopped (ApproachingStation ⇒ AtStation)",0,No stopped event from MDS confirms arrival at the station
+History State,"History State for TrainMovement",0.5,A history-like H is used for emergency recovery but it is scoped inside Moving rather than the whole train movement behavior
+State,"Emergency",1,EmergencyStopped represents the emergency condition
+Transition,"emergency (TrainMovement ⇒ Emergency)",0.5,Emergency transition exists only from Moving and not from all train movement states
+Action,"eStop;",1,eStop is executed on obstructionDetected
+Transition,"clear (Emergency ⇒ History State)",0.5,Cleared transition attempts to resume via H but the history target is not the full movement history
+Region,"SDS",1,SDS region is present
+State,"Initial state (SDS → SDSActive)",1,SDS starts in SDSActive
+State,"SDSActive",1,SDSActive state is present
+Transition,"after 1 sec (SDSActive ⇒ SDSActive)",0.5,SDS checks every second but does not model the changed-segment branch explicitly
+Guard,"[hasSegmentChanged()]",0,No hasSegmentChanged guard is shown
+Action,"setCS; enteringSegment()",0.5,Segment setting appears on enteredSegment transitions but SDS does not explicitly emit enteringSegment
+Transition,"after 1 sec (SDSActive ⇒ SDSActive)",0.5,Unguarded one-second SDS check can cover no-change cases only implicitly
+Guard,"[!hasSegmentChanged()]",0,No not changed guard is shown
+Region,"MDS",1,MDS region is present
+State,"Initial state (MDS → Stopped)",0,MDS starts in generic MDSActive rather than Stopped
+State,"Stopped",0,No Stopped state is modeled in MDS
+Transition,"after 1 sec (Stopped ⇒ Moving)",0,No MDS transition from stopped to moving based on speed
+Guard,"[speed > 0]",0,No speed greater than zero guard in MDS
+Transition,"after 1 sec (Stopped ⇒ Stopped)",0,No MDS stopped self-transition is modeled
+Guard,"[speed == 0]",0,No speed equals zero guard in MDS stopped behavior
+Action,"stopped()",0,No stopped event or action is produced by MDS
+State,"Moving",0,The Journey Moving state is not an MDS movement-detection state
+Transition,"after 1 sec (Moving ⇒ Stopped)",0,No MDS transition from moving to stopped based on speed
+Guard,"[speed == 0]",0,No speed equals zero guard for MDS moving behavior
+Action,"stopped()",0,No stopped event or action is generated when movement ceases
+Transition,"after 1 sec (Moving ⇒ Moving)",0,No MDS moving self-transition is modeled
+Guard,"[speed > 0]",0,No speed greater than zero guard for MDS moving behavior
+Region,"ODS",1,ODS region is present
+State,"Initial state (ODS → ODSActive)",1,ODS starts in ODSActive
+State,"ODSActive",1,ODSActive state is present
+Transition,"after 1 sec (ODSActive ⇒ ODSActive)",0.5,ODS checks every second but does not model the obstacle-detected branch explicitly
+Guard,"[obstacleDetected()]",0,No obstacleDetected guard is shown in ODS
+Action,"emergency()",0.5,Obstruction leads directly to eStop elsewhere but ODS does not emit an emergency event
+Transition,"after 1 sec (ODSActive ⇒ ODSActive)",0.5,Unguarded ODS check can cover no-obstacle cases only implicitly
+Guard,"[!obstacleDetected()]",0,No not obstacleDetected guard is shown
+State,"Arrived",0.5,Final arrival is represented by StoppedAtFinalStation then Off but no distinct arrived state exists
+State,"additional elements",0,No extra states are fundamentally inconsistent with the system description
+Transition,"additional elements",1,On to Off powerOff allows arbitrary shutdown beyond the specified final-station power off
+Guard,"additional elements",0,No extra guards are fundamentally incorrect
+Action,"additional elements",0,Extra check and door actions are reasonable abstractions of continuous systems and station behavior
+Composite State,"additional elements",0,Extra composite structure is unnecessary but not fundamentally wrong
+Region,"additional elements",0,No extra regions are fundamentally incorrect
+History State,"additional elements",0,The history-like element is misplaced but already assessed under the expected history item

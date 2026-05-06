@@ -1,0 +1,116 @@
+Type,Element,Grading,Notes
+State,Initial state (→ Watch),0,No initial state pointing to Watch
+Action,time=0:00:00; alarmTime=0:00:00; alarm=false; flashAlert=false; cdTime=0:00:00,0,No initial actions defined
+Composite State,Watch,1,Watch state is present
+Region,Light,1,Represented by Backlight region
+State,Initial state (Light → Off),1,Initial state points to BacklightOff
+State,Off,1,Represented by BacklightOff
+Action,entry / lightOff(),0,No entry action for light off
+Transition,D (Off ⇒ On),1,Transition D to BacklightOn is present
+State,On,1,Represented by BacklightOn
+Action,entry / lightOn(),0.5,Action is on the transition rather than entry
+Transition,D (On ⇒ Off),1,Transition D to BacklightOff is present
+Transition,after 10sec (On ⇒ Off),1,Transition after_10sec to BacklightOff is present
+Transition,flash (On ⇒ Flash),0,No transition to a Flash state in backlight
+Guard,[flashAlert],0,No flashAlert guard on backlight transitions
+State,Flash,0,No Flash state in backlight region
+Action,do / flash5Sec(),0.5,Flashing is handled via notes on notification states
+Transition,flash (Flash ⇒ Off),0,No Flash state
+Guard,[flashAlert],0,No Flash state
+Transition,anyButton (Flash ⇒ Off),0,No Flash state
+Region,WatchMode,1,Represented by ModeControl region
+State,Initial state (WatchMode → AlarmOff),0.5,Initial state points to OperatingModes instead of an AlarmOff wrapper
+Composite State,AlarmOff,0,No explicit AlarmOff wrapper state
+State,Initial state (AlarmOff → TimeKeepingMode),1,Initial state points to Timekeeping
+Composite State,TimeKeepingMode,1,Represented by Timekeeping state
+State,Initial state (TimeKeepingMode → Idle),1,Initial state points to ShowTime
+State,Idle,1,Represented by ShowTime
+Action,do / displayTime(),0,No display time action
+Transition,B2sec (Idle ⇒ Idle),0.5,Handled via transitions between FlashAlertOff and FlashAlertOn states
+Action,toggleFlashAlert(),1,Handled via state transitions for FlashAlert
+Transition,B (Idle ⇒ Idle),1,Handled via transitions between AlarmDisabled and AlarmEnabled states
+Action,toggleAlarm(),1,Handled via state transitions for Alarm
+Transition,C (Idle ⇒ Seconds),1,Transition C to SettingTime and SettingSeconds is present
+Action,flashSeconds(),0,No flash seconds action
+Transition,A (TimeKeepingMode ⇒ AlarmMode),1,Transition A to Alarm is present
+State,Seconds,1,Represented by SettingSeconds
+Transition,B (Seconds ⇒ Seconds),1,Transition B to increment seconds is present
+Action,time+=1sec,1,Represented by incrementSeconds()
+Transition,C (Seconds ⇒ Minutes),1,Transition C to SettingMinutes is present
+Action,flashMinutes(),0,No flash minutes action
+State,Minutes,1,Represented by SettingMinutes
+Transition,B (Minutes ⇒ Minutes),1,Transition B to increment minutes is present
+Action,time+=1min,1,Represented by incrementMinutes()
+Transition,C (Minutes ⇒ Hours),1,Transition C to SettingHours is present
+Action,flashHours(),0,No flash hours action
+State,Hours,1,Represented by SettingHours
+Transition,B (Hours ⇒ Hours),1,Transition B to increment hours is present
+Action,time+=1hr,1,Represented by incrementHours()
+Transition,C (Hours ⇒ Seconds),1,Transition C to SettingSeconds is present
+Action,flashSeconds(),0,No flash seconds action
+Transition,A (TimeKeepingMode ⇒ AlarmMode),1,Transition A to Alarm is present
+Composite State,AlarmMode,1,Represented by Alarm state
+State,Initial state (AlarmMode → Idle),1,Initial state points to ShowAlarm
+State,Idle,1,Represented by ShowAlarm
+Action,entry / displayAlarmTime(),0,No display alarm time action
+Transition,C (Idle ⇒ Minutes),1,Transition C to SettingAlarm and SettingAlarmMinutes is present
+Action,flashMinutes(),0,No flash minutes action
+Transition,A (AlarmMode ⇒ CountdownMode),1,Transition A to Countdown is present
+State,Minutes,1,Represented by SettingAlarmMinutes
+Transition,B (Minutes ⇒ Minutes),1,Transition B to increment alarm minutes is present
+Action,alarmTime+=1min,1,Represented by incrementAlarmMinutes()
+Transition,C (Minutes ⇒ Hours),1,Transition C to SettingAlarmHours is present
+Action,flashHours(),0,No flash hours action
+State,Hours,1,Represented by SettingAlarmHours
+Transition,B (Hours ⇒ Hours),1,Transition B to increment alarm hours is present
+Action,alarmTime+=1hr,1,Represented by incrementAlarmHours()
+Transition,C (Hours ⇒ Minutes),1,Transition C to SettingAlarmMinutes is present
+Action,flashMinutes(),0,No flash minutes action
+Transition,A (AlarmMode ⇒ CountdownMode),1,Transition A to Countdown is present
+Composite State,CountdownMode,1,Represented by Countdown state
+State,Initial state (CountdownMode → Idle),1,Initial state points to ShowCountdown
+State,Idle,1,Represented by ShowCountdown
+Action,entry / displayCdTime(),0,No display countdown time action
+Transition,C (Idle ⇒ Seconds),1,Transition C to SettingCountdown and SettingCountdownSeconds is present
+Action,flashSeconds(),0,No flash seconds action
+Transition,B (Idle ⇒ Countdown),1,Transition B to CountdownRunning is present
+Guard,[cdTime > 0:00:00],1,Represented by countdownTimeSet guard
+Action,targetTime = time + cdTime,0,No target time calculation action
+Transition,A (CountdownMode ⇒ TimeKeepingMode),1,Transition A to Timekeeping is present
+State,Seconds,1,Represented by SettingCountdownSeconds
+Transition,B (Seconds ⇒ Seconds),1,Transition B to increment countdown seconds is present
+Action,cdTime+=1sec,1,Represented by incrementCountdownSeconds()
+Transition,C (Seconds ⇒ Minutes),1,Transition C to SettingCountdownMinutes is present
+Action,flashMinutes(),0,No flash minutes action
+State,Minutes,1,Represented by SettingCountdownMinutes
+Transition,B (Minutes ⇒ Minutes),1,Transition B to increment countdown minutes is present
+Action,cdTime+=1min,1,Represented by incrementCountdownMinutes()
+Transition,C (Minutes ⇒ Hours),1,Transition C to SettingCountdownHours is present
+Action,flashHours(),0,No flash hours action
+State,Hours,1,Represented by SettingCountdownHours
+Transition,B (Hours ⇒ Hours),1,Transition B to increment countdown hours is present
+Action,cdTime+=1hr,1,Represented by incrementCountdownHours()
+Transition,C (Hours ⇒ Seconds),1,Transition C to SettingCountdownSeconds is present
+Action,flashSeconds(),0,No flash seconds action
+State,Countdown,1,Represented by CountdownRunning
+Action,do / displayCountdown(),0,No display countdown action
+Transition,(targetTime == time) (Countdown ⇒ CountdownReached),1,Represented by countdownComplete transition to CountdownNotifications
+Action,flash(),0.5,Handled via notes on CountdownNotifications
+State,CountdownReached,1,Represented by CountdownNotifications
+Action,do / flashZero&Beep5Sec(),1,Represented by entry actions in notes
+Transition,anyButton (CountdownReached ⇒ CountdownMode),1,Transition anyButton to ShowCountdown is present
+History State,H,1,History states are present
+Transition,(alarm && alarmTime == time) (AlarmOff ⇒ AlarmOn),1,Represented by alarmTimeReached transition to AlarmNotifications
+Action,saveDisplay(),0,No save display action
+Action,flash(),0.5,Handled via notes on AlarmNotifications
+State,AlarmOn,1,Represented by AlarmNotifications
+Action,do / flashAlarmTime&Beep5Sec(),1,Represented by entry actions in notes
+Action,exit / restoreDisplay(),0,No restore display action
+Transition,anyButton (AlarmOn ⇒ History State),1,Transition anyButton to H is present
+State,additional elements,0,Additional states are reasonable structural choices
+Transition,additional elements,0,Additional transitions are correct per system description
+Guard,additional elements,0,No unreasonable additional guards
+Action,additional elements,0,No unreasonable additional actions
+Composite State,additional elements,0,Additional composite states are reasonable structural choices
+Region,additional elements,0,No unreasonable additional regions
+History State,additional elements,0,No unreasonable additional history states

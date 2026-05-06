@@ -1,0 +1,116 @@
+Type,Element,Grading,Notes
+State,"Initial state (→ Watch)",0,No top level initial transition into Watch is shown
+Action,"time=0:00:00; alarmTime=0:00:00; alarm=false; flashAlert=false; cdTime=0:00:00",0,No initialization action for time alarm flash alert or countdown values is modeled
+Composite State,"Watch",1,Watch is modeled as the top composite state
+Region,"Light",1,Backlight region represents the independent light behavior
+State,"Initial state (Light → Off)",1,Backlight region initially enters BacklightOff
+State,"Off",1,BacklightOff represents the off state
+Action,"entry / lightOff()",0.5,Turning off is represented on transitions to Off but not as an entry action and not on initial entry
+Transition,"D (Off ⇒ On)",1,D turns BacklightOff into BacklightOn
+State,"On",1,BacklightOn represents the on state
+Action,"entry / lightOn()",1,The D transition into BacklightOn turns on the backlight
+Transition,"D (On ⇒ Off)",1,D turns BacklightOn off
+Transition,"after 10sec (On ⇒ Off)",1,BacklightOn automatically turns off after 10 seconds
+Transition,"flash (On ⇒ Flash)",0.5,Backlight flashing is modeled through notification actions rather than a light Flash transition
+Guard,"[flashAlert]",1,Conditional flashing is guarded by flashAlertOn in notification behavior
+State,"Flash",0,No separate Backlight Flash state is present
+Action,"do / flash5Sec()",1,Alarm and countdown notification notes specify conditional backlight flashing for the 5 second notification period
+Transition,"flash (Flash ⇒ Off)",0.5,Flashing stops when notifications end but no explicit Flash to Off transition is modeled
+Guard,"[flashAlert]",1,Backlight flash behavior is conditioned on flashAlertOn
+Transition,"anyButton (Flash ⇒ Off)",1,Any button stops notifications and therefore stops the flashing behavior
+Region,"WatchMode",1,ModeControl and OperatingModes represent the watch mode region
+State,"Initial state (WatchMode → AlarmOff)",1,The normal operating modes are initially entered with alarm disabled
+Composite State,"AlarmOff",1,OperatingModes serves as the normal non-notifying composite state
+State,"Initial state (AlarmOff → TimeKeepingMode)",1,OperatingModes initially enters Timekeeping
+Composite State,"TimeKeepingMode",1,Timekeeping is modeled as a composite mode
+State,"Initial state (TimeKeepingMode → Idle)",1,Timekeeping initially enters ShowTime
+State,"Idle",1,ShowTime represents the idle time display
+Action,"do / displayTime()",1,ShowTime semantically displays the current time
+Transition,"B2sec (Idle ⇒ Idle)",0.5,Flash alert toggling is modeled only inside AlarmEnabled instead of generally in timekeeping idle
+Action,"toggleFlashAlert()",0.5,Transitions between FlashAlertOff and FlashAlertOn capture toggling but only when alarm is enabled
+Transition,"B (Idle ⇒ Idle)",1,B toggles between AlarmDisabled and AlarmEnabled while showing time
+Action,"toggleAlarm()",1,AlarmDisabled and AlarmEnabled states capture the alarm toggle
+Transition,"C (Idle ⇒ Seconds)",1,C from ShowTime enters SettingTime with initial SettingSeconds
+Action,"flashSeconds()",0.5,SettingSeconds implies seconds flash but no explicit flash action is shown
+Transition,"A (TimeKeepingMode ⇒ AlarmMode)",1,A transitions from Timekeeping to Alarm
+State,"Seconds",1,SettingSeconds represents seconds setting
+Transition,"B (Seconds ⇒ Seconds)",1,B self transition increments seconds
+Action,"time+=1sec",1,incrementSeconds represents adding one second
+Transition,"C (Seconds ⇒ Minutes)",1,C moves from SettingSeconds to SettingMinutes
+Action,"flashMinutes()",0.5,SettingMinutes implies minutes flash but no explicit flash action is shown
+State,"Minutes",1,SettingMinutes represents minutes setting
+Transition,"B (Minutes ⇒ Minutes)",1,B self transition increments minutes
+Action,"time+=1min",1,incrementMinutes represents adding one minute
+Transition,"C (Minutes ⇒ Hours)",1,C moves from SettingMinutes to SettingHours
+Action,"flashHours()",0.5,SettingHours implies hours flash but no explicit flash action is shown
+State,"Hours",1,SettingHours represents hours setting
+Transition,"B (Hours ⇒ Hours)",1,B self transition increments hours
+Action,"time+=1hr",1,incrementHours represents adding one hour
+Transition,"C (Hours ⇒ Seconds)",1,C cycles from SettingHours back to SettingSeconds
+Action,"flashSeconds()",0.5,SettingSeconds implies seconds flash but no explicit flash action is shown
+Transition,"A (TimeKeepingMode ⇒ AlarmMode)",1,A mode transition from Timekeeping to Alarm is present
+Composite State,"AlarmMode",1,Alarm is modeled as a composite mode
+State,"Initial state (AlarmMode → Idle)",1,Alarm mode initially enters ShowAlarm
+State,"Idle",1,ShowAlarm represents the idle alarm display
+Action,"entry / displayAlarmTime()",1,ShowAlarm semantically displays the current alarm time
+Transition,"C (Idle ⇒ Minutes)",1,C from ShowAlarm enters alarm setting with minutes first
+Action,"flashMinutes()",0.5,SettingAlarmMinutes implies minutes flash but no explicit flash action is shown
+Transition,"A (AlarmMode ⇒ CountdownMode)",1,A transitions from Alarm to Countdown
+State,"Minutes",1,SettingAlarmMinutes represents alarm minutes setting
+Transition,"B (Minutes ⇒ Minutes)",1,B self transition increments alarm minutes
+Action,"alarmTime+=1min",1,incrementAlarmMinutes represents adding one alarm minute
+Transition,"C (Minutes ⇒ Hours)",1,C moves from alarm minutes to alarm hours
+Action,"flashHours()",0.5,SettingAlarmHours implies hours flash but no explicit flash action is shown
+State,"Hours",1,SettingAlarmHours represents alarm hours setting
+Transition,"B (Hours ⇒ Hours)",1,B self transition increments alarm hours
+Action,"alarmTime+=1hr",1,incrementAlarmHours represents adding one alarm hour
+Transition,"C (Hours ⇒ Minutes)",1,C cycles alarm hours back to alarm minutes
+Action,"flashMinutes()",0.5,SettingAlarmMinutes implies minutes flash but no explicit flash action is shown
+Transition,"A (AlarmMode ⇒ CountdownMode)",1,A mode transition from Alarm to Countdown is present
+Composite State,"CountdownMode",1,Countdown is modeled as a composite mode
+State,"Initial state (CountdownMode → Idle)",1,Countdown mode initially enters ShowCountdown
+State,"Idle",1,ShowCountdown represents the idle countdown display
+Action,"entry / displayCdTime()",1,ShowCountdown semantically displays the countdown time
+Transition,"C (Idle ⇒ Seconds)",1,C from ShowCountdown enters countdown setting with seconds first
+Action,"flashSeconds()",0.5,SettingCountdownSeconds implies seconds flash but no explicit flash action is shown
+Transition,"B (Idle ⇒ Countdown)",1,B starts CountdownRunning from ShowCountdown
+Guard,"[cdTime > 0:00:00]",1,countdownTimeSet guard captures that a countdown time must be set
+Action,"targetTime = time + cdTime",0.5,Starting the countdown is modeled but no target time assignment is shown
+Transition,"A (CountdownMode ⇒ TimeKeepingMode)",1,A transitions from Countdown back to Timekeeping
+State,"Seconds",1,SettingCountdownSeconds represents countdown seconds setting
+Transition,"B (Seconds ⇒ Seconds)",1,B self transition increments countdown seconds
+Action,"cdTime+=1sec",1,incrementCountdownSeconds represents adding one countdown second
+Transition,"C (Seconds ⇒ Minutes)",1,C moves from countdown seconds to countdown minutes
+Action,"flashMinutes()",0.5,SettingCountdownMinutes implies minutes flash but no explicit flash action is shown
+State,"Minutes",1,SettingCountdownMinutes represents countdown minutes setting
+Transition,"B (Minutes ⇒ Minutes)",1,B self transition increments countdown minutes
+Action,"cdTime+=1min",1,incrementCountdownMinutes represents adding one countdown minute
+Transition,"C (Minutes ⇒ Hours)",1,C moves from countdown minutes to countdown hours
+Action,"flashHours()",0.5,SettingCountdownHours implies hours flash but no explicit flash action is shown
+State,"Hours",1,SettingCountdownHours represents countdown hours setting
+Transition,"B (Hours ⇒ Hours)",1,B self transition increments countdown hours
+Action,"cdTime+=1hr",1,incrementCountdownHours represents adding one countdown hour
+Transition,"C (Hours ⇒ Seconds)",1,C cycles countdown hours back to countdown seconds
+Action,"flashSeconds()",0.5,SettingCountdownSeconds implies seconds flash but no explicit flash action is shown
+State,"Countdown",1,CountdownRunning represents an active countdown
+Action,"do / displayCountdown()",1,CountdownRunning semantically displays the running countdown
+Transition,"(targetTime == time) (Countdown ⇒ CountdownReached)",1,countdownComplete with countdownReachedZero moves to CountdownNotifications
+Action,"flash()",1,CountdownNotifications starts flashing zero and conditionally flashes the backlight
+State,"CountdownReached",1,CountdownNotifications represents countdown completion notification
+Action,"do / flashZero&Beep5Sec()",1,Notification entry starts beeping and flashing zero for the 5 second notification period
+Transition,"anyButton (CountdownReached ⇒ CountdownMode)",1,Any button stops countdown notifications and returns to ShowCountdown
+History State,"H",1,H is used to return after alarm notifications
+Transition,"(alarm && alarmTime == time) (AlarmOff ⇒ AlarmOn)",1,alarmTimeReached with alarmEnabled triggers AlarmNotifications from operating modes
+Action,"saveDisplay()",0.5,Previous mode is preserved by history but no explicit display save action is shown
+Action,"flash()",1,Alarm notification behavior flashes alarm time and conditionally flashes the backlight
+State,"AlarmOn",1,AlarmNotifications represents the alarm notification state
+Action,"do / flashAlarmTime&Beep5Sec()",1,AlarmNotifications starts beeping and flashing alarm time for the notification period
+Action,"exit / restoreDisplay()",0.5,Return to previous mode restores context through history but no explicit restore display action is shown
+Transition,"anyButton (AlarmOn ⇒ History State)",1,Any button stops alarm notifications and returns via H
+State,"additional elements",0,No fundamentally incorrect extra states identified
+Transition,"additional elements",0,No fundamentally incorrect extra transitions identified
+Guard,"additional elements",0,No fundamentally incorrect extra guards identified
+Action,"additional elements",0,No fundamentally incorrect extra actions identified
+Composite State,"additional elements",0,No fundamentally incorrect extra composite states identified
+Region,"additional elements",0,No fundamentally incorrect extra regions identified
+History State,"additional elements",0,Extra history declarations are harmless modeling detail

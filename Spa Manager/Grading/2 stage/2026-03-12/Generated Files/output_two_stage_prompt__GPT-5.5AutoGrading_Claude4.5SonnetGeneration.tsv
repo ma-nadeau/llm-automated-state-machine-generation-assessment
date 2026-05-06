@@ -1,0 +1,52 @@
+Type	Element	Grading	Notes
+Composite State	SpaManager	1	Top level SpaManager composite is present and contains both controls
+Region	Jacuzzi	1	JacuzziControl region represents the Jacuzzi part of the system
+State	initial state (Jacuzzi → Off)	1	Jacuzzi region initializes to JacuzziOff
+State	Off	1	JacuzziOff state is present
+Composite State	On (Jacuzzi)	1	JacuzziOn composite state is present
+Transition	on (Off ⇒ On)	1	Off to On transition is modeled with turnOn
+Transition	off (On ⇒ Off)	1	On to Off transition is modeled with turnOff
+State	initial state (Level1)	1	JacuzziOn initializes jets to Level1 through JetsActive
+State	Level1	1	Level1 low pressure state is present
+Transition	up (Level1 ⇒ Level2)	1	Increase from Level1 to Level2 is modeled
+State	Level2	1	Level2 medium pressure state is present
+Transition	up (Level2 ⇒ Level3)	1	Increase from Level2 to Level3 is modeled
+Transition	down (Level2 ⇒ Level1)	1	Decrease from Level2 to Level1 is modeled
+State	Level3	1	Level3 high pressure state is present
+Transition	down (Level3 ⇒ Level2)	1	Decrease from Level3 to Level2 is modeled
+History State	History State for Jacuzzi On	1	H is included for resuming the previous jet level after pause
+Transition	setPattern(PatternType type) (On⇒ History State)	1	Pattern selection is modeled for each level with a valid range of 1 to 25 and preserves the current level
+State	Paused	1	Paused state is present
+Transition	pause (On⇒ Pause)	1	Pause transition from active jets to Paused stops the jets
+Transition	after 2min (Paused ⇒ History State)	1	Paused resumes after 2 minutes to H
+Region	Sauna	1	SaunaControl region represents the sauna part of the system
+State	initial state (Sauna → Off)	1	Sauna region initializes to SaunaOff
+State	Off	1	SaunaOff state is present
+Composite State	On (Sauna)	1	SaunaOn composite state is present
+Transition	on (Off ⇒ On)	1	Off to On transition is modeled with turnOn
+Transition	off (On ⇒ Off)	1	On to Off transition is modeled with turnOff
+Region	Heater	1	HeatingControl region models the heater behavior
+State	initial state (Heater → Heat)	1	Heater initializes to Heating
+State	Heat	1	Heating state represents stove heating
+Transition	Heat ⇒ Idle	1	Transition from heating to maintaining occurs at the upper temperature limit
+Guard	[temp ≥ 90°C]	1	Guard temp >= 90 is present
+State	Idle	1	Maintaining state represents heater idle after stopping heat
+Transition	Idle ⇒ Heat	1	Transition back to heating occurs when temperature drops
+Guard	[temp < 85°C]	1	Guard temp < 85 is present
+Region	Fan	1	FanControl region models humidity fan behavior
+State	initial state (Fan → Off)	1	Fan region initializes to FanOff
+State	Off	1	FanOff state is present
+Transition	after 5min (Off ⇒ On)	1	Fan activation after sustained high humidity is modeled through FanMonitoring after 3 minutes
+Guard	[humidity > 40% && exceedTime > 3min]	1	Humidity above 40 percent for 3 minutes is captured by the monitoring state and timer
+Region	Water	1	WaterDispersionControl region models eucalyptus water dispensing
+State	initial state (Water → Idle)	1	Water control initializes to WaterReady which is the available idle state
+State	Idle	1	WaterReady is an equivalent idle available state
+Transition	Idle ⇒ Idle	1	Dispersion request behavior is modeled using Ready to Cooldown then back after 15 minutes
+Guard	disperse [humidity < 40% && !Fan.On && timeSinceLast ≥ 15min]	1	Guard checks humidity below threshold and fan off while cooldown state enforces the 15 minute limit
+State	additional elements	0	Extra monitoring cooldown and grouping states are reasonable refinements
+Transition	additional elements	0	Extra timer and action transitions support specified behavior
+Guard	additional elements	0	No fundamentally incorrect extra guards are present
+Action	additional elements	0	Actions such as heat stop fan and pour are consistent with the system
+Composite State	additional elements	0	Additional composites organize behavior without changing semantics
+Region	additional elements	0	No fundamentally incorrect extra regions are present
+History State	additional elements	0	No fundamentally incorrect extra history states are present

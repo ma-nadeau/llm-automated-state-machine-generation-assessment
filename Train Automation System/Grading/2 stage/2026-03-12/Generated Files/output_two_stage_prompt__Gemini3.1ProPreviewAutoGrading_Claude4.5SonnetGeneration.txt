@@ -1,0 +1,78 @@
+Type,Element,Grading,Notes
+State,"Initial state (→ Scheduled)",0,Initial state goes to Off instead of Scheduled
+State,"Scheduled",0,Scheduled state is missing
+Transition,"at beginningStopDuration (Scheduled ⇒ Active)",0.5,Uses Off to On with powerOn instead of Scheduled to Active at beginningStopDuration
+Action,"pOn; setCS;",1,pOn and setCS are present
+Composite State,"Active",1,On state acts as the Active composite state
+Region,"TrainControl",1,Journey region acts as TrainControl
+Composite State,"TrainMovement",1,Moving state acts as TrainMovement
+State,"Initial state (TrainMovement → AtStation)",0.5,Initial state goes to WaitingAtFirstStation but not explicitly AtStation inside TrainMovement
+State,"AtStation",1,Represented by StoppedAtStation and related states
+Action,"entry / openDoors()",1,openDoors action is present
+Action,"exit / closeDoors()",1,closeDoors action is present
+Transition,"after stopDuration (AtStation ⇒ StopNotRequired)",0.5,Transition exists but triggered by doorsClosed instead of after stopDuration directly
+Guard,"[!isLastStop()]",1,Guard for not final station is present
+Transition,"after stopDuration (AtStation ⇒ Arrived)",1,Transition to Off after stop duration at final station
+Guard,"[isLastStop()]",1,Guard for final station is present
+Action,"pOff;",1,pOff action is present
+State,"StopNotRequired",1,Moving/Traveling acts as StopNotRequired
+Action,"entry / setSpeed()",1,setSpeed is present on transitions instead of entry action
+Transition,"enteringSegment (StopNotRequired ⇒ StopNotRequired)",1,Transition for regular segment is present
+Guard,"[isRegularSegment()]",1,Guard is present
+Transition,"enteringSegment (StopNotRequired ⇒ ApproachingRedLight)",1,Transition for red light is present
+Guard,"[isTrafficLightSegment() && isRed()]",1,Guard is present
+Transition,"enteringSegment (StopNotRequired ⇒ StopNotRequired)",1,Transition for green light is present
+Guard,"[isTrafficLightSegment() && !isRed()]",1,Guard is present
+Transition,"enteringSegment (StopNotRequired ⇒ ApproachingStation)",1,Transition for station is present
+Guard,"[isStationSegment() && stopRequired()]",1,Guard for station is present
+State,"ApproachingRedLight",0.5,Combined approaching and stopped at red light into one state
+Action,"entry / stopAL",1,stopAL is present on transitions
+Transition,"stopped (ApproachingRedLight ⇒ AtRedTrafficLight)",0,Transition missing due to combined states
+State,"AtRedTrafficLight",1,State is present
+Transition,"green (AtRedTrafficLight ⇒ StopNotRequired)",1,Transition is present
+State,"ApproachingStation",0.5,Combined approaching and stopped at station into one state
+Action,"entry / stopAL",1,stopAL is present on transition
+Transition,"stopped (ApproachingStation ⇒ AtStation)",0,Transition missing due to combined states
+History State,"History State for TrainMovement",1,History state is present
+State,"Emergency",1,Emergency state is present
+Transition,"emergency (TrainMovement ⇒ Emergency)",1,Transition is present
+Action,"eStop;",1,eStop action is present
+Transition,"clear (Emergency ⇒ History State)",1,Transition to history state is present
+Region,"SDS",1,SDS region is present
+State,"Initial state (SDS → SDSActive)",1,Initial state is present
+State,"SDSActive",1,State is present
+Transition,"after 1 sec (SDSActive ⇒ SDSActive)",0.5,Transition present but missing guards for segment changed
+Guard,"[hasSegmentChanged()]",0,Guard is missing
+Action,"setCS; enteringSegment()",0,Action is missing or incorrect
+Transition,"after 1 sec (SDSActive ⇒ SDSActive)",0,Second transition is missing
+Guard,"[!hasSegmentChanged()]",0,Guard is missing
+Region,"MDS",1,MDS region is present
+State,"Initial state (MDS → Stopped)",0.5,Initial state goes to MDSActive instead of Stopped
+State,"Stopped",0,Stopped state is missing in MDS
+Transition,"after 1 sec (Stopped ⇒ Moving)",0,Transition is missing
+Guard,"[speed > 0]",0,Guard is missing
+Transition,"after 1 sec (Stopped ⇒ Stopped)",0,Transition is missing
+Guard,"[speed == 0]",0,Guard is missing
+Action,"stopped()",0,Action is missing
+State,"Moving",0,Moving state is missing in MDS
+Transition,"after 1 sec (Moving ⇒ Stopped)",0,Transition is missing
+Guard,"[speed == 0]",0,Guard is missing
+Action,"stopped()",0,Action is missing
+Transition,"after 1 sec (Moving ⇒ Moving)",0,Transition is missing
+Guard,"[speed > 0]",0,Guard is missing
+Region,"ODS",1,ODS region is present
+State,"Initial state (ODS → ODSActive)",1,Initial state is present
+State,"ODSActive",1,State is present
+Transition,"after 1 sec (ODSActive ⇒ ODSActive)",0.5,Transition present but missing guards for obstacle detected
+Guard,"[obstacleDetected()]",0,Guard is missing
+Action,"emergency()",0,Action is missing in ODS
+Transition,"after 1 sec (ODSActive ⇒ ODSActive)",0,Second transition is missing
+Guard,"[!obstacleDetected()]",0,Guard is missing
+State,"Arrived",1,Represented by StoppedAtFinalStation and Off
+State,"additional elements",0,Reasonable decomposition of station wait
+Transition,"additional elements",0,Reasonable decomposition
+Guard,"additional elements",0,No incorrect additional guards
+Action,"additional elements",0,Reasonable abstraction for system checks
+Composite State,"additional elements",0,Reasonable decomposition
+Region,"additional elements",0,No incorrect additional regions
+History State,"additional elements",0,No incorrect additional history states

@@ -1,0 +1,45 @@
+Type	Element	Grading	Notes
+State	initial state (Off)	1	Initial state to Off is present
+State	Off	1	Off state is present
+Transition	on (Off => On)	1	Transition from Off to On is present
+Composite State	On	1	On is modeled as a composite state
+Transition	off (On => Off)	1	Transition from On to Off is present
+State	initial state (Idle)	1	Initial state inside On is present
+State	Idle	1	WaitingForLogin represents the Idle state
+Transition	login(cardID) (Idle => Idle)	1	Self-transition on WaitingForLogin for unauthorized card tap is present
+Guard	[!idAuthorized(cardID)]	1	Guard for unauthorized card is present
+Transition	login(cardID) (Idle => Ready)	1	Transition to LoggedIn on authorized card tap is present
+Guard	[idAuthorized(cardID)]	1	Guard for authorized card is present
+Action	"action=""none"""	0	No action to reset or set action type upon login
+State	Ready	1	LoggedIn represents the Ready state
+Transition	logoff (Ready => Idle)	1	Logoff transition is present
+Transition	start (Ready => Ready)	1	Self-transition for scan error is present
+Guard	"[action==""scan"" & !originalLoaded()]"	1	Guard for missing document on scan is present
+Transition	start (Ready => Ready)	1	Self-transition for print error is present
+Guard	"[action==""print"" & !documentInQueue()]"	1	Guard for empty queue on print is present
+Transition	scan (Ready => Ready)	0	No separate transition to select scan action
+Action	"action = ""scan"""	0	No action variable used for scan
+Transition	print (Ready => Ready)	0	No separate transition to select print action
+Action	"action=""print"""	0	No action variable used for print
+Transition	start (Ready => Scan & Email)	1	Transition to scanning process is present
+Guard	"[action==""scan"" && originalLoaded()]"	1	Guard for document detected is present
+Composite State	Busy	1	Busy state is represented by two separate composite states for printing and scanning
+Transition	stop (Busy => Ready)	1	Stop transitions from both processes to LoggedIn are present
+Transition	done (Busy => Ready)	1	Done transitions to LoggedIn are present
+Transition	jam (Busy => Suspended)	1	Jam transitions to suspended states are present
+History State	for Busy	0	No history state used for resuming
+State	Print	1	Printing state is present
+Transition	start (Ready => Print)	1	Transition to printing process is present
+Guard	"[action=""print"" && documentInQueue()]"	1	Guard for non-empty queue is present
+Transition	outOfPaper (Print => Suspended)	1	Out of paper transition to suspended state is present
+State	Scan & Email	1	Scanning state is present
+State	Suspended	1	Suspended state is represented by multiple specific suspended states
+Transition	resume (Suspended => History State for Busy)	1	Resume transitions go directly to specific states which is semantically equivalent
+Transition	cancel (Suspended => Ready)	1	Cancel transitions from suspended states to LoggedIn are present
+State	additional elements	0	Additional states are reasonable modeling choices
+Transition	additional elements	0	No fundamentally incorrect additional transitions
+Guard	additional elements	0	No fundamentally incorrect additional guards
+Action	additional elements	0	Additional actions are reasonable modeling choices
+Composite State	additional elements	0	Additional composite states are reasonable modeling choices
+Region	additional elements	0	No additional regions
+History State	additional elements	0	No additional history states

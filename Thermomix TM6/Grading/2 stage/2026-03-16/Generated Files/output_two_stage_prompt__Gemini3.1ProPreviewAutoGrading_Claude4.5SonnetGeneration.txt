@@ -1,0 +1,51 @@
+Type,Element,Grading,Notes
+State,"initial state (⇒ TransportationMode)",1,Correctly modeled
+State,"TransportationMode",1,Correctly modeled
+Transition,"selectorPressed (TransportationMode ⇒ On)",1,Transitions to HomeScreen on selectorPressed
+State,"PreparingOff",1,Modeled as ShuttingDown
+Transition,"selectorReleased (PreparingOff ⇒ On)",1,Correctly modeled
+Transition,"after 5sec (PreparingOff ⇒ Off)",1,Modeled correctly with an intermediate ShutdownReady state
+State,"Off",1,Correctly modeled
+Transition,"selectorPressed (Off ⇒ On)",1,Correctly modeled
+Composite State,"On",0.5,No explicit On composite state but states are modeled individually
+History State,"History State for On",0,Missing history state
+Transition,"selectorHeld (On ⇒ PreparingOff)",0.5,Modeled from HomeScreen but not from a general On state
+Transition,"bowlRemoved (On ⇒ On)",1,Modeled from AutoShutdownWarning and RecipeExecution to HomeScreen
+State,"Initial State (On ⇒ Home)",0,Missing due to lack of On composite state
+State,"Home",1,Modeled as HomeScreen
+Transition,"after 14min 30sec (Home ⇒ Preparing Shutdown)",1,Correctly modeled
+Transition,"start (Home ⇒ PromptToAdd)",1,Modeled as start transition from RecipeSelected to AddingIngredients
+Guard,"[!bowlRemoved()]",1,Modeled as bowlPlaced
+Action,"setIngredients()",0,Missing action
+State,"Preparing Shutdown",1,Modeled as AutoShutdownWarning
+Transition,"after 30sec (Preparing Shutdown ⇒ Off)",1,Correctly modeled
+Transition,"cancel (Preparing Shutdown ⇒ Home)",1,Correctly modeled
+State,"PromptToAdd",1,Modeled as AddingIngredients
+Transition,"next (PromptToAdd ⇒ PromptToAdd)",0,Missing self-transition for adding more ingredients
+Guard,"[weightCorrect() && moreIngredientsRequired()]",0,Missing guard
+Action,"setIngredients()",0,Missing action
+Transition,"next (PromptToAdd ⇒ Chop)",1,Modeled correctly
+Guard,"[weightCorrect() && !moreIngredientsRequired()]",0.5,Modeled correctAmount but missing !moreIngredientsRequired
+Action,"setChoppingSpeedAndTime()",1,Modeled as entry action in Chopping state
+State,"Chop",1,Modeled as Chopping
+Transition,"next (Chop ⇒ PromptToAdd)",0,Missing transition back to PromptToAdd
+Guard,"[choppingTimeDone && moreIngredientsRequired()]",0,Missing guard
+Action,"setIngredients()",0,Missing action
+Transition,"next (Chop ⇒ Cook)",1,Modeled correctly
+Guard,"[choppingTimeDone && !moreIngredientsRequired()]",0,Missing guard
+Action,"setCookingSpeedAndTime()",1,Modeled as entry action in Cooking state
+State,"Cook",1,Modeled as Cooking
+Transition,"after choppingTime (Cook ⇒ PromptToAdd)",1,Modeled as done transition to AddingIngredients
+Guard,"[choppingTimeDone && moreIngredientsRequired()]",0.5,Modeled moreSteps but missing choppingTimeDone
+Action,"setIngredients()",0,Missing action
+Transition,"after cookingTime (Cook ⇒ Ready)",1,Modeled correctly
+Guard,"[!moreIngredientsRequired()]",1,Modeled as !moreSteps
+State,"Ready",1,Modeled as MealReady
+Transition,"after 14min 30sec (Ready ⇒ Preparing Shutdown)",0,Missing transition from Ready to AutoShutdownWarning
+State,"additional elements",0,Reasonable intermediate states added
+Transition,"additional elements",0,Reasonable transitions added
+Guard,"additional elements",0,No incorrect additional guards
+Action,"additional elements",0,Reasonable additional actions added
+Composite State,"additional elements",0,Reasonable composite state added
+Region,"additional elements",0,No additional regions
+History State,"additional elements",0,No additional history states

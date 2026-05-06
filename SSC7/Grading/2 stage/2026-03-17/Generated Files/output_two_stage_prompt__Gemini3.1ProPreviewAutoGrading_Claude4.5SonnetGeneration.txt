@@ -1,0 +1,74 @@
+Type,Element,Grading,Notes
+State,"Initial state (→ Active)",1,Correctly represented
+Composite State,"Active",1,Correctly represented
+State,"Initial state (Active → Ready)",1,Correctly represented
+State,"Ready",1,Correctly represented as ReadyForNextItem
+Transition,"scannedNr (Ready ⇒ Ready)",1,Correctly represented
+Guard,"[!existsNr()]",1,Correctly represented as [!codeExists]
+Action,"error()",1,Correctly represented as showError()
+Transition,"productCodeEntered (Ready ⇒ Ready)",1,Represented via EnteringProductCode state
+Guard,"[!existsCode()]",1,Correctly represented as [!codeExists]
+Action,"error()",1,Correctly represented as showError()
+Transition,"productCodeEntered (Ready ⇒ WeighItem)",1,Represented via EnteringProductCode state
+Guard,"[existsCode()]",1,Correctly represented as [codeExists]
+Transition,"scannedNr (Ready ⇒ CheckWeight)",1,Represented via ItemScanned state
+Guard,"[existsNr()]",1,Correctly represented as [codeExists]
+Action,"addItem()",1,Correctly represented as showItem()
+Transition,"cancelCheckout (Ready ⇒ Override)",1,Correctly represented
+Action,"setTypeEverything()",0.5,Missing explicit action but handled via guard logic later
+Transition,"removeItem (Ready ⇒ Override)",1,Correctly represented
+Guard,"[billHasItem()]",1,Correctly represented as [billHasItems]
+Action,"setTypeItem()",0.5,Missing explicit action but handled via guard logic later
+Transition,"broughtOwnBag (Ready ⇒ WeighBag)",1,Correctly represented
+Transition,"pay (Ready ⇒ PayRequested)",1,Correctly represented
+Guard,"[billHasItem()]",1,Correctly represented as [billHasItems]
+Action,"sendPaymentRequest()",1,Correctly represented
+State,"WeighItem",1,Correctly represented as WeighingItem
+Transition,"cancel (WeighItem ⇒ Ready)",1,Correctly represented
+Transition,"weighedItem (WeighItem ⇒ CheckWeight)",1,Represented via ItemWeighed state
+Action,"addWeighedItem()",1,Correctly represented as showItemWithWeight()
+State,"CheckWeight",1,Correctly represented as SecurityWeightCheck
+Transition,"secWeighedItem (CheckWeight ⇒ Ready)",1,Correctly represented
+Guard,"[weightMatched()]",0.5,Modeled as an event rather than a guard
+Transition,"secWeighedItem (CheckWeight ⇒ Override)",1,Correctly represented
+Guard,"[!weightMatched()]",0.5,Modeled as an event rather than a guard
+Action,"setTypeItem()",0.5,Missing explicit action but handled via guard logic later
+Transition,"cancelCheckout (CheckWeight ⇒ Override)",1,Correctly represented
+Action,"setTypeEverything()",0.5,Missing explicit action but handled via guard logic later
+State,"WeighBag",1,Correctly represented as WeighingBag
+Transition,"secWeighedItem (WeighBag ⇒ Ready)",1,Correctly represented
+Action,"addBag()",1,Correctly represented as incrementBagCount()
+Transition,"cancel (WeighBag ⇒ Ready)",1,Correctly represented
+State,"Override",1,Correctly represented as WaitingForOverride
+Action,"entry / lightOn()",0.5,Modeled as actions on incoming transitions instead of entry action
+Action,"exit / lightOff()",0.5,Modeled as actions on outgoing transitions instead of exit action
+Transition,"codeEntered (Override ⇒ Ready)",1,Correctly represented
+Guard,"[codeCorrect() && isTypeItem()]",1,Correctly represented
+Action,"clearItem()",1,Correctly represented
+Transition,"codeEntered (Override ⇒ Ready)",1,Correctly represented
+Guard,"[codeCorrect() && isTypeEverything()]",1,Correctly represented
+Action,"clearEverything()",1,Correctly represented
+Transition,"codeEntered (Override ⇒ Override)",1,Correctly represented
+Guard,"[!codeCorrect()]",1,Correctly represented
+Transition,"timeoutWarning (Active ⇒ TimeoutCountdown)",0.5,Only transitions from ReadyForNextItem instead of all idle states
+Action,"error()",1,Correctly represented as showError() on incorrect code transition
+History State,"H (Active)",1,Correctly represented
+State,"TimeoutCountdown",1,Correctly represented as TimeoutWarning
+Action,"do / countFrom60()",0.5,Modeled as action on incoming transition instead of do-activity
+Transition,"(TimeoutCountdown ⇒ Active)",1,Correctly represented
+Action,"clearEverything()",1,Correctly represented
+Action,"readyForNextCustomer()",0.5,Missing explicit action but implied by transition to ReadyForNextItem
+State,"PayRequested",1,Correctly represented as WaitingForPayment
+Transition,"fail (PayRequested ⇒ Ready)",1,Correctly represented
+Action,"error()",1,Correctly represented as showError()
+Transition,"cancel (PayRequested ⇒ Ready)",1,Correctly represented
+Transition,"success (PayRequested ⇒ Ready)",1,Correctly represented
+Action,"printBill()",1,Correctly represented
+Action,"readyForNextCustomer()",0.5,Missing explicit action but implied by transition to ReadyForNextItem
+State,"additional elements",0,Reasonable intermediate states added
+Transition,"additional elements",0,Reasonable transitions for intermediate states
+Guard,"additional elements",0,Reasonable additional guards
+Action,"additional elements",0,Reasonable additional actions
+Composite State,"additional elements",0,No unnecessary composite states
+Region,"additional elements",0,No unnecessary regions
+History State,"additional elements",0,No unnecessary history states

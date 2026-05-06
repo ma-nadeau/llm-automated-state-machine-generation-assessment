@@ -1,0 +1,74 @@
+Type,Element,Grading,Notes
+State,"Initial state (→ Active)",1,Top-level initial transition goes to Active.
+Composite State,"Active",1,Main behavior is nested in Active.
+State,"Initial state (Active → Ready)",1,Active initial state enters ReadyForNextItem.
+State,"Ready",1,ReadyForNextItem represents the ready-to-scan state.
+Transition,"scannedNr (Ready ⇒ Ready)",1,Invalid barcode loops in ReadyForNextItem via scanBarcode with missing code.
+Guard,"[!existsNr()]",1,The invalid barcode guard is modeled as !codeExists.
+Action,"error()",1,Invalid barcode performs showError.
+Transition,"productCodeEntered (Ready ⇒ Ready)",1,Invalid product code returns to ReadyForNextItem after the entry step.
+Guard,"[!existsCode()]",1,The missing product code condition is modeled as !codeExists.
+Action,"error()",1,Invalid product code performs showError.
+Transition,"productCodeEntered (Ready ⇒ WeighItem)",1,Valid product code leads to WeighingItem through an entry-code state.
+Guard,"[existsCode()]",1,The valid product code condition is modeled as codeExists.
+Transition,"scannedNr (Ready ⇒ CheckWeight)",1,Valid barcode leads to the security weight check after the item is placed.
+Guard,"[existsNr()]",1,The valid barcode condition is modeled as codeExists.
+Action,"addItem()",0,The scan action only shows the item and does not add it to the bill.
+Transition,"cancelCheckout (Ready ⇒ Override)",1,Cancel everything from ReadyForNextItem goes to WaitingForOverride.
+Action,"setTypeEverything()",0.5,The clear-all override type is implied by later guards but not explicitly set on the transition.
+Transition,"removeItem (Ready ⇒ Override)",1,removeItem from ReadyForNextItem goes to WaitingForOverride.
+Guard,"[billHasItem()]",1,The removeItem transition requires billHasItems.
+Action,"setTypeItem()",0.5,The item override type is implied by later guards but not explicitly set.
+Transition,"broughtOwnBag (Ready ⇒ WeighBag)",1,addBag from ReadyForNextItem enters WeighingBag.
+Transition,"pay (Ready ⇒ PayRequested)",1,Pay from ReadyForNextItem enters WaitingForPayment when items exist.
+Guard,"[billHasItem()]",1,The pay transition is guarded by billHasItems.
+Action,"sendPaymentRequest()",1,The pay transition sends the payment request.
+State,"WeighItem",1,WeighingItem represents weighing an item without a barcode.
+Transition,"cancel (WeighItem ⇒ Ready)",1,cancelWeighing from WeighingItem returns to ReadyForNextItem.
+Transition,"weighedItem (WeighItem ⇒ CheckWeight)",1,After itemWeighed the model proceeds toward the security weight check.
+Action,"addWeighedItem()",0,The weighed item is shown but no action adds it to the bill.
+State,"CheckWeight",1,SecurityWeightCheck represents the security scale check.
+Transition,"secWeighedItem (CheckWeight ⇒ Ready)",1,A matching security weight returns to ReadyForNextItem.
+Guard,"[weightMatched()]",1,The matching condition is represented by securityWeightMatches.
+Transition,"secWeighedItem (CheckWeight ⇒ Override)",1,A security weight mismatch enters WaitingForOverride.
+Guard,"[!weightMatched()]",1,The mismatch condition is represented by securityWeightMismatch.
+Action,"setTypeItem()",0.5,The item override type is not explicitly set although item clearing is later possible.
+Transition,"cancelCheckout (CheckWeight ⇒ Override)",1,cancelEverything from SecurityWeightCheck enters WaitingForOverride.
+Action,"setTypeEverything()",0.5,The clear-all type is only implicit in the cancelEverything path.
+State,"WeighBag",1,WeighingBag is present for customer bags.
+Transition,"secWeighedItem (WeighBag ⇒ Ready)",1,After a bag is weighed the model returns to ReadyForNextItem.
+Action,"addBag()",1,bagWeighed increments and displays the bag count.
+Transition,"cancel (WeighBag ⇒ Ready)",1,cancelWeighing from WeighingBag returns to ReadyForNextItem.
+State,"Override",1,WaitingForOverride represents waiting for staff override.
+Action,"entry / lightOn()",1,All modeled entries to override turn on the staff light.
+Action,"exit / lightOff()",1,Successful exits from override turn off the light.
+Transition,"codeEntered (Override ⇒ Ready)",1,Correct item override returns to ReadyForNextItem.
+Guard,"[codeCorrect() && isTypeItem()]",1,The guard uses codeCorrect and itemOverride.
+Action,"clearItem()",1,The item override transition clears the item.
+Transition,"codeEntered (Override ⇒ Ready)",1,Correct clear-all override returns to ReadyForNextItem.
+Guard,"[codeCorrect() && isTypeEverything()]",1,The guard uses codeCorrect and clearAllOverride.
+Action,"clearEverything()",1,The clear-all override transition clears everything.
+Transition,"codeEntered (Override ⇒ Override)",1,Incorrect override code loops in WaitingForOverride.
+Guard,"[!codeCorrect()]",1,The incorrect code guard is modeled as !codeCorrect.
+Transition,"timeoutWarning (Active ⇒ TimeoutCountdown)",0.5,Timeout warning is only modeled from ReadyForNextItem rather than all non-payment non-override active states.
+Transition,"error()",1,Incorrect override code shows an error.
+History State,"H (Active)",1,A history state H is included for continuing after the countdown.
+State,"TimeoutCountdown",1,TimeoutWarning represents the countdown state.
+Action,"do / countFrom60()",1,The timeout warning transition starts the countdown.
+Transition,"(TimeoutCountdown ⇒ Active)",1,Countdown timeout returns to the active ready state.
+Action,"clearEverything()",1,Countdown timeout clears everything.
+Action,"readyForNextCustomer()",0.5,Returning to ReadyForNextItem implies readiness but no explicit next-customer reset action is modeled.
+State,"PayRequested",1,WaitingForPayment represents the payment-requested state.
+Transition,"fail (PayRequested ⇒ Ready)",1,Payment failure returns to ReadyForNextItem.
+Action,"error()",1,Payment failure shows an error.
+Transition,"cancel (PayRequested ⇒ Ready)",1,Payment cancellation returns to ReadyForNextItem.
+Transition,"success (PayRequested ⇒ Ready)",1,Payment success returns to ReadyForNextItem.
+Action,"printBill()",1,Payment success prints the bill.
+Action,"readyForNextCustomer()",0.5,The model returns to ready after success but does not explicitly reset for a new customer.
+State,"additional elements",0,Extra intermediate states for item display and code entry are reasonable refinements.
+Transition,"additional elements",0,Extra transitions such as placing items and pay-without-items do not fundamentally conflict.
+Guard,"additional elements",0,No fundamentally incorrect extra guards are present.
+Action,"additional elements",0,Extra display and light actions are harmless or consistent.
+Composite State,"additional elements",0,No incorrect extra composite states are present.
+Region,"additional elements",0,No extra regions are modeled.
+History State,"additional elements",0,No incorrect extra history state is present.

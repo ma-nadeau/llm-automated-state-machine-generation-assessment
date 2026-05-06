@@ -1,0 +1,52 @@
+Type,Element,Grading,Notes
+Composite State,"SpaManager",1,SpaManager composite state is present.
+Region,"Jacuzzi",1,JacuzziControl region is present.
+State,"initial state (Jacuzzi → Off)",1,Initial state pointing to JacuzziOff is present.
+State,"Off",1,JacuzziOff state is present.
+Composite State,"On (Jacuzzi)",1,JacuzziOn composite state is present.
+Transition,"on (Off ⇒ On)",1,Transition from JacuzziOff to JacuzziOn is present.
+Transition,"off (On ⇒ Off)",1,Transition from JacuzziOn to JacuzziOff is present.
+State,"initial state (Level1)",1,Initial state pointing to Level1 is present.
+State,"Level1",1,Level1 state is present.
+Transition,"up (Level1 ⇒ Level2)",1,Transition from Level1 to Level2 is present.
+State,"Level2",1,Level2 state is present.
+Transition,"up (Level2 ⇒ Level3)",1,Transition from Level2 to Level3 is present.
+Transition,"down (Level2 ⇒ Level1)",1,Transition from Level2 to Level1 is present.
+State,"Level3",1,Level3 state is present.
+Transition,"down (Level3 ⇒ Level2)",1,Transition from Level3 to Level2 is present.
+History State,"History State for Jacuzzi On",1,History state H is present inside JetsActive.
+Transition,"setPattern(PatternType type) (On⇒ History State)",1,Modeled as self-transitions on each level which correctly preserves the current state.
+State,"Paused",1,Paused state is present.
+Transition,"pause (On⇒ Pause)",1,Transition from JetsActive to Paused is present.
+Transition,"after 2min (Paused ⇒ History State)",1,Transition from Paused to History state after 2 minutes is present.
+Region,"Sauna",1,SaunaControl region is present.
+State,"initial state (Sauna → Off)",1,Initial state pointing to SaunaOff is present.
+State,"Off",1,SaunaOff state is present.
+Composite State,"On (Sauna)",1,SaunaOn composite state is present.
+Transition,"on (Off ⇒ On)",1,Transition from SaunaOff to SaunaOn is present.
+Transition,"off (On ⇒ Off)",1,Transition from SaunaOn to SaunaOff is present.
+Region,"Heater",1,HeatingControl region is present.
+State,"initial state (Heater → Heat)",1,Initial state pointing to Heating is present.
+State,"Heat",1,Heating state is present.
+Transition,"Heat ⇒ Idle",1,Transition from Heating to Maintaining is present.
+Guard,"[temp ≥ 90°C]",1,Guard for temperature >= 90 is present.
+State,"Idle",1,Maintaining state acts as Idle.
+Transition,"Idle ⇒ Heat",1,Transition from Maintaining to Heating is present.
+Guard,"[temp < 85°C]",1,Guard for temperature < 85 is present.
+Region,"Fan",1,FanControl region is present.
+State,"initial state (Fan → Off)",1,Initial state pointing to FanOff is present.
+State,"Off",1,FanOff state is present.
+Transition,"after 5min (Off ⇒ On)",1,Transition from FanOn to FanOff after 5 minutes is present.
+Guard,"[humidity > 40% && exceedTime > 3min]",1,Modeled using an intermediate FanMonitoring state and timers which correctly captures the behavior.
+Region,"Water",1,WaterDispersionControl region is present.
+State,"initial state (Water → Idle)",1,Initial state pointing to WaterReady is present.
+State,"Idle",1,WaterReady state acts as Idle.
+Transition,"Idle ⇒ Idle",1,Modeled using a WaterCooldown state to enforce the 15-minute limit which is a valid alternative.
+Guard,"disperse [humidity < 40% && !Fan.On && timeSinceLast ≥ 15min]",1,Guard checks humidity and fan status while the 15-minute constraint is handled by the cooldown state.
+State,"additional elements",0,Additional states are valid modeling choices.
+Transition,"additional elements",0,Additional transitions are valid modeling choices.
+Guard,"additional elements",0,Additional guards are valid modeling choices.
+Action,"additional elements",0,Additional actions are valid modeling choices.
+Composite State,"additional elements",0,Additional composite states are valid modeling choices.
+Region,"additional elements",0,No unnecessary regions added.
+History State,"additional elements",0,No unnecessary history states added.
