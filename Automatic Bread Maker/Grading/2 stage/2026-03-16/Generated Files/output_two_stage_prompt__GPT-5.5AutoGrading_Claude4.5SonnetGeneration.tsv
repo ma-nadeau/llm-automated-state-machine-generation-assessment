@@ -1,0 +1,56 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Off)	1	Initial pseudostate correctly enters Off.
+State	Off	1	Off state is explicitly present.
+Transition	on (Off ⇒ On)	1	Off transitions to On on the on event.
+Composite State	On	1	On is modeled as a composite state containing operating behavior.
+Transition	on => off	1	On transitions to Off on the off event.
+Composite State	Setup	0.5	CourseSelection represents setup behavior but is not modeled as a composite crust selection state.
+State	Initial state (Setup → Medium)	0	Initial setup entry does not establish a medium crust state.
+Action	delay=0; selectFirstCourse()	0.5	Timer zero is only implied by guards and first course selection is not initialized by an action.
+State	Medium	0.5	Medium crust is only implied by the abstract selectNextCrust action.
+Transition	setup initial state => medium	0	No transition from setup initial state to a medium crust condition is shown.
+Transition	medium => dark	0.5	Crust self loop suggests cycling but does not explicitly show medium to dark.
+State	Dark	0.5	Dark crust is only implied by the abstract crust cycling action.
+Transition	dark => light	0.5	Crust self loop suggests cycling but does not explicitly show dark to light.
+State	Light	0.5	Light crust is only implied by the abstract crust cycling action.
+History State	H	1	Explicit history is unnecessary because setup self loops preserve selections.
+Transition	setup => H	1	Menu is modeled as a setup self loop that preserves the current setup context.
+Action	selectNextCourse()	1	Menu transition calls selectNextCourse.
+Transition	plus (Setup ⇒ Setup)	1	Plus is modeled as a setup self loop.
+Guard	[delay <= 17*60+50]	1	Guard timer less than 1080 prevents exceeding 18 hours with 10 minute steps.
+Action	delay = delay + 10	1	Plus action increases the timer by 10.
+Transition	minus (Setup ⇒ Setup)	1	Minus is modeled as a setup self loop.
+Guard	[delay >= 10]	1	Guard timer greater than 0 is equivalent for 10 minute increments.
+Action	delay = delay - 10	1	Minus action decreases the timer by 10.
+Transition	start (Setup ⇒ Countdown)	1	Start enters Countdown when timer is positive.
+Guard	[delay > 0]	1	Countdown transition uses a positive timer guard.
+Transition	start (Setup ⇒ Baking)	1	Start enters the baking process when timer is zero.
+Guard	[delay == 0]	1	Direct baking transition uses a zero timer guard.
+State	Countdown	1	Countdown state is explicitly present.
+Action	setCourseTimes()	0.5	Course based timing is implicit in phase timing events but no setCourseTimes action is shown.
+Transition	Countdown => baking	1	Countdown transitions to BakingProcess when the timer expires.
+Transition	Countdown => setup	1	Stop during countdown returns to CourseSelection.
+Action	setCourseTimes()	0.5	Direct start to baking lacks an explicit setCourseTimes action though phase times are named.
+Composite State	Baking	1	BakingProcess is modeled as a composite baking state.
+State	Initial state	1	BakingProcess has an initial pseudostate.
+State	Kneading	1	Kneading state is explicitly present.
+Action	startKneading()	1	Kneading note includes entry startKneading.
+Action	stopKneading()	1	Kneading note includes exit stopKneading.
+Transition	baking initial state => kneading	1	BakingProcess initial state enters Kneading.
+Transition	kneading => rising	1	Kneading transitions to Rising after kneading time.
+State	Rising	1	Rising state is explicitly present.
+Transition	rising => baking	1	Rising transitions to Baking after rising time.
+State	Baking	1	Baking phase state is explicitly present.
+Action	heat()	1	Baking phase invokes heat on entry.
+Transition	baking => warming	1	Baking transitions to Warming after baking time.
+State	Warming	1	Warming state is explicitly present.
+Action	warm()	1	Warming phase invokes warm on entry.
+Transition	adter 60min (warming => setup)	1	Warming returns to CourseSelection after 60 minutes.
+Transition	baking => setup	1	Stop from the BakingProcess composite returns to CourseSelection.
+State	additional elements	0	No fundamentally incorrect extra states.
+Transition	additional elements	0	Extra countdown tick transition is reasonable detail.
+Guard	additional elements	0	No fundamentally incorrect extra guards.
+Action	additional elements	0	No fundamentally incorrect extra actions.
+Composite State	additional elements	0	No fundamentally incorrect extra composite states.
+Region	additional elements	0	No extra regions.
+History State	additional elements	0	No incorrect extra history states.

@@ -1,0 +1,53 @@
+Type	Element	Grading	Notes
+State	initial state (off)	1	Top level initial pseudostate leads to Off
+Transition	initial state (off) => off	1	Initial transition to Off is shown
+State	Off	1	Off state is explicitly modeled
+Transition	off => on	1	onOff transition from Off to On is present
+Composite State	On	1	On is modeled as a composite state
+State	initial state (on)	1	On initial transition enters Setup
+Composite State	GameSetup	1	Setup composite represents pregame configuration
+Region	GameSetup Region 1	1	Timing selection behavior is modeled inside Setup
+State	Initial state (region 1)	1	Setup initially enters TimingSelection
+State	TimingSelection	1	TimingSelection state is present
+Action	incrTimingProgram()	1	plus selects the next timing option
+Action	decrTimingProgram()	1	minus selects the previous timing option
+Transition	timing selection => timing selection	1	plus and minus are self transitions during timing selection
+Transition	game setup => ready to start	1	select moves from TimingSelection to TimingSelected
+Region	GameSetup Region 2	0.5	Orientation swapping is modeled by action but not as an independent region
+State	Initial state (region 2)	0	No default white king orientation state is modeled
+State	WhiteKingOnLeft	0	No explicit left orientation state is present
+State	WhiteKingOnRight	0	No explicit right orientation state is present
+Transition	initial state => white king on left	0	No transition establishes an initial left orientation
+Transition	white king on left => white king on right	0.5	flip swap action implies toggling but no left to right state change is shown
+Transition	white king on right => white king on left	0.5	flip swap action implies toggling but no right to left state change is shown
+State	ReadyToStart	1	TimingSelected reasonably represents the ready after selection condition
+Transition	ready to start => game running	0.5	startStop starts the game but is attached to all of Setup so it can bypass selection
+Composite State	GameRunning	1	GameActive composite represents the running game
+History State	H	0.5	H is included for resume intent but not modeled with clear history semantics
+State	WhiteClockRunning	1	WhiteTurn represents white clock running
+Action	startTimer(wc)	1	startWhiteClock is used when white begins or resumes by flip
+Action	stopTimer(wc)	1	stopWhiteClock is used on flip and pause
+Guard	[wc > 0]	0	No guard limits white countdown to positive time
+Action	decrTimer(wc)	1	countDownWhite represents decrementing white time
+Transition	white clock running => white clock running	0.5	Countdown is shown as a do activity rather than an explicit per second self transition
+State	BlackClockRunning	1	BlackTurn represents black clock running
+Action	startTimer(bc)	1	startBlackClock is used when black begins by flip
+Action	stopTimer(bc)	1	stopBlackClock is used on flip and pause
+Guard	[bc > 0]	0	No guard limits black countdown to positive time
+Action	decrTimer(bc)	1	countDownBlack represents decrementing black time
+Transition	balck clock running => black clock running	0.5	Countdown is shown as a do activity rather than an explicit per second self transition
+Transition	game running => game paused	1	startStop from each active turn stops the current clock and enters Paused
+Transition	game running => game finished	1	Timeout transitions enter flag states that represent game-ending timeout outcomes
+Guard	[wc == 0]	1	White timeout guard is present as whiteTime equals zero
+Guard	[bc == 0]	1	Black timeout guard is present as blackTime equals zero
+State	GamePaused	1	Paused state is explicitly modeled
+Transition	game paused => game running	0.5	startStop resumes via H but the target running substate is unclear
+State	GameFinished	1	WhiteTimeout and BlackTimeout represent finished timeout states with flags
+Transition	on => off	1	onOff transition from On to Off is present
+State	additional elements	0	No fundamentally incorrect extra states
+Transition	additional elements	1	Setup to GameActive on startStop incorrectly allows starting before select
+Guard	additional elements	0	No fundamentally incorrect extra guards
+Action	additional elements	0	Extra actions are reasonable refinements of required behavior
+Composite State	additional elements	0	No fundamentally incorrect extra composite states
+Region	additional elements	0	No fundamentally incorrect extra regions
+History State	additional elements	0	No additional incorrect history states

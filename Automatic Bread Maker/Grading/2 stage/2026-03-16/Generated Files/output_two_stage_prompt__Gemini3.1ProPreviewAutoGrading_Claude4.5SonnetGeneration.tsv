@@ -1,0 +1,56 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Off)	1	Initial state to Off is correctly represented.
+State	Off	1	Off state is correctly represented.
+Transition	on (Off ⇒ On)	1	Transition from Off to On is correctly represented.
+Composite State	On	1	On is correctly represented as a composite state.
+Transition	on => off	1	Transition from On to Off is correctly represented.
+Composite State	Setup	0.5	CourseSelection state exists but is not a composite state for crust selection.
+State	Initial state (Setup → Medium)	0	Missing initial state for crust selection.
+Action	delay=0; selectFirstCourse()	0	Missing initialization actions for delay and course.
+State	Medium	0	Medium state is missing.
+Transition	setup initial state => medium	0	Missing transition to medium.
+Transition	medium => dark	0.5	Handled via self-transition and action instead of explicit states.
+State	Dark	0	Dark state is missing.
+Transition	dark => light	0.5	Handled via self-transition and action instead of explicit states.
+State	Light	0	Light state is missing.
+History State	H	0	History state is missing.
+Transition	setup => H	0.5	Handled via self-transition instead of history state.
+Action	selectNextCourse()	1	Action selectNextCourse() is correctly represented.
+Transition	plus (Setup ⇒ Setup)	1	Transition for plus is correctly represented.
+Guard	[delay <= 17*60+50]	1	Guard correctly limits timer to 18 hours (1080 minutes).
+Action	delay = delay + 10	1	Action correctly increments timer by 10.
+Transition	minus (Setup ⇒ Setup)	1	Transition for minus is correctly represented.
+Guard	[delay >= 10]	1	Guard timer > 0 is functionally equivalent since timer increments by 10.
+Action	delay = delay - 10	1	Action correctly decrements timer by 10.
+Transition	start (Setup ⇒ Countdown)	1	Transition to Countdown with start event is correctly represented.
+Guard	[delay > 0]	1	Guard correctly checks timer > 0.
+Transition	start (Setup ⇒ Baking)	1	Transition to BakingProcess with start event is correctly represented.
+Guard	[delay == 0]	1	Guard correctly checks timer == 0.
+State	Countdown	1	Countdown state is correctly represented.
+Action	setCourseTimes()	0	Missing action to set course times.
+Transition	Countdown => baking	1	Transition from Countdown to BakingProcess is correctly represented.
+Transition	Countdown => setup	1	Transition from Countdown to CourseSelection with stop event is correctly represented.
+Action	setCourseTimes()	0	Missing action to set course times.
+Composite State	Baking	1	BakingProcess is correctly represented as a composite state.
+State	Initial state	1	Initial state to Kneading is correctly represented.
+State	Kneading	1	Kneading state is correctly represented.
+Action	startKneading()	1	Action startKneading() is correctly represented on entry.
+Action	stopKneading()	1	Action stopKneading() is correctly represented on exit.
+Transition	baking initial state => kneading	1	Transition from initial state to Kneading is correctly represented.
+Transition	kneading => rising	1	Transition from Kneading to Rising is correctly represented.
+State	Rising	1	Rising state is correctly represented.
+Transition	rising => baking	1	Transition from Rising to Baking is correctly represented.
+State	Baking	1	Baking state is correctly represented.
+Action	heat()	1	Action heat() is correctly represented on entry.
+Transition	baking => warming	1	Transition from Baking to Warming is correctly represented.
+State	Warming	1	Warming state is correctly represented.
+Action	warm()	1	Action warm() is correctly represented on entry.
+Transition	adter 60min (warming => setup)	1	Transition from Warming to CourseSelection after 60min is correctly represented.
+Transition	baking => setup	1	Transition from BakingProcess to CourseSelection with stop event is correctly represented.
+State	additional elements	0	No fundamentally incorrect additional states.
+Transition	additional elements	0	Countdown loop is a reasonable modeling choice.
+Guard	additional elements	0	Countdown loop guard is a reasonable modeling choice.
+Action	additional elements	0	Countdown loop action is a reasonable modeling choice.
+Composite State	additional elements	0	No fundamentally incorrect additional composite states.
+Region	additional elements	0	No fundamentally incorrect additional regions.
+History State	additional elements	0	No fundamentally incorrect additional history states.
