@@ -1,13 +1,16 @@
 # Evaluations - Directory Structure
 
-This directory contains evaluation results for state machine diagram generation across multiple projects using different prompting strategies (1 stage vs 2 stage), along with human and automatic grading via an LLM.
+This directory contains evaluation results for state machine diagram generation across multiple projects using different prompting strategies (1 stage vs 2 stage), along with human and automatic grading via LLMs.
 
-Initial generation and grading results used **Claude 4.5 Sonnet** as both the generator and the auto-grader baseline. Two types of model comparison experiments are then defined:
+Initial generation and grading results used **Claude 4.5 Sonnet** as the generator. The dataset was then extended with **GPT-5.5** and **Gemini 3.1 Pro Preview** for automatic grading and additional generated state machines. Because GPT-5.5- and Gemini-generated state machines have not been assessed by human graders, the paper-facing experiments should distinguish generation quality from grading quality:
 
-| Experiment Type | What varies | What is fixed |
-|-----------------|-------------|---------------|
-| **Generation Comparison** | Generation model (e.g. GPT-5.5, Gemini 3.1 Pro Preview) | Auto-grader (Claude 4.5 Sonnet) |
-| **Grading Comparison** | Auto-grader model (e.g. GPT-5.5, Gemini 3.1 Pro Preview) | Generation model (Claude 4.5 Sonnet) |
+| Paper RQ | What is evaluated | Evidence available |
+|----------|-------------------|--------------------|
+| **RQ1** | Generation quality of Claude 4.5 Sonnet using one-stage and two-stage prompting | Human assessment of Claude-generated state machines |
+| **RQ2** | Grading quality of Claude 4.5 Sonnet, GPT-5.5, and Gemini 3.1 Pro Preview | Each LLM grader compared against human grades for Claude-generated state machines |
+| **RQ3** | Whether the grading trends from RQ2 hold on additional generated state machines | Available automatic grades for GPT-5.5- and Gemini-generated state machines; these results should be interpreted as grading-trend comparisons, not human-validated generation quality |
+
+For RQ1, report precision, recall, and F1 for Claude-generated state machines overall and by model element type. For RQ2, report precision, recall, F1, and 0/0.5/1 confusion matrices for each grader overall and by model element type. For RQ3, compare grading distributions and trends on GPT-5.5- and Gemini-generated state machines without claiming their generation quality.
 
 The repositories used to generate these results are:
 
@@ -19,10 +22,14 @@ The repositories used to generate these results are:
 ```
 Evaluations/
 ├── _scripts/
-│   └── generate_agreement_figures.py      # Script: confusion matrix figures (--mode flag)
+│   ├── generate_agreement_figures.py      # Script: confusion matrix figures
+│   ├── summarize_paper_experiments.py     # Script: Markdown RQ summaries for the paper
+│   └── generate_paper_figures.py          # Script: publication-ready SVG figures
 ├── _Figures/
-│   └── Confusion Matrices/
+│   ├── Confusion Matrices/
 │       └── ConfusionMatrices_CombinedHumanVs<AutoGradingLLM>_<GenerationLLM>/   # Aggregated + per-file human-vs-llm matrices
+│   ├── PaperExperimentData/       # Figure-ready CSVs for RQ1/RQ2/RQ3
+│   └── PaperFigures/              # SVG paper figures and HTML contact sheet
 ├── Grading Summary.xlsx
 ├── README.md
 └── [Example Name]/
@@ -101,7 +108,7 @@ Evaluations/
 #### `[Example Name] Evaluation - Template.xlsx`
 **Purpose:** Evaluation template and grading rubric used for this project  
 
-**Content:** Spreadsheet where elements from the sample solution are broken down into their atomic components, along with inter-rater calculations (Cohen’s kappa and weighted Cohen’s kappa) and evaluation metrics such as F1 score, precision, and recall  
+**Content:** Spreadsheet where elements from the sample solution are broken down into model elements, along with inter-rater calculations (Cohen’s kappa and weighted Cohen’s kappa) and evaluation metrics such as F1 score, precision, and recall  
 
 **Usage:** Defines the evaluation framework and metrics used across all evaluation runs  
 #### `[example_name]_ground_truth_mermaid.txt`
@@ -193,6 +200,45 @@ python _scripts/generate_agreement_figures.py --stage 2
 python _scripts/generate_agreement_figures.py --date 2026-03-16
 ```
 
+### `summarize_paper_experiments.py`
+
+**Purpose:** Consolidates the current experiment data into figure-ready CSVs for the revised RQ structure. This is intended as the starting point for rebuilding the experiments section and avoiding legacy comparisons that mix generation quality with automatic grading trends.
+
+**Usage:**
+```bash
+python _scripts/summarize_paper_experiments.py --out-dir _Figures/PaperExperimentData
+```
+
+**Outputs:**
+- `rq1_generation_quality_summary.csv` — Claude generation quality from human grading, averaged by approach and model element type
+- `rq1_generation_quality_by_example.csv` — per-example human grading metrics for Claude-generated state machines
+- `rq2_grading_quality_summary.csv` — human-vs-LLM grading quality for Claude, GPT, and Gemini graders
+- `rq2_confusion_matrices.csv` — long-form 0/0.5/1 confusion matrices by grader and model element type
+- `rq3_grading_score_distribution.csv` — score distributions for GPT/Gemini-generated state machines using the available automatic grading data
+- `data_availability.csv` — file-count overview showing which generator/grader combinations are present
+
+### `generate_paper_figures.py`
+
+**Purpose:** Generates publication-ready SVG figures from the consolidated CSVs. The figures are dependency-free and reproducible, so the paper figures can be regenerated whenever the grading data changes.
+
+**Usage:**
+```bash
+python _scripts/generate_paper_figures.py
+
+# Include high-resolution PNG previews when rsvg-convert is available
+python _scripts/generate_paper_figures.py --png
+```
+
+**Outputs:** Written to `_Figures/PaperFigures/`.
+- `fig_rq1_generation_quality.svg`
+- `fig_rq1_f1_by_model_element.svg`
+- `fig_rq2_grader_quality_overall.svg`
+- `fig_rq2_grader_quality_by_model_element.svg`
+- `fig_rq2_overall_confusion_matrices.svg`
+- `fig_rq3_grading_trends_score_distribution.svg`
+- `fig_*.png` — optional high-resolution previews generated with `--png`
+- `index.html` — contact sheet for quickly reviewing the generated figures
+
 **Additional elements handling:** Rows where the element column is `"additional elements"` carry raw false-positive *counts* (not 0/0.5/1 scores). They are mapped to the confusion matrix as follows:
 
 | Condition | Cell updated |
@@ -238,11 +284,11 @@ One folder exists per AutoGrading LLM (e.g. `ConfusionMatrices_CombinedHumanVs<A
 
 #### `grading_results__generated-by-<generation-llm>__graded-by-<grading-llm>.tsv` and `grading_output__generated-by-<generation-llm>__graded-by-<grading-llm>.txt`
 
-**Grading Methodology:** The LLM was provided a CSV version of the evaluation template containing atomic components of the ground truth state machine (from the Sample Solution). The LLM then graded the generated Mermaid diagram by comparing it against three inputs: (1) the generated state machine, (2) the original problem description, and (3) the Mermaid representation of the solution.
+**Grading Methodology:** The LLM was provided a CSV version of the evaluation template containing model elements of the ground truth state machine (from the Sample Solution). The LLM then graded the generated Mermaid diagram by comparing it against three inputs: (1) the generated state machine, (2) the original problem description, and (3) the Mermaid representation of the solution.
 
 **Content:** Both files contain identical grading results in different formats with columns for:
 - **Type**: Element category (State, Transition, Action, Guard, Composite State, History State, etc.)
-- **Element**: Specific component evaluated (e.g., "Off", "on (Off ⇒ On)", "delay=0; selectFirstCourse()")
+- **Element**: Specific model element evaluated (e.g., "Off", "on (Off ⇒ On)", "delay=0; selectFirstCourse()")
 - **Grading**: Score indicating correctness (0 = missing/incorrect, 0.5 = partial, 1 = correct)
 - **Notes**: Explanation of assessment (expected vs. actual)
 
@@ -279,17 +325,17 @@ stateDiagram-v2
 
 ### Human Grading Process
 
-Generated state machines by Claude Sonnet 4.5 were evaluated by **two independent graders** using a standardized rubric (i.e., the provided `[Example Name] Evaluation - Template.xlsx`). Each grader independently assessed the generated diagrams against the atomic components defined in the sample solution. The two evaluations were then consolidated into a single grading sheet to produce the final human assessment.
+Generated state machines by Claude Sonnet 4.5 were evaluated by **two independent graders** using a standardized rubric (i.e., the provided `[Example Name] Evaluation - Template.xlsx`). Each grader independently assessed the generated diagrams against the model elements defined in the sample solution. The two evaluations were then consolidated into a single grading sheet to produce the final human assessment.
 
 ### LLM-Based Grading (Automatic Grading)
 
 Following the human evaluation, the LLM grader was used to replicate the same grading methodology. It evaluated each generated Mermaid diagram using four inputs:  
 1. the original system description,  
-2. the structured evaluation rubric containing atomic components (provided as a CSV derived from `[Example Name] Evaluation - Template.xlsx`, without computed metrics),  
+2. the structured evaluation rubric containing model elements (provided as a CSV derived from `[Example Name] Evaluation - Template.xlsx`, without computed metrics),  
 3. the ground truth Mermaid diagram, and  
 4. the generated Mermaid diagram to be graded.  
 
-The LLM then assigned scores to each rubric component and generated concise justifications, prioritizing semantic correctness and alignment with the intended system behaviour.
+The LLM then assigned scores to each rubric model element and generated concise justifications, prioritizing semantic correctness and alignment with the intended system behaviour.
 
 ## Grading Scheme
 
@@ -347,11 +393,11 @@ The following metrics are used to evaluate LLM performance in generating state m
 - **High Recall** → Few missing required elements (good completeness)
 - **High F1-Score** → Well-balanced correctness and completeness
 
-### Confusion Matrix Components
+### Confusion Matrix Categories
 
 The grading results are classified using the following categories:
 
-| Component | Definition |
+| Category | Definition |
 |-----------|-----------|
 | **TP (True Positive)** | Correctly generated elements matching the expected specification |
 | **FP (False Positive)** | Unnecessary or incorrect additional elements generated by the LLM |
@@ -388,4 +434,3 @@ The grading results are classified using the following categories:
 
 **Confusion matrix figures (aggregated, inside `_Figures/Confusion Matrices/<group>/`):**
 - `AllExamples_CombinedHumanVs<AutoGradingLLM>_<GenerationLLM>_{scope}.png`
-

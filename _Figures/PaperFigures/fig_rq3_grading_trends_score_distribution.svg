@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="920" viewBox="0 0 1600 920" role="img" aria-label="RQ3 grading trends">
+<defs>
+<filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+<feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#101828" flood-opacity="0.12"/>
+</filter>
+<linearGradient id="headerFade" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#f7f8ff"/>
+<stop offset="100%" stop-color="#f2fbf8"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="920" fill="#fbfcfe"/>
+<style>text{font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;} .title{font-size:28px;font-weight:800;fill:#17212b;} .subtitle{font-size:15px;fill:#667085;} .label{font-size:15px;fill:#344054;} .small{font-size:13px;fill:#667085;} .tiny{font-size:11px;fill:#667085;} .num{font-size:13px;font-weight:700;fill:#17212b;} .axis{stroke:#d0d5dd;stroke-width:1;} .grid{stroke:#e5e7eb;stroke-width:1;} .panelTitle{font-size:17px;font-weight:750;fill:#17212b;} .legend{font-size:14px;fill:#344054;}</style>
+<text x="58.00" y="48.00" class="title" text-anchor="start">RQ3 - Grading trends on additional generated state machines</text>
+<text x="58.00" y="75.00" class="subtitle" text-anchor="start">Claude grader score distributions for GPT-5.5 and Gemini-generated state machines; not human-validated generation quality.</text>
+<rect x="58.00" y="101.00" width="20.00" height="12.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="86.00" y="112.00" class="legend" text-anchor="start">Score 0</text>
+<rect x="181.00" y="101.00" width="20.00" height="12.00" rx="6.00" fill="#d6a12a" stroke="none" opacity="1" />
+<text x="209.00" y="112.00" class="legend" text-anchor="start">Score 0.5</text>
+<rect x="304.00" y="101.00" width="20.00" height="12.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="332.00" y="112.00" class="legend" text-anchor="start">Score 1</text>
+<line x1="320.00" y1="129.00" x2="320.00" y2="715.00" stroke="#e5e7eb" stroke-width="1" opacity="1"/>
+<text x="320.00" y="737.00" class="tiny" text-anchor="middle">0%</text>
+<line x1="542.00" y1="129.00" x2="542.00" y2="715.00" stroke="#e5e7eb" stroke-width="1" opacity="1"/>
+<text x="542.00" y="737.00" class="tiny" text-anchor="middle">20%</text>
+<line x1="764.00" y1="129.00" x2="764.00" y2="715.00" stroke="#e5e7eb" stroke-width="1" opacity="1"/>
+<text x="764.00" y="737.00" class="tiny" text-anchor="middle">40%</text>
+<line x1="986.00" y1="129.00" x2="986.00" y2="715.00" stroke="#e5e7eb" stroke-width="1" opacity="1"/>
+<text x="986.00" y="737.00" class="tiny" text-anchor="middle">60%</text>
+<line x1="1208.00" y1="129.00" x2="1208.00" y2="715.00" stroke="#e5e7eb" stroke-width="1" opacity="1"/>
+<text x="1208.00" y="737.00" class="tiny" text-anchor="middle">80%</text>
+<line x1="1430.00" y1="129.00" x2="1430.00" y2="715.00" stroke="#e5e7eb" stroke-width="1" opacity="1"/>
+<text x="1430.00" y="737.00" class="tiny" text-anchor="middle">100%</text>
+<text x="170.00" y="186.00" class="label" text-anchor="start">Overall</text>
+<text x="310.00" y="180.00" class="tiny" text-anchor="end">GPT</text>
+<rect x="320.00" y="165.00" width="185.00" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="412.50" y="180.00" class="tiny" text-anchor="middle" fill="#ffffff">17%</text>
+<rect x="505.00" y="165.00" width="33.11" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<rect x="538.11" y="165.00" width="891.89" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="984.05" y="180.00" class="tiny" text-anchor="middle" fill="#ffffff">80%</text>
+<text x="1442.00" y="180.00" class="tiny" text-anchor="start">n=570</text>
+<text x="310.00" y="208.00" class="tiny" text-anchor="end">Gemini</text>
+<rect x="320.00" y="193.00" width="303.26" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="471.63" y="208.00" class="tiny" text-anchor="middle" fill="#ffffff">27%</text>
+<rect x="623.26" y="193.00" width="75.81" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<text x="661.16" y="208.00" class="tiny" text-anchor="middle" fill="#17212b">7%</text>
+<rect x="699.07" y="193.00" width="730.93" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="1064.54" y="208.00" class="tiny" text-anchor="middle" fill="#ffffff">66%</text>
+<text x="1442.00" y="208.00" class="tiny" text-anchor="start">n=571</text>
+<text x="170.00" y="254.00" class="label" text-anchor="start">State</text>
+<text x="310.00" y="248.00" class="tiny" text-anchor="end">GPT</text>
+<rect x="320.00" y="233.00" width="144.05" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="392.02" y="248.00" class="tiny" text-anchor="middle" fill="#ffffff">13%</text>
+<rect x="464.05" y="233.00" width="8.47" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<rect x="472.52" y="233.00" width="957.48" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="951.26" y="248.00" class="tiny" text-anchor="middle" fill="#ffffff">86%</text>
+<text x="1442.00" y="248.00" class="tiny" text-anchor="start">n=131</text>
+<text x="310.00" y="276.00" class="tiny" text-anchor="end">Gemini</text>
+<rect x="320.00" y="261.00" width="169.47" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="404.73" y="276.00" class="tiny" text-anchor="middle" fill="#ffffff">15%</text>
+<rect x="489.47" y="261.00" width="50.84" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<rect x="540.31" y="261.00" width="889.69" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="985.15" y="276.00" class="tiny" text-anchor="middle" fill="#ffffff">80%</text>
+<text x="1442.00" y="276.00" class="tiny" text-anchor="start">n=131</text>
+<text x="170.00" y="322.00" class="label" text-anchor="start">Transition</text>
+<text x="310.00" y="316.00" class="tiny" text-anchor="end">GPT</text>
+<rect x="320.00" y="301.00" width="105.16" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="372.58" y="316.00" class="tiny" text-anchor="middle" fill="#ffffff">9%</text>
+<rect x="425.16" y="301.00" width="58.42" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<text x="454.37" y="316.00" class="tiny" text-anchor="middle" fill="#17212b">5%</text>
+<rect x="483.58" y="301.00" width="946.42" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="956.79" y="316.00" class="tiny" text-anchor="middle" fill="#ffffff">85%</text>
+<text x="1442.00" y="316.00" class="tiny" text-anchor="start">n=190</text>
+<text x="310.00" y="344.00" class="tiny" text-anchor="end">Gemini</text>
+<rect x="320.00" y="329.00" width="157.74" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="398.87" y="344.00" class="tiny" text-anchor="middle" fill="#ffffff">14%</text>
+<rect x="477.74" y="329.00" width="87.63" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<text x="521.55" y="344.00" class="tiny" text-anchor="middle" fill="#17212b">8%</text>
+<rect x="565.37" y="329.00" width="864.63" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="997.68" y="344.00" class="tiny" text-anchor="middle" fill="#ffffff">78%</text>
+<text x="1442.00" y="344.00" class="tiny" text-anchor="start">n=190</text>
+<text x="170.00" y="390.00" class="label" text-anchor="start">Action</text>
+<text x="310.00" y="384.00" class="tiny" text-anchor="end">GPT</text>
+<rect x="320.00" y="369.00" width="160.00" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="400.00" y="384.00" class="tiny" text-anchor="middle" fill="#ffffff">14%</text>
+<rect x="480.00" y="369.00" width="30.00" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<rect x="510.00" y="369.00" width="920.00" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="970.00" y="384.00" class="tiny" text-anchor="middle" fill="#ffffff">83%</text>
+<text x="1442.00" y="384.00" class="tiny" text-anchor="start">n=111</text>
+<text x="310.00" y="412.00" class="tiny" text-anchor="end">Gemini</text>
+<rect x="320.00" y="397.00" width="530.00" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="585.00" y="412.00" class="tiny" text-anchor="middle" fill="#ffffff">48%</text>
+<rect x="850.00" y="397.00" width="80.00" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<text x="890.00" y="412.00" class="tiny" text-anchor="middle" fill="#17212b">7%</text>
+<rect x="930.00" y="397.00" width="500.00" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="1180.00" y="412.00" class="tiny" text-anchor="middle" fill="#ffffff">45%</text>
+<text x="1442.00" y="412.00" class="tiny" text-anchor="start">n=111</text>
+<text x="170.00" y="458.00" class="label" text-anchor="start">Guard</text>
+<text x="310.00" y="452.00" class="tiny" text-anchor="end">GPT</text>
+<rect x="320.00" y="437.00" width="201.82" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="420.91" y="452.00" class="tiny" text-anchor="middle" fill="#ffffff">18%</text>
+<rect x="521.82" y="437.00" width="16.82" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<rect x="538.64" y="437.00" width="891.36" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="984.32" y="452.00" class="tiny" text-anchor="middle" fill="#ffffff">80%</text>
+<text x="1442.00" y="452.00" class="tiny" text-anchor="start">n=66</text>
+<text x="310.00" y="480.00" class="tiny" text-anchor="end">Gemini</text>
+<rect x="320.00" y="465.00" width="353.18" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="496.59" y="480.00" class="tiny" text-anchor="middle" fill="#ffffff">32%</text>
+<rect x="673.18" y="465.00" width="134.55" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<text x="740.45" y="480.00" class="tiny" text-anchor="middle" fill="#17212b">12%</text>
+<rect x="807.73" y="465.00" width="622.27" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="1118.86" y="480.00" class="tiny" text-anchor="middle" fill="#ffffff">56%</text>
+<text x="1442.00" y="480.00" class="tiny" text-anchor="start">n=66</text>
+<text x="170.00" y="526.00" class="label" text-anchor="start">Composite</text>
+<text x="310.00" y="520.00" class="tiny" text-anchor="end">GPT</text>
+<rect x="320.00" y="505.00" width="393.87" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="516.94" y="520.00" class="tiny" text-anchor="middle" fill="#ffffff">35%</text>
+<rect x="713.87" y="505.00" width="716.13" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="1071.94" y="520.00" class="tiny" text-anchor="middle" fill="#ffffff">65%</text>
+<text x="1442.00" y="520.00" class="tiny" text-anchor="start">n=31</text>
+<text x="310.00" y="548.00" class="tiny" text-anchor="end">Gemini</text>
+<rect x="320.00" y="533.00" width="393.87" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="516.94" y="548.00" class="tiny" text-anchor="middle" fill="#ffffff">35%</text>
+<rect x="713.87" y="533.00" width="35.81" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<rect x="749.68" y="533.00" width="680.32" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="1089.84" y="548.00" class="tiny" text-anchor="middle" fill="#ffffff">61%</text>
+<text x="1442.00" y="548.00" class="tiny" text-anchor="start">n=31</text>
+<text x="170.00" y="594.00" class="label" text-anchor="start">History</text>
+<text x="310.00" y="588.00" class="tiny" text-anchor="end">GPT</text>
+<rect x="320.00" y="573.00" width="740.00" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="690.00" y="588.00" class="tiny" text-anchor="middle" fill="#ffffff">67%</text>
+<rect x="1060.00" y="573.00" width="370.00" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="1245.00" y="588.00" class="tiny" text-anchor="middle" fill="#ffffff">33%</text>
+<text x="1442.00" y="588.00" class="tiny" text-anchor="start">n=18</text>
+<text x="310.00" y="616.00" class="tiny" text-anchor="end">Gemini</text>
+<rect x="320.00" y="601.00" width="801.67" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="720.83" y="616.00" class="tiny" text-anchor="middle" fill="#ffffff">72%</text>
+<rect x="1121.67" y="601.00" width="308.33" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="1275.83" y="616.00" class="tiny" text-anchor="middle" fill="#ffffff">28%</text>
+<text x="1442.00" y="616.00" class="tiny" text-anchor="start">n=18</text>
+<text x="170.00" y="662.00" class="label" text-anchor="start">Region</text>
+<text x="310.00" y="656.00" class="tiny" text-anchor="end">GPT</text>
+<rect x="320.00" y="641.00" width="434.35" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="537.17" y="656.00" class="tiny" text-anchor="middle" fill="#ffffff">39%</text>
+<rect x="754.35" y="641.00" width="96.52" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<text x="802.61" y="656.00" class="tiny" text-anchor="middle" fill="#17212b">9%</text>
+<rect x="850.87" y="641.00" width="579.13" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="1140.43" y="656.00" class="tiny" text-anchor="middle" fill="#ffffff">52%</text>
+<text x="1442.00" y="656.00" class="tiny" text-anchor="start">n=23</text>
+<text x="310.00" y="684.00" class="tiny" text-anchor="end">Gemini</text>
+<rect x="320.00" y="669.00" width="508.75" height="22.00" rx="6.00" fill="#d4515c" stroke="none" opacity="1" />
+<text x="574.38" y="684.00" class="tiny" text-anchor="middle" fill="#ffffff">46%</text>
+<rect x="828.75" y="669.00" width="46.25" height="22.00" rx="0.00" fill="#d6a12a" stroke="none" opacity="1" />
+<rect x="875.00" y="669.00" width="555.00" height="22.00" rx="6.00" fill="#2f9e66" stroke="none" opacity="1" />
+<text x="1152.50" y="684.00" class="tiny" text-anchor="middle" fill="#ffffff">50%</text>
+<text x="1442.00" y="684.00" class="tiny" text-anchor="start">n=24</text>
+<text x="875.00" y="773.00" class="small" text-anchor="middle">Share of model elements assigned each score</text>
+<text x="800.00" y="875.00" class="small" text-anchor="middle">Data: rq3_grading_score_distribution.csv</text>
+</svg>
