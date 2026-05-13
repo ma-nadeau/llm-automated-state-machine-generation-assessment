@@ -1,0 +1,78 @@
+stateDiagram-v2
+    state Shopping
+    state TimeoutWarning
+    state StaffOverride
+    state Payment
+    state PrintingBill
+
+    [*] --> Shopping
+
+    state Shopping {
+        state Ready
+        state WeighingItem
+        state SecurityCheck
+        state WeighingBag
+        state H
+
+        [*] --> Ready
+
+        Ready --> SecurityCheck : scanBarcode [exists] / showItem()
+        Ready --> Ready : scanBarcode [!exists] / showError()
+        Ready --> WeighingItem : enterProductCode [exists]
+        Ready --> Ready : enterProductCode [!exists] / showError()
+        Ready --> WeighingBag : addBag
+
+        WeighingItem --> SecurityCheck : weightReceived / showItemAndWeight()
+        WeighingItem --> Ready : cancel
+
+        SecurityCheck --> Ready : weightReceived [matches]
+
+        WeighingBag --> Ready : weightReceived / updateBagCount()
+        WeighingBag --> Ready : cancel
+    }
+
+    state StaffOverride {
+        state RemoveItemOverride
+        state CancelAllOverride
+        state WeightMismatchOverride
+
+        [*] --> RemoveItemOverride
+
+        RemoveItemOverride --> RemoveItemOverride : enterCode [!correct] / showError()
+        CancelAllOverride --> CancelAllOverride : enterCode [!correct] / showError()
+        WeightMismatchOverride --> WeightMismatchOverride : enterCode [!correct] / showError()
+    }
+
+    note right of StaffOverride
+        entry / turnOnLight()
+        exit / turnOffLight()
+    end note
+
+    note right of TimeoutWarning
+        entry / startCountdown(60s)
+    end note
+
+    note right of PrintingBill
+        entry / printBill()
+    end note
+
+    Shopping --> TimeoutWarning : timeoutWarning
+    TimeoutWarning --> H : continue
+    TimeoutWarning --> Shopping : countdownZero / clearEverything()
+
+    Ready --> RemoveItemOverride : removeItem [billNotEmpty]
+    Ready --> CancelAllOverride : cancelAll
+    SecurityCheck --> CancelAllOverride : cancelAll
+    SecurityCheck --> WeightMismatchOverride : weightReceived [!matches]
+
+    RemoveItemOverride --> Shopping : enterCode [correct] / clearItem()
+    WeightMismatchOverride --> Shopping : enterCode [correct] / clearItem()
+    CancelAllOverride --> Shopping : enterCode [correct] / clearEverything()
+
+    Ready --> Payment : pay [billNotEmpty] / sendPaymentRequest()
+
+    Payment --> PrintingBill : success
+    Payment --> Shopping : fail / showError()
+    Payment --> Shopping : cancel
+
+    PrintingBill --> Shopping : done / clearEverything()
