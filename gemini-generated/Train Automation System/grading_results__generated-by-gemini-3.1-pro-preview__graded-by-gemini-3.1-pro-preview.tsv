@@ -1,0 +1,78 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Scheduled)	1	Correctly represented
+State	Scheduled	1	Correctly represented
+Transition	at beginningStopDuration (Scheduled ⇒ Active)	1	Correctly represented
+Action	pOn; setCS;	1	Correctly represented
+Composite State	Active	1	Correctly represented
+Region	TrainControl	1	Correctly represented
+Composite State	TrainMovement	1	Correctly represented
+State	Initial state (TrainMovement → AtStation)	1	Correctly represented
+State	AtStation	1	Correctly represented
+Action	entry / openDoors()	1	Correctly represented
+Action	exit / closeDoors()	0.5	Represented as an action on the outgoing transition rather than an exit action
+Transition	after stopDuration (AtStation ⇒ StopNotRequired)	1	Correctly represented
+Guard	[!isLastStop()]	1	Correctly represented
+Transition	after stopDuration (AtStation ⇒ Arrived)	1	Correctly represented
+Guard	[isLastStop()]	1	Correctly represented
+Action	pOff;	1	Correctly represented
+State	StopNotRequired	1	Correctly represented
+Action	entry / setSpeed()	0.5	Represented as transition actions rather than an entry action
+Transition	enteringSegment (StopNotRequired ⇒ StopNotRequired)	1	Correctly represented
+Guard	[isRegularSegment()]	1	Correctly represented
+Transition	enteringSegment (StopNotRequired ⇒ ApproachingRedLight)	1	Correctly represented
+Guard	[isTrafficLightSegment() && isRed()]	1	Correctly represented
+Transition	enteringSegment (StopNotRequired ⇒ StopNotRequired)	1	Correctly represented
+Guard	[isTrafficLightSegment() && !isRed()]	1	Correctly represented
+Transition	enteringSegment (StopNotRequired ⇒ ApproachingStation)	1	Correctly represented
+Guard	[isStationSegment() && stopRequired()]	0.5	Missing check if the station is on the itinerary
+State	ApproachingRedLight	1	Correctly represented
+Action	entry / stopAL	0.5	Represented as a transition action rather than an entry action
+Transition	stopped (ApproachingRedLight ⇒ AtRedTrafficLight)	1	Correctly represented
+State	AtRedTrafficLight	1	Correctly represented
+Transition	green (AtRedTrafficLight ⇒ StopNotRequired)	1	Correctly represented
+State	ApproachingStation	1	Correctly represented
+Action	entry / stopAL	0.5	Represented as a transition action rather than an entry action
+Transition	stopped (ApproachingStation ⇒ AtStation)	1	Correctly represented
+History State	History State for TrainMovement	1	Correctly represented
+State	Emergency	1	Correctly represented
+Transition	emergency (TrainMovement ⇒ Emergency)	1	Correctly represented
+Action	eStop;	1	Correctly represented
+Transition	clear (Emergency ⇒ History State)	1	Correctly represented
+Region	SDS	1	Correctly represented
+State	Initial state (SDS → SDSActive)	1	Correctly represented
+State	SDSActive	1	Correctly represented
+Transition	after 1 sec (SDSActive ⇒ SDSActive)	1	Correctly represented
+Guard	[hasSegmentChanged()]	1	Correctly represented
+Action	setCS; enteringSegment()	0.5	setCS is present but missing the generation of the enteringSegment event
+Transition	after 1 sec (SDSActive ⇒ SDSActive)	0	Missing transition for when segment has not changed
+Guard	[!hasSegmentChanged()]	0	Missing guard for when segment has not changed
+Region	MDS	1	Correctly represented
+State	Initial state (MDS → Stopped)	0.5	Initial state goes to a generic running state rather than Stopped
+State	Stopped	0	Missing Stopped state
+Transition	after 1 sec (Stopped ⇒ Moving)	0	Missing transition
+Guard	[speed > 0]	0	Missing guard
+Transition	after 1 sec (Stopped ⇒ Stopped)	0	Missing transition
+Guard	[speed == 0]	0	Missing guard
+Action	stopped()	0	Missing action to generate stopped event
+State	Moving	0	Missing Moving state in MDS region
+Transition	after 1 sec (Moving ⇒ Stopped)	0	Missing transition
+Guard	[speed == 0]	0	Missing guard
+Action	stopped()	0	Missing action
+Transition	after 1 sec (Moving ⇒ Moving)	0	Missing transition
+Guard	[speed > 0]	0	Missing guard
+Region	ODS	1	Correctly represented
+State	Initial state (ODS → ODSActive)	1	Correctly represented
+State	ODSActive	1	Correctly represented
+Transition	after 1 sec (ODSActive ⇒ ODSActive)	0.5	Transition exists but does not branch based on obstruction detection
+Guard	[obstacleDetected()]	0	Missing guard
+Action	emergency()	0.5	Action to generate emergency event is missing in ODS region
+Transition	after 1 sec (ODSActive ⇒ ODSActive)	0	Missing transition for when no obstacle is detected
+Guard	[!obstacleDetected()]	0	Missing guard
+State	Arrived	1	Correctly represented
+State	additional elements	0	No unnecessary additional states
+Transition	additional elements	0	No unnecessary additional transitions
+Guard	additional elements	0	No unnecessary additional guards
+Action	additional elements	0	No unnecessary additional actions
+Composite State	additional elements	0	No unnecessary additional composite states
+Region	additional elements	0	No unnecessary additional regions
+History State	additional elements	0	No unnecessary additional history states

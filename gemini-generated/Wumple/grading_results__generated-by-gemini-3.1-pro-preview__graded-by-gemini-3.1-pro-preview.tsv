@@ -1,0 +1,116 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Watch)	1	Correctly represented by the initial transition to Watch.
+Action	time=0:00:00; alarmTime=0:00:00; alarm=false; flashAlert=false; cdTime=0:00:00	0	No initialization actions are present on the initial transition.
+Composite State	Watch	1	Correctly represented by the Watch state.
+Region	Light	1	Correctly represented by the Backlight region.
+State	Initial state (Light → Off)	1	Correctly represented by the initial transition to BacklightOff.
+State	Off	1	Correctly represented by BacklightOff.
+Action	entry / lightOff()	0	No entry action defined for BacklightOff.
+Transition	D (Off ⇒ On)	1	Correctly represented by BacklightOff --> BacklightOn : D.
+State	On	1	Correctly represented by BacklightOn.
+Action	entry / lightOn()	0	No entry action defined for BacklightOn.
+Transition	D (On ⇒ Off)	1	Correctly represented by BacklightOn --> BacklightOff : D.
+Transition	after 10sec (On ⇒ Off)	1	Correctly represented by BacklightOn --> BacklightOff : after_10s.
+Transition	flash (On ⇒ Flash)	1	Correctly represented by transitions to BacklightFlashing on alarmTimeReached and countdownReachedZero.
+Guard	[flashAlert]	1	Correctly represented by [flashAlertOn].
+State	Flash	1	Correctly represented by BacklightFlashing.
+Action	do / flash5Sec()	0	No do action defined for BacklightFlashing.
+Transition	flash (Flash ⇒ Off)	1	Correctly represented by the transition from BacklightOff to BacklightFlashing (assuming typo in rubric for Off => Flash).
+Guard	[flashAlert]	1	Correctly represented by [flashAlertOn] on the transition from BacklightOff.
+Transition	anyButton (Flash ⇒ Off)	1	Correctly represented by BacklightFlashing --> BacklightOff : anyButton.
+Region	WatchMode	1	Correctly represented by the Main region.
+State	Initial state (WatchMode → AlarmOff)	1	Correctly represented by the initial transition to NormalOperation.
+Composite State	AlarmOff	1	Correctly represented by NormalOperation.
+State	Initial state (AlarmOff → TimeKeepingMode)	1	Correctly represented by the initial transition to Timekeeping.
+Composite State	TimeKeepingMode	1	Correctly represented by Timekeeping.
+State	Initial state (TimeKeepingMode → Idle)	1	Correctly represented by the initial transition to ShowTime.
+State	Idle	1	Correctly represented by ShowTime.
+Action	do / displayTime()	0	No do action defined for ShowTime.
+Transition	B2sec (Idle ⇒ Idle)	1	Correctly represented by ShowTime --> ShowTime : B_held_2s.
+Action	toggleFlashAlert()	1	Correctly represented by toggleFlashAlert().
+Transition	B (Idle ⇒ Idle)	1	Correctly represented by ShowTime --> ShowTime : B.
+Action	toggleAlarm()	1	Correctly represented by toggleAlarm().
+Transition	C (Idle ⇒ Seconds)	1	Correctly represented by ShowTime --> SetTime : C and initial transition to SetSeconds.
+Action	flashSeconds()	1	Correctly represented by the note with do: flash() for SetSeconds.
+Transition	A (TimeKeepingMode ⇒ AlarmMode)	1	Correctly represented by ShowTime --> Alarm : A.
+State	Seconds	1	Correctly represented by SetSeconds.
+Transition	B (Seconds ⇒ Seconds)	1	Correctly represented by SetSeconds --> SetSeconds : B.
+Action	time+=1sec	1	Correctly represented by incrementSeconds().
+Transition	C (Seconds ⇒ Minutes)	1	Correctly represented by SetSeconds --> SetMinutes : C.
+Action	flashMinutes()	1	Correctly represented by the note with do: flash() for SetMinutes.
+State	Minutes	1	Correctly represented by SetMinutes.
+Transition	B (Minutes ⇒ Minutes)	1	Correctly represented by SetMinutes --> SetMinutes : B.
+Action	time+=1min	1	Correctly represented by incrementMinutes().
+Transition	C (Minutes ⇒ Hours)	1	Correctly represented by SetMinutes --> SetHours : C.
+Action	flashHours()	1	Correctly represented by the note with do: flash() for SetHours.
+State	Hours	1	Correctly represented by SetHours.
+Transition	B (Hours ⇒ Hours)	1	Correctly represented by SetHours --> SetHours : B.
+Action	time+=1hr	1	Correctly represented by incrementHours().
+Transition	C (Hours ⇒ Seconds)	1	Correctly represented by SetHours --> SetSeconds : C.
+Action	flashSeconds()	1	Correctly represented by the note with do: flash() for SetSeconds.
+Transition	A (TimeKeepingMode ⇒ AlarmMode)	1	Correctly represented by ShowTime --> Alarm : A.
+Composite State	AlarmMode	1	Correctly represented by Alarm.
+State	Initial state (AlarmMode → Idle)	1	Correctly represented by the initial transition to ShowAlarm.
+State	Idle	1	Correctly represented by ShowAlarm.
+Action	entry / displayAlarmTime()	0	No entry action defined for ShowAlarm.
+Transition	C (Idle ⇒ Minutes)	1	Correctly represented by ShowAlarm --> SetAlarm : C and initial transition to SetAlarmMinutes.
+Action	flashMinutes()	1	Correctly represented by the note with do: flash() for SetAlarmMinutes.
+Transition	A (AlarmMode ⇒ CountdownMode)	1	Correctly represented by ShowAlarm --> Countdown : A.
+State	Minutes	1	Correctly represented by SetAlarmMinutes.
+Transition	B (Minutes ⇒ Minutes)	1	Correctly represented by SetAlarmMinutes --> SetAlarmMinutes : B.
+Action	alarmTime+=1min	1	Correctly represented by incrementMinutes().
+Transition	C (Minutes ⇒ Hours)	1	Correctly represented by SetAlarmMinutes --> SetAlarmHours : C.
+Action	flashHours()	1	Correctly represented by the note with do: flash() for SetAlarmHours.
+State	Hours	1	Correctly represented by SetAlarmHours.
+Transition	B (Hours ⇒ Hours)	1	Correctly represented by SetAlarmHours --> SetAlarmHours : B.
+Action	alarmTime+=1hr	1	Correctly represented by incrementHours().
+Transition	C (Hours ⇒ Minutes)	1	Correctly represented by SetAlarmHours --> SetAlarmMinutes : C.
+Action	flashMinutes()	1	Correctly represented by the note with do: flash() for SetAlarmMinutes.
+Transition	A (AlarmMode ⇒ CountdownMode)	1	Correctly represented by ShowAlarm --> Countdown : A.
+Composite State	CountdownMode	1	Correctly represented by Countdown.
+State	Initial state (CountdownMode → Idle)	1	Correctly represented by the initial transition to ShowCountdown.
+State	Idle	1	Correctly represented by ShowCountdown.
+Action	entry / displayCdTime()	0	No entry action defined for ShowCountdown.
+Transition	C (Idle ⇒ Seconds)	1	Correctly represented by ShowCountdown --> SetCountdown : C and initial transition to SetCDSeconds.
+Action	flashSeconds()	1	Correctly represented by the note with do: flash() for SetCDSeconds.
+Transition	B (Idle ⇒ Countdown)	1	Correctly represented by ShowCountdown --> CountdownRunning : B.
+Guard	[cdTime > 0:00:00]	1	Correctly represented by [countdownTimeSet].
+Action	targetTime = time + cdTime	1	Correctly represented by startCountdown().
+Transition	A (CountdownMode ⇒ TimeKeepingMode)	1	Correctly represented by ShowCountdown --> Timekeeping : A and CountdownRunning --> Timekeeping : A.
+State	Seconds	1	Correctly represented by SetCDSeconds.
+Transition	B (Seconds ⇒ Seconds)	1	Correctly represented by SetCDSeconds --> SetCDSeconds : B.
+Action	cdTime+=1sec	1	Correctly represented by incrementSeconds().
+Transition	C (Seconds ⇒ Minutes)	1	Correctly represented by SetCDSeconds --> SetCDMinutes : C.
+Action	flashMinutes()	1	Correctly represented by the note with do: flash() for SetCDMinutes.
+State	Minutes	1	Correctly represented by SetCDMinutes.
+Transition	B (Minutes ⇒ Minutes)	1	Correctly represented by SetCDMinutes --> SetCDMinutes : B.
+Action	cdTime+=1min	1	Correctly represented by incrementMinutes().
+Transition	C (Minutes ⇒ Hours)	1	Correctly represented by SetCDMinutes --> SetCDHours : C.
+Action	flashHours()	1	Correctly represented by the note with do: flash() for SetCDHours.
+State	Hours	1	Correctly represented by SetCDHours.
+Transition	B (Hours ⇒ Hours)	1	Correctly represented by SetCDHours --> SetCDHours : B.
+Action	cdTime+=1hr	1	Correctly represented by incrementHours().
+Transition	C (Hours ⇒ Seconds)	1	Correctly represented by SetCDHours --> SetCDSeconds : C.
+Action	flashSeconds()	1	Correctly represented by the note with do: flash() for SetCDSeconds.
+State	Countdown	1	Correctly represented by CountdownRunning.
+Action	do / displayCountdown()	0	No do action defined for CountdownRunning.
+Transition	(targetTime == time) (Countdown ⇒ CountdownReached)	0.5	Partially represented by NormalOperation --> CountdownRinging : countdownReachedZero (transitions from composite state instead of CountdownRunning).
+Action	flash()	1	Correctly represented by beepAndFlashZeros().
+State	CountdownReached	1	Correctly represented by CountdownRinging.
+Action	do / flashZero&Beep5Sec()	1	Correctly represented by beepAndFlashZeros().
+Transition	anyButton (CountdownReached ⇒ CountdownMode)	1	Correctly represented by CountdownRinging --> Countdown : anyButton.
+History State	H	1	Correctly represented by state H.
+Transition	(alarm && alarmTime == time) (AlarmOff ⇒ AlarmOn)	1	Correctly represented by NormalOperation --> AlarmRinging : alarmTimeReached.
+Action	saveDisplay()	0	No saveDisplay action defined.
+Action	flash()	1	Correctly represented by beepAndFlashAlarmTime().
+State	AlarmOn	1	Correctly represented by AlarmRinging.
+Action	do / flashAlarmTime&Beep5Sec()	1	Correctly represented by beepAndFlashAlarmTime().
+Action	exit / restoreDisplay()	0	No restoreDisplay action defined.
+Transition	anyButton (AlarmOn ⇒ History State)	1	Correctly represented by AlarmRinging --> H : anyButton.
+State	additional elements	0	No fundamentally incorrect additional states.
+Transition	additional elements	0	No fundamentally incorrect additional transitions.
+Guard	additional elements	0	No fundamentally incorrect additional guards.
+Action	additional elements	0	No fundamentally incorrect additional actions.
+Composite State	additional elements	0	No fundamentally incorrect additional composite states.
+Region	additional elements	0	No fundamentally incorrect additional regions.
+History State	additional elements	0	No fundamentally incorrect additional history states.

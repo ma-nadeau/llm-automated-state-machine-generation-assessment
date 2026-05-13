@@ -1,0 +1,51 @@
+Type,Element,Grading,Notes
+State,initial state (⇒ TransportationMode),1,Correctly represented
+State,TransportationMode,1,Correctly represented
+Transition,selectorPressed (TransportationMode ⇒ On),1,Correctly represented
+State,PreparingOff,1,Represented as SwitchingOff
+Transition,selectorReleased (PreparingOff ⇒ On),1,Implicitly and correctly handled by the time >= 5s guard on the transition to SwitchingOff
+Transition,after 5sec (PreparingOff ⇒ Off),1,Represented by the time >= 5s guard and subsequent selectorReleased transition
+State,Off,1,Correctly represented
+Transition,selectorPressed (Off ⇒ On),1,Correctly represented
+Composite State,On,1,Correctly represented
+History State,History State for On,0,Missing history state
+Transition,selectorHeld (On ⇒ PreparingOff),1,Correctly represented
+Transition,bowlRemoved (On ⇒ On),1,Represented by transitions from Cooking and ShutdownWarning to HomeScreen
+State,Initial State (On ⇒ Home),1,Correctly represented
+State,Home,1,Represented as HomeScreen
+Transition,after 14min 30sec (Home ⇒ Preparing Shutdown),1,Correctly represented
+Transition,start (Home ⇒ PromptToAdd),1,Represented via RecipeSelected intermediate state
+Guard,[!bowlRemoved()],1,Represented as bowlPlaced guard
+Action,setIngredients(),0.5,Represented as weighIngredients do-action in AddIngredients state
+State,Preparing Shutdown,1,Represented as ShutdownWarning
+Transition,after 30sec (Preparing Shutdown ⇒ Off),1,Correctly represented
+Transition,cancel (Preparing Shutdown ⇒ Home),1,Correctly represented
+State,PromptToAdd,1,Represented as AddIngredients
+Transition,next (PromptToAdd ⇒ PromptToAdd),0,Missing self-transition for adding more ingredients
+Guard,[weightCorrect() && moreIngredientsRequired()],0,Missing guard for more ingredients
+Action,setIngredients(),0,Missing action
+Transition,next (PromptToAdd ⇒ Chop),1,Correctly represented
+Guard,[weightCorrect() && !moreIngredientsRequired()],0.5,Partially represented by correctAmountAdded guard but missing moreIngredientsRequired check
+Action,setChoppingSpeedAndTime(),0.5,Represented as chopIngredients do-action in Chopping state
+State,Chop,1,Represented as Chopping
+Transition,next (Chop ⇒ PromptToAdd),0,Missing transition back to AddIngredients from Chopping
+Guard,[choppingTimeDone && moreIngredientsRequired()],0,Missing guard
+Action,setIngredients(),0,Missing action
+Transition,next (Chop ⇒ Cook),1,Represented via ChoppingDone intermediate state
+Guard,[choppingTimeDone && !moreIngredientsRequired()],0.5,Partially represented by choppingCompleted event but missing moreIngredientsRequired check
+Action,setCookingSpeedAndTime(),0.5,Represented as cookMeal do-action in CookingStep state
+State,Cook,1,Represented as CookingStep
+Transition,after choppingTime (Cook ⇒ PromptToAdd),1,Represented by transition from CookingDone to AddIngredients
+Guard,[choppingTimeDone && moreIngredientsRequired()],0.5,Represented as promptAddIngredients event instead of a guard
+Action,setIngredients(),0,Missing action
+Transition,after cookingTime (Cook ⇒ Ready),1,Represented by transition from CookingDone to MealReady
+Guard,[!moreIngredientsRequired()],0.5,Represented as lastStepCompleted event instead of a guard
+State,Ready,1,Represented as MealReady
+Transition,after 14min 30sec (Ready ⇒ Preparing Shutdown),0,Missing transition from MealReady to ShutdownWarning
+State,additional elements,0,Intermediate states are reasonable modeling choices
+Transition,additional elements,0,Transitions for intermediate states are reasonable
+Guard,additional elements,0,No fundamentally incorrect guards
+Action,additional elements,0,No fundamentally incorrect actions
+Composite State,additional elements,0,Cooking composite state is a reasonable abstraction
+Region,additional elements,0,No additional regions
+History State,additional elements,0,No additional history states

@@ -1,0 +1,74 @@
+Type,Element,Grading,Notes
+State,"Initial state (→ Active)",1,Initial state points to Shopping which is equivalent to Active
+Composite State,"Active",1,Shopping is a composite state equivalent to Active
+State,"Initial state (Active → Ready)",1,Initial state inside Shopping points to Ready
+State,"Ready",1,Ready state is present
+Transition,"scannedNr (Ready ⇒ Ready)",1,Transition present
+Guard,"[!existsNr()]",1,Guard present
+Action,"error()",1,Action present
+Transition,"productCodeEntered (Ready ⇒ Ready)",1,Transition present
+Guard,"[!existsCode()]",1,Guard present
+Action,"error()",1,Action present
+Transition,"productCodeEntered (Ready ⇒ WeighItem)",1,Transition present
+Guard,"[existsCode()]",1,Guard present
+Transition,"scannedNr (Ready ⇒ CheckWeight)",1,Transition present
+Guard,"[existsNr()]",1,Guard present
+Action,"addItem()",1,Action present
+Transition,"cancelCheckout (Ready ⇒ Override)",1,Transition present
+Action,"setTypeEverything()",1,Handled implicitly by using separate override states
+Transition,"removeItem (Ready ⇒ Override)",1,Transition present
+Guard,"[billHasItem()]",1,Guard present
+Action,"setTypeItem()",1,Handled implicitly by using separate override states
+Transition,"broughtOwnBag (Ready ⇒ WeighBag)",1,Transition present
+Transition,"pay (Ready ⇒ PayRequested)",1,Transition present
+Guard,"[billHasItem()]",1,Guard present
+Action,"sendPaymentRequest()",1,Action present
+State,"WeighItem",1,State present
+Transition,"cancel (WeighItem ⇒ Ready)",1,Transition present
+Transition,"weighedItem (WeighItem ⇒ CheckWeight)",1,Transition present
+Action,"addWeighedItem()",1,Action present
+State,"CheckWeight",1,State present
+Transition,"secWeighedItem (CheckWeight ⇒ Ready)",1,Transition present
+Guard,"[weightMatched()]",1,Guard present
+Transition,"secWeighedItem (CheckWeight ⇒ Override)",1,Transition present
+Guard,"[!weightMatched()]",1,Guard present
+Action,"setTypeItem()",1,Handled implicitly by using separate override states
+Transition,"cancelCheckout (CheckWeight ⇒ Override)",1,Transition present
+Action,"setTypeEverything()",1,Handled implicitly by using separate override states
+State,"WeighBag",1,State present
+Transition,"secWeighedItem (WeighBag ⇒ Ready)",1,Transition present
+Action,"addBag()",1,Action present
+Transition,"cancel (WeighBag ⇒ Ready)",1,Transition present
+State,"Override",1,State present as a composite state
+Action,"entry / lightOn()",1,Action present
+Action,"exit / lightOff()",1,Action present
+Transition,"codeEntered (Override ⇒ Ready)",1,Transitions go to Shopping which enters Ready
+Guard,"[codeCorrect() && isTypeItem()]",1,Guard present and type handled by state
+Action,"clearItem()",1,Action present
+Transition,"codeEntered (Override ⇒ Ready)",1,Transition goes to Shopping which enters Ready
+Guard,"[codeCorrect() && isTypeEverything()]",1,Guard present and type handled by state
+Action,"clearEverything()",1,Action present
+Transition,"codeEntered (Override ⇒ Override)",1,Self-transitions on incorrect code present
+Guard,"[!codeCorrect()]",1,Guard present
+Transition,"timeoutWarning (Active ⇒ TimeoutCountdown)",1,Transition present
+Transition,"error()",1,Action present
+History State,"H (Active)",1,History state present
+State,"TimeoutCountdown",1,State present
+Action,"do / countFrom60()",1,Action present
+Transition,"(TimeoutCountdown ⇒ Active)",1,Transition present
+Action,"clearEverything()",1,Action present
+Action,"readyForNextCustomer()",0.5,Missing explicit action but implied by transitioning to Shopping
+State,"PayRequested",1,State present
+Transition,"fail (PayRequested ⇒ Ready)",1,Transition goes to Shopping which enters Ready
+Action,"error()",1,Action present
+Transition,"cancel (PayRequested ⇒ Ready)",1,Transition goes to Shopping which enters Ready
+Transition,"success (PayRequested ⇒ Ready)",1,Handled via intermediate PrintingBill state
+Action,"printBill()",1,Action present
+Action,"readyForNextCustomer()",0.5,Missing explicit action but implied by transitioning to Shopping
+State,"additional elements",0,Reasonable modeling choice to separate printing into its own state
+Transition,"additional elements",0,Reasonable modeling choice
+Guard,"additional elements",0,No incorrect additional guards
+Action,"additional elements",0,No incorrect additional actions
+Composite State,"additional elements",0,Reasonable modeling choice
+Region,"additional elements",0,No incorrect additional regions
+History State,"additional elements",0,No incorrect additional history states

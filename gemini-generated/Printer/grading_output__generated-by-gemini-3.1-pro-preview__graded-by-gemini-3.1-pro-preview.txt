@@ -1,0 +1,45 @@
+Type,Element,Grading,Notes
+State,"initial state (Off)",1,Initial state transitions to Off.
+State,"Off",1,Off state is present.
+Transition,"on (Off => On)",1,Transition from Off to On is present.
+Composite State,"On",1,On is a composite state.
+Transition,"off (On => Off)",1,Transition from On to Off is present.
+State,"initial state (Idle)",1,Initial state inside On transitions to LoggedOut which serves the purpose of the ground truth Idle state.
+State,"Idle",1,LoggedOut state represents the system waiting for login.
+Transition,"login(cardID) (Idle => Idle)",1,Transition for failed login is present.
+Guard,"[!idAuthorized(cardID)]",1,Guard for unauthorized card is present.
+Transition,"login(cardID) (Idle => Ready)",1,Transition for successful login is present.
+Guard,"[idAuthorized(cardID)]",1,Guard for authorized card is present.
+Action,"action=""none""",1,Student uses separate states instead of an action variable which is a valid alternative modeling approach.
+State,"Ready",1,Ready state is represented by Idle PrintReady and ScanReady states.
+Transition,"logoff (Ready => Idle)",1,Logoff transitions are present from the ready states to LoggedOut.
+Transition,"start (Ready => Ready)",1,Transition for scan start error is present.
+Guard,"[action==""scan"" & !originalLoaded()]",1,Guard for missing document is present.
+Transition,"start (Ready => Ready)",1,Transition for print start error is present.
+Guard,"[action==""print"" & !documentInQueue()]",1,Guard for empty queue is present.
+Transition,"scan (Ready => Ready)",1,Transitions to choose scan mode are present.
+Action,"action = ""scan""",1,Modeled using state change to ScanReady instead of an action variable.
+Transition,"print (Ready => Ready)",1,Transitions to choose print mode are present.
+Action,"action=""print""",1,Modeled using state change to PrintReady instead of an action variable.
+Transition,"start (Ready => Scan & Email)",1,Transition to start scanning is present.
+Guard,"[action==""scan"" && originalLoaded()]",1,Guard for document detected is present.
+Composite State,"Busy",1,Busy state behavior is correctly represented by separate Printing and Scanning states with their respective transitions.
+Transition,"stop (Busy => Ready)",1,Stop transitions are present from both printing and scanning states.
+Transition,"done (Busy => Ready)",1,Done transitions are present from both printing and scanning states.
+Transition,"jam (Busy => Suspended)",1,Jam transitions are present for both printing and scanning.
+History State,"for Busy",1,Student explicitly models resume transitions to the specific active states instead of using a history state.
+State,"Print",1,Printing state is present.
+Transition,"start (Ready => Print)",1,Transition to start printing is present.
+Guard,"[action=""print"" && documentInQueue()]",1,Guard for non-empty queue is present.
+Transition,"outOfPaper (Print => Suspended)",1,Out of paper transition is present.
+State,"Scan & Email",1,Scanning state is present.
+State,"Suspended",1,Suspended states are explicitly modeled for each condition.
+Transition,"resume (Suspended => History State for Busy)",1,Resume transitions correctly return to the specific interrupted states.
+Transition,"cancel (Suspended => Ready)",1,Cancel transitions correctly return to the respective ready states.
+State,"additional elements",0,Extra states are reasonable modeling choices for the chosen architecture.
+Transition,"additional elements",0,Extra transitions are necessary for the state-based approach and do not violate system behavior.
+Guard,"additional elements",0,No incorrect additional guards.
+Action,"additional elements",0,Additional actions correctly reflect the system description.
+Composite State,"additional elements",0,LoggedIn composite state is a reasonable modeling choice.
+Region,"additional elements",0,No additional regions.
+History State,"additional elements",0,No additional history states.
