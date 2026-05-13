@@ -1,0 +1,45 @@
+Type	Element	Grading	Notes
+State	initial state (Off)	1	Initial pseudostate enters Off.
+State	Off	1	Off state is explicitly present.
+Transition	on (Off => On)	1	Off transitions to On on switchOn which is equivalent.
+Composite State	On	1	On is modeled as a composite state.
+Transition	off (On => Off)	1	On transitions to Off on switchOff which is equivalent.
+State	initial state (Idle)	1	On initially enters LoggedOut which is the unauthenticated idle condition.
+State	Idle	1	The unauthenticated idle state is represented as LoggedOut.
+Transition	login(cardID) (Idle => Idle)	1	Unauthorized tapCard stays in LoggedOut and shows an error.
+Guard	[!idAuthorized(cardID)]	1	Unauthorized guard is represented as !authorized.
+Transition	login(cardID) (Idle => Ready)	1	Authorized tapCard moves from LoggedOut into the logged in area.
+Guard	[idAuthorized(cardID)]	1	Authorized guard is present on the login transition.
+Action	"action=""none"""	1	No action variable is used but logged in Idle represents no selected option.
+State	Ready	1	Ready behavior is split across LoggedIn Idle PrintReady and ScanReady.
+Transition	logoff (Ready => Idle)	1	Logoff is allowed from nonbusy logged in states to LoggedOut.
+Transition	start (Ready => Ready)	1	Starting scan without a detected document stays in ScanReady and shows an error.
+Guard	"[action==""scan"" & !originalLoaded()]"	1	Being in ScanReady plus !documentDetected captures this guard.
+Transition	start (Ready => Ready)	1	Starting print with an empty queue stays in PrintReady and shows an error.
+Guard	"[action==""print"" & !documentInQueue()]"	1	Being in PrintReady plus queueEmpty captures this guard.
+Transition	scan (Ready => Ready)	1	Choosing scan moves the logged in user to ScanReady.
+Action	"action = ""scan"""	1	Entering ScanReady represents selecting scan.
+Transition	print (Ready => Ready)	1	Choosing print moves the logged in user to PrintReady.
+Action	"action=""print"""	1	Entering PrintReady represents selecting print.
+Transition	start (Ready => Scan & Email)	1	ScanReady starts Scanning when a document is detected and later sends email.
+Guard	"[action==""scan"" && originalLoaded()]"	1	Being in ScanReady plus documentDetected captures this guard.
+Composite State	Busy	1	Busy behavior is modeled by separate Printing and Scanning states rather than one wrapper.
+Transition	stop (Busy => Ready)	1	Stop from Printing or Scanning returns to the corresponding ready state.
+Transition	done (Busy => Ready)	1	Done from Printing or Scanning returns to the corresponding ready state.
+Transition	jam (Busy => Suspended)	1	Paper jam suspends both Printing and Scanning.
+History State	for Busy	1	Resume memory is represented by separate suspended states returning to the prior task.
+State	Print	1	Printing state represents the print task.
+Transition	start (Ready => Print)	1	PrintReady starts Printing when the queue is not empty.
+Guard	"[action=""print"" && documentInQueue()]"	1	Being in PrintReady plus queueNotEmpty captures this guard.
+Transition	outOfPaper (Print => Suspended)	1	Out of paper during Printing moves to a paper suspension state.
+State	Scan & Email	1	Scanning with sendToEmail on completion represents scan and email.
+State	Suspended	1	Suspension is represented by separate jam and paper suspension states.
+Transition	resume (Suspended => History State for Busy)	1	Each suspended state resumes the corresponding Printing or Scanning task.
+Transition	cancel (Suspended => Ready)	1	Cancel from each suspended state returns to the appropriate ready state.
+State	additional elements	0	Extra ready and suspension states are reasonable refinements.
+Transition	additional elements	0	Extra choice and error transitions are consistent with the described behavior.
+Guard	additional elements	0	No fundamentally incorrect extra guards are present.
+Action	additional elements	0	Error display and email actions are appropriate details.
+Composite State	additional elements	0	LoggedIn composite is a reasonable organization.
+Region	additional elements	0	No extra regions are present.
+History State	additional elements	0	No extra history states are present.

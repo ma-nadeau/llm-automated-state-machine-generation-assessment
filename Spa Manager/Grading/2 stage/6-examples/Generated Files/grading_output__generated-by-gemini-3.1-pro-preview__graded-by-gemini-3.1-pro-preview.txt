@@ -1,0 +1,52 @@
+Type,Element,Grading,Notes
+Composite State,"SpaManager",1,Correctly represented
+Region,"Jacuzzi",1,Correctly represented
+State,"initial state (Jacuzzi → Off)",1,Correctly represented
+State,"Off",1,Correctly represented
+Composite State,"On (Jacuzzi)",1,Correctly represented
+Transition,"on (Off ⇒ On)",1,Correctly represented
+Transition,"off (On ⇒ Off)",1,Correctly represented
+State,"initial state (Level1)",1,Correctly represented
+State,"Level1",1,Correctly represented
+Transition,"up (Level1 ⇒ Level2)",1,Correctly represented
+State,"Level2",1,Correctly represented
+Transition,"up (Level2 ⇒ Level3)",1,Correctly represented
+Transition,"down (Level2 ⇒ Level1)",1,Correctly represented
+State,"Level3",1,Correctly represented
+Transition,"down (Level3 ⇒ Level2)",1,Correctly represented
+History State,"History State for Jacuzzi On",1,Correctly represented
+Transition,"setPattern(PatternType type) (On⇒ History State)",1,Student uses an orthogonal region for patterns which is a valid and behaviorally correct alternative to using a history state transition
+State,"Paused",1,Correctly represented
+Transition,"pause (On⇒ Pause)",1,Correctly represented
+Transition,"after 2min (Paused ⇒ History State)",1,Correctly represented
+Region,"Sauna",1,Correctly represented
+State,"initial state (Sauna → Off)",1,Correctly represented
+State,"Off",1,Correctly represented
+Composite State,"On (Sauna)",1,Correctly represented
+Transition,"on (Off ⇒ On)",1,Correctly represented
+Transition,"off (On ⇒ Off)",1,Correctly represented
+Region,"Heater",1,Correctly represented
+State,"initial state (Heater → Heat)",1,Correctly represented
+State,"Heat",1,Correctly represented
+Transition,"Heat ⇒ Idle",1,Correctly represented
+Guard,"[temp ≥ 90°C]",1,Correctly represented
+State,"Idle",1,Correctly represented
+Transition,"Idle ⇒ Heat",1,Correctly represented
+Guard,"[temp < 85°C]",1,Correctly represented
+Region,"Fan",1,Correctly represented
+State,"initial state (Fan → Off)",1,Correctly represented
+State,"Off",1,Correctly represented
+Transition,"after 5min (Off ⇒ On)",1,Student correctly models the 5-minute timeout for turning the fan off as described in the system description
+Guard,"[humidity > 40% && exceedTime > 3min]",1,Student correctly models the 3-minute delay using a monitoring state and an after transition
+Region,"Water",1,Correctly represented
+State,"initial state (Water → Idle)",1,Correctly represented
+State,"Idle",1,Correctly represented
+Transition,"Idle ⇒ Idle",1,Student correctly models the cooldown using a separate state instead of a self-transition
+Guard,"disperse [humidity < 40% && !Fan.On && timeSinceLast ≥ 15min]",1,Correctly represented using guards and a cooldown state
+State,"additional elements",0,No incorrect additional states
+Transition,"additional elements",0,No incorrect additional transitions
+Guard,"additional elements",0,No incorrect additional guards
+Action,"additional elements",0,No incorrect additional actions
+Composite State,"additional elements",0,No incorrect additional composite states
+Region,"additional elements",0,No incorrect additional regions
+History State,"additional elements",0,No incorrect additional history states

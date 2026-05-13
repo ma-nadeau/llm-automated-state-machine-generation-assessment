@@ -1,0 +1,52 @@
+Type,Element,Grading,Notes
+Composite State,"SpaManager",1,Top level composite SpaManager is present.
+Region,"Jacuzzi",1,Jacuzzi behavior is separated in its own region.
+State,"initial state (Jacuzzi → Off)",1,Jacuzzi region initializes to JacuzziOff.
+State,"Off",1,JacuzziOff state is present.
+Composite State,"On (Jacuzzi)",1,JacuzziOn composite state is present.
+Transition,"on (Off ⇒ On)",1,JacuzziOff transitions to JacuzziOn on turnOnJacuzzi.
+Transition,"off (On ⇒ Off)",1,JacuzziOn transitions to JacuzziOff on turnOffJacuzzi.
+State,"initial state (Level1)",1,Pressure region initializes to Level1 when active.
+State,"Level1",1,Low pressure Level1 state is present.
+Transition,"up (Level1 ⇒ Level2)",1,Increase transition from Level1 to Level2 is present.
+State,"Level2",1,Medium pressure Level2 state is present.
+Transition,"up (Level2 ⇒ Level3)",1,Increase transition from Level2 to Level3 is present.
+Transition,"down (Level2 ⇒ Level1)",1,Decrease transition from Level2 to Level1 is present.
+State,"Level3",1,High pressure Level3 state is present.
+Transition,"down (Level3 ⇒ Level2)",1,Decrease transition from Level3 to Level2 is present.
+History State,"History State for Jacuzzi On",1,H state is included and used as the return target after pause.
+Transition,"setPattern(PatternType type) (On⇒ History State)",1,Pattern selection is modeled with a guarded selectPattern transition while preserving active behavior.
+State,"Paused",1,JacuzziPaused state is present.
+Transition,"pause (On⇒ Pause)",1,Pause transition from active Jacuzzi operation to JacuzziPaused is present.
+Transition,"after 2min (Paused ⇒ History State)",1,JacuzziPaused returns to H after 2 minutes.
+Region,"Sauna",1,Sauna behavior is separated in its own region.
+State,"initial state (Sauna → Off)",1,Sauna region initializes to SaunaOff.
+State,"Off",1,SaunaOff state is present.
+Composite State,"On (Sauna)",1,SaunaOn composite state is present.
+Transition,"on (Off ⇒ On)",1,SaunaOff transitions to SaunaOn on turnOnSauna.
+Transition,"off (On ⇒ Off)",1,SaunaOn transitions to SaunaOff on turnOffSauna.
+Region,"Heater",1,Heating behavior is modeled in a separate region.
+State,"initial state (Heater → Heat)",1,Heating region initializes to HeatingOn.
+State,"Heat",1,HeatingOn represents the stove heating state.
+Transition,"Heat ⇒ Idle",1,HeatingOn transitions to HeatingOff when hot enough.
+Guard,"[temp ≥ 90°C]",1,The heating off transition uses temp >= 90.
+State,"Idle",1,HeatingOff represents the nonheating idle state.
+Transition,"Idle ⇒ Heat",1,HeatingOff transitions back to HeatingOn when temperature drops.
+Guard,"[temp < 85°C]",1,The reheat transition uses temp < 85.
+Region,"Fan",1,Fan behavior is modeled in a separate region.
+State,"initial state (Fan → Off)",1,Fan region initializes to FanOff.
+State,"Off",1,FanOff state is present.
+Transition,"after 5min (Off ⇒ On)",1,Fan activation after sustained high humidity is captured through FanMonitoring then after 3min to FanOn.
+Guard,"[humidity > 40% && exceedTime > 3min]",1,High humidity condition and 3 minute duration are represented by guard plus timed transition.
+Region,"Water",1,Water dispersion behavior is modeled in a separate region.
+State,"initial state (Water → Idle)",1,Water region initializes to WaterReady which represents availability.
+State,"Idle",1,WaterReady represents the idle ready state for dispensing.
+Transition,"Idle ⇒ Idle",1,Dispensing is modeled as Ready to Cooldown then back after 15 minutes which is behaviorally equivalent.
+Guard,"disperse [humidity < 40% && !Fan.On && timeSinceLast ≥ 15min]",1,Humidity and fan guards are explicit and the cooldown state enforces the 15 minute limit.
+State,"additional elements",0,Extra states such as monitoring cooldown active and pattern selection are reasonable refinements.
+Transition,"additional elements",0,No fundamentally incorrect extra transitions are present.
+Guard,"additional elements",0,Extra guards such as valid pattern range and humidity reset are consistent with the description.
+Action,"additional elements",0,Actions such as heat runFan setPattern and disperseWater are appropriate.
+Composite State,"additional elements",0,Additional composite structure for active Jacuzzi behavior is reasonable.
+Region,"additional elements",0,Additional pressure and pattern regions are appropriate for independent Jacuzzi features.
+History State,"additional elements",0,No incorrect extra history states are present.
