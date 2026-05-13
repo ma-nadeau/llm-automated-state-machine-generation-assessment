@@ -1,0 +1,52 @@
+Type	Element	Grading	Notes
+Composite State	SpaManager	1	Correctly implemented as the main state
+Region	Jacuzzi	1	Correctly implemented as JacuzziController region
+State	initial state (Jacuzzi → Off)	1	Correctly implemented
+State	Off	1	Correctly implemented as JacuzziOff
+Composite State	On (Jacuzzi)	1	Correctly implemented as JacuzziOn
+Transition	on (Off ⇒ On)	1	Correctly implemented with both central and panel triggers
+Transition	off (On ⇒ Off)	1	Correctly implemented with both central and panel triggers
+State	initial state (Level1)	1	Correctly implemented
+State	Level1	1	Correctly implemented
+Transition	up (Level1 ⇒ Level2)	1	Correctly implemented
+State	Level2	1	Correctly implemented
+Transition	up (Level2 ⇒ Level3)	1	Correctly implemented
+Transition	down (Level2 ⇒ Level1)	1	Correctly implemented
+State	Level3	1	Correctly implemented
+Transition	down (Level3 ⇒ Level2)	1	Correctly implemented
+History State	History State for Jacuzzi On	1	Behavior achieved elegantly via orthogonal regions preserving pressure and pattern states during pause
+Transition	setPattern(PatternType type) (On⇒ History State)	1	Pattern selection handled correctly via self-transition in orthogonal region
+State	Paused	1	Correctly implemented as JetsPaused
+Transition	pause (On⇒ Pause)	1	Correctly implemented as transition to JetsPaused
+Transition	after 2min (Paused ⇒ History State)	1	Correctly implemented as transition back to JetsRunning after 2min
+Region	Sauna	1	Correctly implemented as SaunaController region
+State	initial state (Sauna → Off)	1	Correctly implemented
+State	Off	1	Correctly implemented as SaunaOff
+Composite State	On (Sauna)	1	Correctly implemented as SaunaOn
+Transition	on (Off ⇒ On)	1	Correctly implemented
+Transition	off (On ⇒ Off)	1	Correctly implemented
+Region	Heater	1	Correctly implemented as TemperatureControl region
+State	initial state (Heater → Heat)	1	Correctly implemented
+State	Heat	1	Correctly implemented as TemperatureHeating
+Transition	Heat ⇒ Idle	1	Correctly implemented
+Guard	[temp ≥ 90°C]	1	Correctly implemented as temperatureAtOrAbove90C
+State	Idle	1	Correctly implemented as TemperatureIdle
+Transition	Idle ⇒ Heat	1	Correctly implemented
+Guard	[temp < 85°C]	1	Correctly implemented as temperatureBelow85C
+Region	Fan	1	Correctly implemented as HumidityControl region
+State	initial state (Fan → Off)	1	Correctly implemented
+State	Off	1	Correctly implemented as HumiditySafe
+Transition	after 5min (Off ⇒ On)	1	Correctly implemented as transition from FanActive to HumiditySafe after 5 minutes
+Guard	[humidity > 40% && exceedTime > 3min]	1	Correctly modeled using a timing state to enforce the 3-minute duration of high humidity
+Region	Water	1	Correctly implemented as WaterDispersal region
+State	initial state (Water → Idle)	1	Correctly implemented
+State	Idle	1	Correctly implemented as WaterReady
+Transition	Idle ⇒ Idle	1	Modeled as a sequence of states that correctly captures the behavior
+Guard	disperse [humidity < 40% && !Fan.On && timeSinceLast ≥ 15min]	1	Conditions correctly captured via guards and the WaterCooldown state enforcing the 15-minute limit
+State	additional elements	0	Extra states are valid modeling choices for timers and actions
+Transition	additional elements	0	Extra transitions are valid and necessary for the chosen state structure
+Guard	additional elements	0	Extra guards correctly handle edge cases
+Action	additional elements	0	Actions correctly represent system behaviors
+Composite State	additional elements	0	No unnecessary composite states
+Region	additional elements	0	Orthogonal regions are used correctly
+History State	additional elements	0	No unnecessary history states

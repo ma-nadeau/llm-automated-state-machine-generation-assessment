@@ -1,0 +1,55 @@
+Type,Element,Grading,Notes
+Composite State,"DishwasherOn",1,Represented by ProgramRunning
+Region,"Door",0,No explicit Door region
+State,"initial state (⇒ Closed)",0,No explicit Door states
+State,"Closed",0,No explicit Door states
+Transition,"open (Closed ⇒ Open)",0,No explicit Door states
+Transition,"lock (Closed ⇒ Locked)",0.5,Modeled as entry action lockDoor in Cleaning
+State,"Open",0,No explicit Door states
+Transition,"close (Open ⇒ Closed)",0,No explicit Door states
+State,"Locked",0,No explicit Door states
+Transition,"unlock (Locked ⇒ Closed)",0.5,Modeled as exit action unlockDoor in Cleaning
+Region,"Washer",1,Represented by ProcessRegion
+State,"initial state",1,Represented by initial transition to SetupDefaultDrying
+Transition,"r =1; dT=20; (initial state ⇒ Idle)",1,Represented by initial transition to SetupDefaultDrying
+State,"Idle",1,Represented by SetupDefaultDrying and SetupExtendedDrying
+Transition,"selectProgram(n) (Idle ⇒ Idle)",1,Represented by selectProgram transitions
+Guard,"[n ≥ 1]",0,Missing guard for program selection
+Action,"r = n;",1,Represented by setProgram action
+Transition,"toggleDryingTime (Idle ⇒ Idle)",1,Represented by extendDrying and reduceDrying transitions
+Action,"if dT = 20 then dT = 40 else dT = 20;",1,Represented by setDryingTime actions
+Transition,"start (Idle ⇒ Cleaning)",1,Represented by start transition to ProgramRunning
+Guard,"[door.isClosed()]",0,Missing guard for door closed on start
+Action,"door.lock(); c = 1;",0.5,lockDoor is an entry action in Cleaning and cycle initialization is implicit
+Composite State,"Cleaning",1,Represented by Cleaning state
+State,"initial state (⇒ Intake)",1,Represented by initial transition to WaterIntake
+State,"Intake",1,Represented by WaterIntake state
+Transition,"Intake ⇒ Washing",1,Represented by waterIntakeComplete transition
+State,"Washing",1,Represented by Washing state
+Transition,"after 10 min (Washing ⇒ Drain)",1,Represented by washTimerElapsed transition
+State,"Drain",1,Represented by Draining state
+Guard,"[c < r]",1,Represented by cyclesRemaining greater than 1 guard
+Transition,"Drain ⇒ Intake",1,Represented by waterDrained transition to WaterIntake
+Action,"c++",1,Represented by decrementCyclesRemaining action
+Transition,"(Drain ⇒ end state)",1,Represented by waterDrained transition to Drying
+Guard,"[c ≥ r]",1,Represented by cyclesRemaining equals 1 guard
+History State,"History State for Cleaning",0,Missing history state as student uses a parallel region instead
+Transition,"toggleDryingTime (Cleaning ⇒ History State)",0.5,Drying time extension during cleaning is handled via parallel DryingTimeRegion
+Action,"if dT = 20 then dT = 40 else dT = 20;",1,Represented by setOrExtendDryingTime action
+Transition,"Cleaning ⇒ Drying",1,Represented by transition from Draining to Drying
+Action,"door.unlock();",1,Represented by exit action unlockDoor in Cleaning
+State,"Drying",1,Represented by Drying state
+Transition,"after dT min (Drying ⇒ Idle)",1,Represented by dryingTimerElapsed transition
+Transition,"extend DryingTime (Drying ⇒ Drying)",1,Handled in parallel DryingTimeRegion
+Action,"dT = 40;",1,Represented by setOrExtendDryingTime action
+Transition,"open (Drying ⇒ Suspended)",1,Represented by doorOpened transition
+State,"Suspended",1,Represented by DoorOpenSuspended state
+Transition,"close (Suspended ⇒ Drying)",1,Represented by doorClosed transition
+Transition,"after 5 min (Suspended ⇒ Idle)",1,Represented by doorOpenTimerElapsed transition
+State,"additional elements",0,Extra states are reasonable modeling choices for the parallel region approach
+Transition,"additional elements",0,Extra transitions are reasonable for the parallel region approach
+Guard,"additional elements",0,Extra guards are reasonable
+Action,"additional elements",0,Extra actions are reasonable detailed additions
+Composite State,"additional elements",0,No incorrect additional composite states
+Region,"additional elements",0,Parallel regions are a reasonable alternative to history states
+History State,"additional elements",0,No additional history states

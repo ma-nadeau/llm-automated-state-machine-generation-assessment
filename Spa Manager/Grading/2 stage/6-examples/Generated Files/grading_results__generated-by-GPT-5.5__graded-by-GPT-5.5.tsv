@@ -1,0 +1,52 @@
+Type	Element	Grading	Notes
+Composite State	SpaManager	1	Top level composite state encloses both spa subsystems.
+Region	Jacuzzi	1	JacuzziController region represents the Jacuzzi subsystem.
+State	initial state (Jacuzzi → Off)	1	Initial transition in JacuzziController goes to JacuzziOff.
+State	Off	1	JacuzziOff represents the off state.
+Composite State	On (Jacuzzi)	1	JacuzziOn is a composite state with pressure pattern and jet operation.
+Transition	on (Off ⇒ On)	1	Off to On transitions are provided for central and panel turn on.
+Transition	off (On ⇒ Off)	1	On to Off transitions are provided for central and panel turn off.
+State	initial state (Level1)	1	PressureControl initially enters Level1.
+State	Level1	1	Level1 state is present and sets low pressure.
+Transition	up (Level1 ⇒ Level2)	1	Increase pressure moves Level1 to Level2 from either control source.
+State	Level2	1	Level2 state is present and sets medium pressure.
+Transition	up (Level2 ⇒ Level3)	1	Increase pressure moves Level2 to Level3 from either control source.
+Transition	down (Level2 ⇒ Level1)	1	Decrease pressure moves Level2 to Level1 from either control source.
+State	Level3	1	Level3 state is present and sets high pressure.
+Transition	down (Level3 ⇒ Level2)	1	Decrease pressure moves Level3 to Level2 from either control source.
+History State	History State for Jacuzzi On	1	No explicit history node is used but parallel regions preserve pressure and pattern while jets pause.
+Transition	setPattern(PatternType type) (On⇒ History State)	1	Pattern selection is modeled as valid central and panel self transitions over pattern IDs 1 through 25.
+State	Paused	1	JetsPaused represents the pause feature.
+Transition	pause (On⇒ Pause)	1	Pause events move running jets to JetsPaused.
+Transition	after 2min (Paused ⇒ History State)	1	After two minutes jets resume while pressure and pattern settings are retained.
+Region	Sauna	1	SaunaController region represents the sauna subsystem.
+State	initial state (Sauna → Off)	1	Initial transition in SaunaController goes to SaunaOff.
+State	Off	1	SaunaOff represents the off state.
+Composite State	On (Sauna)	1	SaunaOn is a composite state with temperature humidity and water behavior.
+Transition	on (Off ⇒ On)	1	SaunaOff transitions to SaunaOn on central turn on.
+Transition	off (On ⇒ Off)	1	SaunaOn transitions to SaunaOff on central turn off.
+Region	Heater	1	TemperatureControl region represents the heater behavior.
+State	initial state (Heater → Heat)	1	TemperatureControl initially enters TemperatureHeating.
+State	Heat	1	TemperatureHeating represents active stove heating.
+Transition	Heat ⇒ Idle	1	Heating transitions to idle when temperature reaches at least 90C.
+Guard	[temp ≥ 90°C]	1	The transition condition temperatureAtOrAbove90C captures temp >= 90C.
+State	Idle	1	TemperatureIdle represents stove not heating while monitoring temperature.
+Transition	Idle ⇒ Heat	1	Idle transitions back to heating when temperature is below 85C.
+Guard	[temp < 85°C]	1	The transition condition temperatureBelow85C captures temp < 85C.
+Region	Fan	1	HumidityControl region represents fan activation based on humidity.
+State	initial state (Fan → Off)	1	HumidityControl initially starts in a non fan active safe state.
+State	Off	1	HumiditySafe and HumidityAboveLimitTiming together represent fan off behavior.
+Transition	after 5min (Off ⇒ On)	1	Fan activation is modeled after humidity remains above 40 percent for three minutes.
+Guard	[humidity > 40% && exceedTime > 3min]	1	The after3min transition requires humidityPercent > 40.
+Region	Water	1	WaterDispersal region represents eucalyptus water control.
+State	initial state (Water → Idle)	1	WaterDispersal initially enters WaterReady as the idle waiting state.
+State	Idle	1	WaterReady represents idle readiness for a dispersal request.
+Transition	Idle ⇒ Idle	1	Request handling disperses water then enters cooldown and returns to ready which captures the self cycle behavior.
+Guard	disperse [humidity < 40% && !Fan.On && timeSinceLast ≥ 15min]	1	Humidity and fan guards are explicit and the 15 minute limit is enforced by cooldown.
+State	additional elements	0	Extra states such as cooldown and timing refine required behavior without contradicting it.
+Transition	additional elements	0	Extra rejection and panel transitions are consistent with the described controls.
+Guard	additional elements	0	Extra guards only enforce valid humidity fan and timing conditions.
+Action	additional elements	0	Actions describe starting stopping dispensing and timers without adding incorrect behavior.
+Composite State	additional elements	0	Additional composite structure separates concurrent concerns appropriately.
+Region	additional elements	0	Additional regions divide independent control aspects and are behaviorally reasonable.
+History State	additional elements	0	No incorrect extra history states are present.

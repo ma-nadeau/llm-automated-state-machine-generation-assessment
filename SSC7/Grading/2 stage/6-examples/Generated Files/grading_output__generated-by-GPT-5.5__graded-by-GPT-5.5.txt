@@ -1,0 +1,74 @@
+Type,Element,Grading,Notes
+State,"Initial state (→ Active)",1,Initial transition enters the main shopping composite state.
+Composite State,"Active",1,Shopping composite represents the active checkout behavior where scanning and related actions occur.
+State,"Initial state (Active → Ready)",1,Shopping initial state goes to ReadyForNextItem.
+State,"Ready",1,ReadyForNextItem represents readiness to scan or choose another action.
+Transition,"scannedNr (Ready ⇒ Ready)",1,Invalid barcode scan loops in ReadyForNextItem.
+Guard,"[!existsNr()]",1,Uses guard for nonexisting barcode.
+Action,"error()",1,Invalid barcode scan shows an error.
+Transition,"productCodeEntered (Ready ⇒ Ready)",1,Invalid product code loops in ReadyForNextItem.
+Guard,"[!existsCode()]",1,Uses guard for nonexisting product code.
+Action,"error()",1,Invalid product code shows an error.
+Transition,"productCodeEntered (Ready ⇒ WeighItem)",1,Valid product code moves to item weighing.
+Guard,"[existsCode()]",1,Uses guard for existing product code.
+Transition,"scannedNr (Ready ⇒ CheckWeight)",1,Valid barcode moves to security weight check.
+Guard,"[existsNr()]",1,Uses guard for existing barcode.
+Action,"addItem()",0.5,Shows the scanned item but does not explicitly add it before security check.
+Transition,"cancelCheckout (Ready ⇒ Override)",1,Cancel everything from Ready requests clear all override.
+Action,"setTypeEverything()",1,Override type is encoded by targeting OverrideClearAll.
+Transition,"removeItem (Ready ⇒ Override)",1,Remove item from Ready requests item override.
+Guard,"[billHasItem()]",1,Requires at least one item on the bill.
+Action,"setTypeItem()",1,Override type is encoded by targeting OverrideClearItem.
+Transition,"broughtOwnBag (Ready ⇒ WeighBag)",1,Own bag action moves to bag weighing.
+Transition,"pay (Ready ⇒ PayRequested)",1,Pay from Ready moves to payment processing.
+Guard,"[billHasItem()]",1,Pay transition requires billHasItems.
+Action,"sendPaymentRequest()",1,Payment request is sent on entry to payment processing.
+State,"WeighItem",1,WeighingProductCodeItem represents weighing a product-code item.
+Transition,"cancel (WeighItem ⇒ Ready)",1,Cancel during item weighing returns to Ready.
+Transition,"weighedItem (WeighItem ⇒ CheckWeight)",1,Received item weight moves to security check.
+Action,"addWeighedItem()",0.5,Shows item with weight but does not explicitly add weighed item before security check.
+State,"CheckWeight",1,AwaitingSecurityCheck represents the security weight check.
+Transition,"secWeighedItem (CheckWeight ⇒ Ready)",1,Matching security weight returns to Ready.
+Guard,"[weightMatched()]",1,Uses weightMatches guard for matching weight.
+Transition,"secWeighedItem (CheckWeight ⇒ Override)",1,Nonmatching security weight requests override.
+Guard,"[!weightMatched()]",1,Uses negated weightMatches guard.
+Action,"setTypeItem()",1,Targets item-clearing override state.
+Transition,"cancelCheckout (CheckWeight ⇒ Override)",1,Cancel everything during security check requests override.
+Action,"setTypeEverything()",1,Targets clear-all override state.
+State,"WeighBag",1,WeighingBag state is present.
+Transition,"secWeighedItem (WeighBag ⇒ Ready)",1,Bag weight received returns to Ready.
+Action,"addBag()",1,Adds bag and shows bag count.
+Transition,"cancel (WeighBag ⇒ Ready)",1,Cancel bag weighing returns to Ready.
+State,"Override",1,OverrideRequired composite represents staff override.
+Action,"entry / lightOn()",1,OverrideRequired has entry action to turn light on.
+Action,"exit / lightOff()",1,OverrideRequired has exit action to turn light off.
+Transition,"codeEntered (Override ⇒ Ready)",1,Valid staff code in item override returns to Ready.
+Guard,"[codeCorrect() && isTypeItem()]",1,Correct code is checked and item type is represented by OverrideClearItem.
+Action,"clearItem()",1,Valid item override clears item from bill.
+Transition,"codeEntered (Override ⇒ Ready)",1,Valid staff code in clear-all override returns to Ready.
+Guard,"[codeCorrect() && isTypeEverything()]",1,Correct code is checked and everything type is represented by OverrideClearAll.
+Action,"clearEverything()",1,Valid clear-all override clears everything and resets.
+Transition,"codeEntered (Override ⇒ Override)",1,Incorrect staff code self-loops in override substates.
+Guard,"[!codeCorrect()]",1,Uses invalid override code guard.
+Transition,"timeoutWarning (Active ⇒ TimeoutCountdown)",1,Timeout warning from Shopping enters TimeoutWarning.
+Transition,"error()",1,Incorrect override code shows an error.
+History State,"H (Active)",1,H is included in Shopping and continue targets it to resume.
+State,"TimeoutCountdown",1,TimeoutWarning represents the countdown state.
+Action,"do / countFrom60()",1,Starts a 60 second countdown on entry.
+Transition,"(TimeoutCountdown ⇒ Active)",1,Countdown reaching zero returns to Ready for next customer.
+Action,"clearEverything()",1,Countdown expiry clears everything.
+Action,"readyForNextCustomer()",1,Countdown expiry resets for the next customer.
+State,"PayRequested",1,PaymentProcessing represents waiting for payment result.
+Transition,"fail (PayRequested ⇒ Ready)",1,Payment failure returns to Ready.
+Action,"error()",1,Payment failure shows an error.
+Transition,"cancel (PayRequested ⇒ Ready)",1,Payment cancellation returns to Ready.
+Transition,"success (PayRequested ⇒ Ready)",1,Payment success returns to Ready for next customer.
+Action,"printBill()",1,Payment success prints the bill.
+Action,"readyForNextCustomer()",1,Payment success resets for the next customer.
+State,"additional elements",0,Extra states are reasonable refinements such as separate override types.
+Transition,"additional elements",0,Extra transitions are reasonable operational details.
+Guard,"additional elements",0,No fundamentally incorrect extra guards.
+Action,"additional elements",0,Extra actions such as showing messages and clearing pending items are reasonable.
+Composite State,"additional elements",0,Additional composites are acceptable organization choices.
+Region,"additional elements",0,No incorrect parallel regions are present.
+History State,"additional elements",0,No incorrect extra history states are present.

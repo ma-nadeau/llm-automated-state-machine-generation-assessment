@@ -1,0 +1,116 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Watch)	1	Correctly represented
+Action	time=0:00:00; alarmTime=0:00:00; alarm=false; flashAlert=false; cdTime=0:00:00	0	No initialization action on the initial transition
+Composite State	Watch	1	Correctly represented
+Region	Light	1	Represented as Backlight region
+State	Initial state (Light → Off)	1	Correctly represented
+State	Off	1	Represented as BacklightOff
+Action	entry / lightOff()	1	Correctly represented
+Transition	D (Off ⇒ On)	1	Correctly represented
+State	On	1	Represented as BacklightOn
+Action	entry / lightOn()	1	Correctly represented
+Transition	D (On ⇒ Off)	1	Correctly represented
+Transition	after 10sec (On ⇒ Off)	1	Correctly represented
+Transition	flash (On ⇒ Flash)	0	Not represented as a transition in the backlight region
+Guard	[flashAlert]	0.5	Represented as a condition in the notification states rather than a guard
+State	Flash	0	No Flash state in the backlight region
+Action	do / flash5Sec()	0.5	Handled via do action in notification states
+Transition	flash (Flash ⇒ Off)	0	Not represented
+Guard	[flashAlert]	0	Not represented
+Transition	anyButton (Flash ⇒ Off)	0	Not represented
+Region	WatchMode	1	Represented as UserInterface region
+State	Initial state (WatchMode → AlarmOff)	0.5	Initial state points to NormalOperation; AlarmOff is in a parallel region
+Composite State	AlarmOff	1	Represented via parallel region AlarmSwitch
+State	Initial state (AlarmOff → TimeKeepingMode)	1	Correctly represented
+Composite State	TimeKeepingMode	1	Correctly represented
+State	Initial state (TimeKeepingMode → Idle)	1	Correctly represented
+State	Idle	1	Represented as TimeDisplay
+Action	do / displayTime()	1	Correctly represented
+Transition	B2sec (Idle ⇒ Idle)	1	Handled in FlashAlertSwitch parallel region
+Action	toggleFlashAlert()	1	Correctly represented
+Transition	B (Idle ⇒ Idle)	1	Handled in AlarmSwitch parallel region
+Action	toggleAlarm()	1	Correctly represented
+Transition	C (Idle ⇒ Seconds)	1	Correctly represented
+Action	flashSeconds()	1	Correctly represented
+Transition	A (TimeKeepingMode ⇒ AlarmMode)	1	Correctly represented from TimeDisplay
+State	Seconds	1	Represented as TimeSetSeconds
+Transition	B (Seconds ⇒ Seconds)	1	Correctly represented
+Action	time+=1sec	1	Correctly represented
+Transition	C (Seconds ⇒ Minutes)	1	Correctly represented
+Action	flashMinutes()	1	Correctly represented
+State	Minutes	1	Represented as TimeSetMinutes
+Transition	B (Minutes ⇒ Minutes)	1	Correctly represented
+Action	time+=1min	1	Correctly represented
+Transition	C (Minutes ⇒ Hours)	1	Correctly represented
+Action	flashHours()	1	Correctly represented
+State	Hours	1	Represented as TimeSetHours
+Transition	B (Hours ⇒ Hours)	1	Correctly represented
+Action	time+=1hr	1	Correctly represented
+Transition	C (Hours ⇒ Seconds)	1	Correctly represented
+Action	flashSeconds()	1	Correctly represented
+Transition	A (TimeKeepingMode ⇒ AlarmMode)	1	Correctly represented
+Composite State	AlarmMode	1	Correctly represented
+State	Initial state (AlarmMode → Idle)	1	Correctly represented
+State	Idle	1	Represented as AlarmDisplay
+Action	entry / displayAlarmTime()	1	Correctly represented
+Transition	C (Idle ⇒ Minutes)	1	Correctly represented
+Action	flashMinutes()	1	Correctly represented
+Transition	A (AlarmMode ⇒ CountdownMode)	1	Correctly represented
+State	Minutes	1	Represented as AlarmSetMinutes
+Transition	B (Minutes ⇒ Minutes)	1	Correctly represented
+Action	alarmTime+=1min	1	Correctly represented
+Transition	C (Minutes ⇒ Hours)	1	Correctly represented
+Action	flashHours()	1	Correctly represented
+State	Hours	1	Represented as AlarmSetHours
+Transition	B (Hours ⇒ Hours)	1	Correctly represented
+Action	alarmTime+=1hr	1	Correctly represented
+Transition	C (Hours ⇒ Minutes)	1	Correctly represented
+Action	flashMinutes()	1	Correctly represented
+Transition	A (AlarmMode ⇒ CountdownMode)	1	Student correctly transitions to TimekeepingMode as per system description
+Composite State	CountdownMode	1	Correctly represented
+State	Initial state (CountdownMode → Idle)	1	Correctly represented
+State	Idle	1	Represented as CountdownDisplay
+Action	entry / displayCdTime()	1	Correctly represented
+Transition	C (Idle ⇒ Seconds)	1	Correctly represented
+Action	flashSeconds()	1	Correctly represented
+Transition	B (Idle ⇒ Countdown)	1	Correctly represented
+Guard	[cdTime > 0:00:00]	1	Represented as countdownTimeSet()
+Action	targetTime = time + cdTime	1	Represented as startCountdown()
+Transition	A (CountdownMode ⇒ TimeKeepingMode)	1	Correctly represented
+State	Seconds	1	Represented as CountdownSetSeconds
+Transition	B (Seconds ⇒ Seconds)	1	Correctly represented
+Action	cdTime+=1sec	1	Correctly represented
+Transition	C (Seconds ⇒ Minutes)	1	Correctly represented
+Action	flashMinutes()	1	Correctly represented
+State	Minutes	1	Represented as CountdownSetMinutes
+Transition	B (Minutes ⇒ Minutes)	1	Correctly represented
+Action	cdTime+=1min	1	Correctly represented
+Transition	C (Minutes ⇒ Hours)	1	Correctly represented
+Action	flashHours()	1	Correctly represented
+State	Hours	1	Represented as CountdownSetHours
+Transition	B (Hours ⇒ Hours)	1	Correctly represented
+Action	cdTime+=1hr	1	Correctly represented
+Transition	C (Hours ⇒ Seconds)	1	Correctly represented
+Action	flashSeconds()	1	Correctly represented
+State	Countdown	1	Represented as CountdownRunning
+Action	do / displayCountdown()	1	Correctly represented
+Transition	(targetTime == time) (Countdown ⇒ CountdownReached)	1	Correctly represented
+Action	flash()	1	Correctly represented
+State	CountdownReached	1	Represented as CountdownNotification
+Action	do / flashZero&Beep5Sec()	1	Correctly represented
+Transition	anyButton (CountdownReached ⇒ CountdownMode)	1	Correctly represented
+History State	H	1	Correctly represented
+Transition	(alarm && alarmTime == time) (AlarmOff ⇒ AlarmOn)	1	Correctly represented
+Action	saveDisplay()	0.5	Implicitly handled by History state semantics
+Action	flash()	1	Correctly represented
+State	AlarmOn	1	Represented as AlarmNotification
+Action	do / flashAlarmTime&Beep5Sec()	1	Correctly represented
+Action	exit / restoreDisplay()	0.5	Implicitly handled by History state semantics
+Transition	anyButton (AlarmOn ⇒ History State)	1	Correctly represented
+State	additional elements	0	No fundamentally incorrect additional states
+Transition	additional elements	0	No fundamentally incorrect additional transitions
+Guard	additional elements	0	No fundamentally incorrect additional guards
+Action	additional elements	0	No fundamentally incorrect additional actions
+Composite State	additional elements	0	No fundamentally incorrect additional composite states
+Region	additional elements	0	Additional regions are reasonable modeling choices
+History State	additional elements	0	No fundamentally incorrect additional history states

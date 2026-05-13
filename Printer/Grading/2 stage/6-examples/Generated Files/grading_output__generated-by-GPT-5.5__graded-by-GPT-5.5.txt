@@ -1,0 +1,45 @@
+Type,Element,Grading,Notes
+State,"initial state (Off)",1,Initial pseudostate leads to Off.
+State,"Off",1,Off state is explicitly modeled.
+Transition,"on (Off => On)",1,Off transitions to On on masterOn.
+Composite State,"On",1,On is modeled as a composite state.
+Transition,"off (On => Off)",1,On transitions to Off on masterOff.
+State,"initial state (Idle)",1,Initial state inside On leads to LoggedOut which is equivalent to Idle.
+State,"Idle",1,LoggedOut represents the unauthenticated idle state.
+Transition,"login(cardID) (Idle => Idle)",1,Unauthorized card tap stays in LoggedOut and shows error.
+Guard,"[!idAuthorized(cardID)]",1,Unauthorized guard is represented as !authorized(cardId).
+Transition,"login(cardID) (Idle => Ready)",1,Authorized card tap enters UserSession.
+Guard,"[idAuthorized(cardID)]",1,Authorized guard is represented as authorized(cardId).
+Action,"action=""none""",1,Entering TaskSelection AwaitingOption after login leaves no print or scan option selected.
+State,"Ready",1,UserSession with TaskSelection represents the logged in ready condition.
+Transition,"logoff (Ready => Idle)",1,Logoff from TaskSelection returns to LoggedOut.
+Transition,"start (Ready => Ready)",1,Starting scan without original stays in ScanChosen and shows an error.
+Guard,"[action==""scan"" & !originalLoaded()]",1,Being in ScanChosen with !originalDetected captures this condition.
+Transition,"start (Ready => Ready)",1,Starting print without queued document stays in PrintChosen and shows an error.
+Guard,"[action==""print"" & !documentInQueue()]",1,Being in PrintChosen with !hasQueuedDocument captures this condition.
+Transition,"scan (Ready => Ready)",1,Choosing scan moves to ScanChosen while remaining in task selection.
+Action,"action = ""scan""",1,ScanChosen state records the selected scan option.
+Transition,"print (Ready => Ready)",1,Choosing print moves to PrintChosen while remaining in task selection.
+Action,"action=""print""",1,PrintChosen state records the selected print option.
+Transition,"start (Ready => Scan & Email)",1,Pressing start from ScanChosen with original detected enters Scanning.
+Guard,"[action==""scan"" && originalLoaded()]",1,ScanChosen plus originalDetected captures the required guard.
+Composite State,"Busy",1,ActiveTask composite represents the busy printing or scanning behavior.
+Transition,"stop (Busy => Ready)",1,pressStop from ActiveTask returns to TaskSelection.
+Transition,"done (Busy => Ready)",1,Printing and Scanning completion both return to TaskSelection.
+Transition,"jam (Busy => Suspended)",1,paperJam from ActiveTask enters recovery suspension.
+History State,"for Busy",1,H inside ActiveTask is used as the resume target for suspended tasks.
+State,"Print",1,Printing state is explicitly modeled.
+Transition,"start (Ready => Print)",1,Pressing start from PrintChosen with a queued document enters Printing.
+Guard,"[action=""print"" && documentInQueue()]",1,PrintChosen plus hasQueuedDocument captures the required guard.
+Transition,"outOfPaper (Print => Suspended)",1,outOfPaper from Printing enters OutOfPaperRecovery.
+State,"Scan & Email",1,Scanning state models scan and later sends scan to email on completion.
+State,"Suspended",1,PaperJamRecovery and OutOfPaperRecovery model suspended recovery conditions.
+Transition,"resume (Suspended => History State for Busy)",1,Recovery states resume to H after the problem is cleared.
+Transition,"cancel (Suspended => Ready)",1,Recovery states cancel back to TaskSelection.
+State,"additional elements",0,Extra selection and recovery substates are reasonable refinements.
+Transition,"additional elements",0,Extra choice and recovery transitions preserve the specified behavior.
+Guard,"additional elements",0,Extra guards are consistent with authorization and resource checks.
+Action,"additional elements",0,Extra actions such as showing errors and suspending tasks are appropriate.
+Composite State,"additional elements",0,Extra composite organization is a reasonable modeling choice.
+Region,"additional elements",0,No incorrect parallel regions are introduced.
+History State,"additional elements",0,No incorrect extra history behavior is introduced.

@@ -1,0 +1,53 @@
+Type,Element,Grading,Notes
+State,"initial state (off)",1,Top level initial pseudostate is present.
+Transition,"initial state (off) => off",1,Initial transition goes to Off.
+State,"Off",1,Off state is explicitly modeled.
+Transition,"off => on",1,onOff powers the clock from Off to On.
+Composite State,"On",1,On is modeled as a composite containing setup and game behavior.
+State,"initial state (on)",1,Initial state inside On enters Setup.
+Composite State,"GameSetup",1,Setup composite covers pregame timing and seating configuration.
+Region,"GameSetup Region 1",1,Timing selection behavior is represented in ChoosingTiming.
+State,"Initial state (region 1)",1,ChoosingTiming has an initial transition to BrowseWhiteLeft.
+State,"TimingSelection",1,Timing browsing is explicitly modeled by ChoosingTiming.
+Action,"incrTimingProgram()",1,plus advances to the next predefined timing.
+Action,"decrTimingProgram()",1,minus goes to the previous predefined timing.
+Transition,"timing selection => timing selection",1,plus and minus self loops keep the user in timing selection.
+Transition,"game setup => ready to start",1,select stores the timing and moves to ready states.
+Region,"GameSetup Region 2",1,White and black seating orientation is represented by left and right variants.
+State,"Initial state (region 2)",1,Default orientation is modeled as white on the left.
+State,"WhiteKingOnLeft",1,White-left orientation is represented by BrowseWhiteLeft and ReadyWhiteLeft.
+State,"WhiteKingOnRight",1,White-right orientation is represented by BrowseWhiteRight and ReadyWhiteRight.
+Transition,"initial state => white king on left",1,Initial setup starts with the white-left orientation.
+Transition,"white king on left => white king on right",1,flip swaps from white-left to white-right.
+Transition,"white king on right => white king on left",1,flip swaps from white-right to white-left.
+State,"ReadyToStart",1,TimingSelected with ReadyWhiteLeft and ReadyWhiteRight represents ready to start.
+Transition,"ready to start => game running",1,startStop from ready states initializes clocks and enters Game.
+Composite State,"GameRunning",1,GameRunning composite contains the active clock states.
+History State,"H",1,H is declared in GameRunning and used for resume from pause.
+State,"WhiteClockRunning",1,WhiteRunning represents the white clock running.
+Action,"startTimer(wc)",1,WhiteRunning entry starts the white countdown.
+Action,"stopTimer(wc)",1,WhiteRunning exit stops the white countdown.
+Guard,"[wc > 0]",1,White decrement is guarded by positive remaining time before timeout handling.
+Action,"decrTimer(wc)",1,White clock is decremented on each one-second event.
+Transition,"white clock running => white clock running",1,WhiteRunning has a timed self transition while time remains.
+State,"BlackClockRunning",1,BlackRunning represents the black clock running.
+Action,"startTimer(bc)",1,BlackRunning entry starts the black countdown.
+Action,"stopTimer(bc)",1,BlackRunning exit stops the black countdown.
+Guard,"[bc > 0]",1,Black decrement is guarded by positive remaining time before timeout handling.
+Action,"decrTimer(bc)",1,Black clock is decremented on each one-second event.
+Transition,"balck clock running => black clock running",1,BlackRunning has a timed self transition while time remains.
+Transition,"game running => game paused",1,startStop moves from GameRunning to Paused.
+Transition,"game running => game finished",1,Timeout transitions leave running play and enter a flashing flag state.
+Guard,"[wc == 0]",1,White timeout is detected when the next tick reaches zero.
+Guard,"[bc == 0]",1,Black timeout is detected when the next tick reaches zero.
+State,"GamePaused",1,Paused state is explicitly modeled.
+Transition,"game paused => game running",1,startStop from Paused resumes via H.
+State,"GameFinished",1,WhiteFlag and BlackFlag represent finished timeout states with flashing flags.
+Transition,"on => off",1,onOff from On powers the clock off at any time.
+State,"additional elements",0,Extra orientation and flag states are reasonable refinements.
+Transition,"additional elements",0,No fundamentally incorrect extra transitions are present.
+Guard,"additional elements",0,No fundamentally incorrect extra guards are present.
+Action,"additional elements",0,Extra actions are reasonable implementation details.
+Composite State,"additional elements",0,Additional composites preserve the intended behavior.
+Region,"additional elements",0,No incorrect extra regions are introduced.
+History State,"additional elements",0,No incorrect extra history states are introduced.

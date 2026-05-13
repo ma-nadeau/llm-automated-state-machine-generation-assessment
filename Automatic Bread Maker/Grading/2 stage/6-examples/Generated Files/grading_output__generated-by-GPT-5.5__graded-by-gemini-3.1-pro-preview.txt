@@ -1,0 +1,56 @@
+Type,Element,Grading,Notes
+State,Initial state (→ Off),1,Initial state transitions to Off
+State,Off,1,Off state is present
+Transition,on (Off ⇒ On),1,Transition from Off to On is present
+Composite State,On,1,On is a composite state
+Transition,on => off,1,Transition from On to Off is present
+Composite State,Setup,1,Setup is a composite state
+State,Initial state (Setup → Medium),1,Initial state transitions to Medium in CrustSelection region
+Action,delay=0; selectFirstCourse(),1,initializeDefaults() and region initial states capture this behavior
+State,Medium,1,Medium state is present
+Transition,setup initial state => medium,1,Initial transition to Medium is present
+Transition,medium => dark,1,Transition from Medium to Dark is present
+State,Dark,1,Dark state is present
+Transition,dark => light,1,Transition from Dark to Light is present
+State,Light,1,Light state is present
+History State,H,0,No history state is used; student uses parallel regions instead
+Transition,setup => H,0,No transition to a history state
+Action,selectNextCourse(),1,selectNextCourse() action is present on menu event
+Transition,plus (Setup ⇒ Setup),1,Plus transitions are present within TimerSetting region
+Guard,[delay <= 17*60+50],1,Guard for maximum timer (18h) is present
+Action,delay = delay + 10,1,Action to increase timer by 10 minutes is present
+Transition,minus (Setup ⇒ Setup),1,Minus transitions are present within TimerSetting region
+Guard,[delay >= 10],1,Guards checking if timer is at least 10 minutes are present
+Action,delay = delay - 10,1,Action to decrease timer by 10 minutes is present
+Transition,start (Setup ⇒ Countdown),1,Transition from Setup to Countdown on start is present
+Guard,[delay > 0],1,Guard checking if timer > 0 is present
+Transition,start (Setup ⇒ Baking),1,Transition from Setup to BakingProcess on start is present
+Guard,[delay == 0],1,Guard checking if timer == 0 is present
+State,Countdown,1,Countdown state is present
+Action,setCourseTimes(),0.5,Course times are not explicitly set but are referenced dynamically in after() triggers
+Transition,Countdown => baking,1,Transition from Countdown to BakingProcess is present
+Transition,Countdown => setup,1,Transition from Countdown to Setup on stop is present
+Action,setCourseTimes(),0.5,Course times are evaluated dynamically rather than set via an action
+Composite State,Baking,1,BakingProcess is a composite state
+State,Initial state,1,Initial state in BakingProcess transitions to Kneading
+State,Kneading,1,Kneading state is present
+Action,startKneading(),1,startKneading() action is present on entry to Kneading
+Action,stopKneading(),1,stopKneading() action is present on exit from Kneading
+Transition,baking initial state => kneading,1,Initial transition to Kneading is present
+Transition,kneading => rising,1,Transition from Kneading to Rising is present
+State,Rising,1,Rising state is present
+Transition,rising => baking,1,Transition from Rising to Baking is present
+State,Baking,1,Baking state is present
+Action,heat(),1,heat() action is present in Baking
+Transition,baking => warming,1,Transition from Baking to Warming is present
+State,Warming,1,Warming state is present
+Action,warm(),1,warm() action is present in Warming
+Transition,adter 60min (warming => setup),1,Transition from Warming to Setup after 60min is present
+Transition,baking => setup,1,Transition from BakingProcess to Setup on stop is present
+State,additional elements,0,Extra states are reasonable for the parallel region modeling approach
+Transition,additional elements,0,Extra transitions are reasonable for the parallel region modeling approach
+Guard,additional elements,0,Extra guards are reasonable for the detailed timer logic
+Action,additional elements,0,Extra actions are reasonable for timer management
+Composite State,additional elements,0,No incorrect additional composite states
+Region,additional elements,0,Parallel regions are a valid alternative modeling choice for independent settings
+History State,additional elements,0,No additional history states

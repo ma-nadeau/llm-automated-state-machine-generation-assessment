@@ -1,0 +1,56 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Off)	1	Top level initial transition goes to Off.
+State	Off	1	Off state is explicitly defined.
+Transition	on (Off ⇒ On)	1	Off transitions to On on powerOn which represents turning on.
+Composite State	On	1	On is modeled as a composite state.
+Transition	on => off	1	On transitions to Off on powerOff which represents turning off.
+Composite State	Setup	1	Setup is modeled as a composite state inside On.
+State	Initial state (Setup → Medium)	1	Setup initializes the crust region to Medium.
+Action	delay=0; selectFirstCourse()	1	Defaults are initialized on powerOn and Setup starts with first course and timer not set.
+State	Medium	1	Medium crust state is present.
+Transition	setup initial state => medium	1	Initial transition in crust selection enters Medium.
+Transition	medium => dark	1	Medium transitions to Dark on crust.
+State	Dark	1	Dark crust state is present.
+Transition	dark => light	1	Dark transitions to Light on crust.
+State	Light	1	Light crust state is present.
+History State	H	1	No explicit history state but orthogonal Setup regions preserve selections during menu and timer changes.
+Transition	setup => H	1	Menu is handled as a course-selection self transition without disturbing other setup choices.
+Action	selectNextCourse()	1	Menu transition calls selectNextCourse().
+Transition	plus (Setup ⇒ Setup)	1	Plus is handled within the TimerSetting region while staying in Setup.
+Guard	[delay <= 17*60+50]	1	Timer increases only below the 18 hour maximum and is ignored at 18 hours.
+Action	delay = delay + 10	1	Plus actions increase the timer by 10 minutes.
+Transition	minus (Setup ⇒ Setup)	1	Minus is handled within the TimerSetting region while staying in Setup.
+Guard	[delay >= 10]	1	Timer decreases only when at least 10 minutes are set.
+Action	delay = delay - 10	1	Minus actions decrease the timer by 10 minutes.
+Transition	start (Setup ⇒ Countdown)	1	Start from Setup enters Countdown when timer is greater than zero.
+Guard	[delay > 0]	1	Delayed start transition has guard timer greater than zero.
+Transition	start (Setup ⇒ Baking)	1	Start from Setup enters BakingProcess when timer is zero.
+Guard	[delay == 0]	1	Immediate baking transition has guard timer equals zero.
+State	Countdown	1	Countdown state is explicitly defined.
+Action	setCourseTimes()	1	Course dependent times are represented through selectedCourse timing expressions.
+Transition	Countdown => baking	1	Countdown transitions to BakingProcess when the timer elapses.
+Transition	Countdown => setup	1	Stop during Countdown returns to Setup.
+Action	setCourseTimes()	1	Direct baking uses selectedCourse timing expressions instead of a separate setup action.
+Composite State	Baking	1	BakingProcess is a composite state for the baking process.
+State	Initial state	1	BakingProcess has an initial transition.
+State	Kneading	1	Kneading state is present.
+Action	startKneading()	1	Kneading has entry action startKneading().
+Action	stopKneading()	1	Kneading has exit action stopKneading().
+Transition	baking initial state => kneading	1	Initial transition in BakingProcess enters Kneading.
+Transition	kneading => rising	1	Kneading transitions to Rising after the selected course kneading time.
+State	Rising	1	Rising state is present.
+Transition	rising => baking	1	Rising transitions to Baking after the selected course rising time.
+State	Baking	1	Baking phase state is present inside the process.
+Action	heat()	1	Baking phase has do action heat().
+Transition	baking => warming	1	Baking transitions to Warming after the selected course baking time.
+State	Warming	1	Warming state is present.
+Action	warm()	1	Warming has do action warm().
+Transition	adter 60min (warming => setup)	1	Warming returns to Setup after 60 minutes.
+Transition	baking => setup	1	Stop during BakingProcess returns to Setup.
+State	additional elements	0	Extra states for course and timer tracking are reasonable refinements.
+Transition	additional elements	0	Extra self transitions and reset transitions preserve intended behavior.
+Guard	additional elements	0	Extra guards handle timer boundaries consistently.
+Action	additional elements	0	Extra actions such as clearTimer and countdown control are reasonable details.
+Composite State	additional elements	0	Additional decomposition of Setup is a valid modeling choice.
+Region	additional elements	0	Parallel regions reasonably model simultaneous setup choices.
+History State	additional elements	0	No incorrect extra history states are present.
