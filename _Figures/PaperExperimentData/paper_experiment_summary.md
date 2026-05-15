@@ -33,30 +33,30 @@ Source CSV: `_Figures/PaperExperimentData/rq2_grading_quality_summary.csv`
 
 | Grader | Model element | Items | Exact agreement | Macro P | Macro R | Macro F1 |
 | --- | --- | --- | --- | --- | --- | --- |
-| Claude4.5Sonnet | Composite State | 31 | 0.839 | 0.732 | 0.883 | 0.779 |
-| Claude4.5Sonnet | State | 131 | 0.826 | 0.548 | 0.564 | 0.540 |
-| Claude4.5Sonnet | Transition | 189 | 0.825 | 0.521 | 0.618 | 0.551 |
-| Claude4.5Sonnet | Action | 112 | 0.643 | 0.557 | 0.549 | 0.511 |
-| Claude4.5Sonnet | Region | 24 | 0.958 | 0.958 | 0.962 | 0.958 |
+| Claude4.5Sonnet | Composite State | 31 | 0.806 | 0.674 | 0.867 | 0.714 |
+| Claude4.5Sonnet | State | 131 | 0.774 | 0.491 | 0.505 | 0.487 |
+| Claude4.5Sonnet | Transition | 189 | 0.788 | 0.487 | 0.574 | 0.509 |
+| Claude4.5Sonnet | Action | 112 | 0.634 | 0.547 | 0.540 | 0.504 |
+| Claude4.5Sonnet | Region | 24 | 0.917 | 0.923 | 0.923 | 0.917 |
 | Claude4.5Sonnet | History State | 18 | 0.737 | 0.571 | 0.500 | 0.750 |
-| Claude4.5Sonnet | Guard | 66 | 0.773 | 0.685 | 0.750 | 0.695 |
-| Claude4.5Sonnet | Overall Score | 571 | 0.787 | 0.583 | 0.638 | 0.599 |
+| Claude4.5Sonnet | Guard | 66 | 0.742 | 0.660 | 0.734 | 0.669 |
+| Claude4.5Sonnet | Overall Score | 571 | 0.754 | 0.559 | 0.612 | 0.571 |
 | GPT-5.5 | Composite State | 31 | 0.903 | 0.750 | 0.933 | 0.765 |
-| GPT-5.5 | State | 131 | 0.893 | 0.706 | 0.737 | 0.717 |
-| GPT-5.5 | Transition | 189 | 0.836 | 0.623 | 0.682 | 0.637 |
+| GPT-5.5 | State | 131 | 0.855 | 0.643 | 0.671 | 0.649 |
+| GPT-5.5 | Transition | 189 | 0.783 | 0.572 | 0.617 | 0.573 |
 | GPT-5.5 | Action | 112 | 0.679 | 0.653 | 0.673 | 0.545 |
-| GPT-5.5 | Region | 24 | 0.958 | 0.667 | 0.955 | 0.976 |
-| GPT-5.5 | History State | 18 | 0.789 | 0.556 | 0.542 | 0.812 |
-| GPT-5.5 | Guard | 66 | 0.803 | 0.680 | 0.624 | 0.615 |
-| GPT-5.5 | Overall Score | 571 | 0.822 | 0.644 | 0.679 | 0.646 |
+| GPT-5.5 | Region | 24 | 0.917 | 0.667 | 0.909 | 0.950 |
+| GPT-5.5 | History State | 18 | 0.737 | 0.544 | 0.500 | 0.762 |
+| GPT-5.5 | Guard | 66 | 0.773 | 0.661 | 0.608 | 0.594 |
+| GPT-5.5 | Overall Score | 571 | 0.788 | 0.613 | 0.646 | 0.612 |
 | Gemini3.1ProPreview | Composite State | 31 | 0.903 | 0.773 | 0.933 | 0.824 |
-| Gemini3.1ProPreview | State | 131 | 0.908 | 0.743 | 0.776 | 0.749 |
-| Gemini3.1ProPreview | Transition | 189 | 0.878 | 0.628 | 0.725 | 0.660 |
+| Gemini3.1ProPreview | State | 131 | 0.870 | 0.682 | 0.710 | 0.680 |
+| Gemini3.1ProPreview | Transition | 189 | 0.841 | 0.584 | 0.681 | 0.618 |
 | Gemini3.1ProPreview | Action | 112 | 0.696 | 0.521 | 0.490 | 0.749 |
-| Gemini3.1ProPreview | Region | 24 | 0.958 | 0.958 | 0.962 | 0.958 |
+| Gemini3.1ProPreview | Region | 24 | 0.917 | 0.923 | 0.923 | 0.917 |
 | Gemini3.1ProPreview | History State | 18 | 0.789 | 0.857 | 0.542 | 0.801 |
-| Gemini3.1ProPreview | Guard | 66 | 0.833 | 0.713 | 0.703 | 0.690 |
-| Gemini3.1ProPreview | Overall Score | 571 | 0.846 | 0.644 | 0.693 | 0.662 |
+| Gemini3.1ProPreview | Guard | 66 | 0.803 | 0.657 | 0.687 | 0.662 |
+| Gemini3.1ProPreview | Overall Score | 571 | 0.820 | 0.614 | 0.666 | 0.632 |
 
 ## RQ2: Overall Confusion Matrices
 
@@ -68,25 +68,25 @@ Source CSV: `_Figures/PaperExperimentData/rq2_confusion_matrices.csv`
 
 | Human \ LLM | 0 | 0.5 | 1 |
 | --- | --- | --- | --- |
-| 0.0 | 109 | 3 | 11 |
+| 0.0 | 104 | 6 | 14 |
 | 0.5 | 26 | 8 | 2 |
-| 1.0 | 33 | 47 | 334 |
+| 1.0 | 45 | 48 | 321 |
 
 **GPT-5.5**
 
 | Human \ LLM | 0 | 0.5 | 1 |
 | --- | --- | --- | --- |
-| 0.0 | 86 | 28 | 8 |
-| 0.5 | 16 | 16 | 4 |
-| 1.0 | 11 | 35 | 368 |
+| 0.0 | 81 | 29 | 12 |
+| 0.5 | 16 | 15 | 5 |
+| 1.0 | 17 | 42 | 355 |
 
 **Gemini3.1ProPreview**
 
 | Human \ LLM | 0 | 0.5 | 1 |
 | --- | --- | --- | --- |
-| 0.0 | 109 | 9 | 4 |
-| 0.5 | 23 | 11 | 2 |
-| 1.0 | 30 | 20 | 364 |
+| 0.0 | 106 | 9 | 7 |
+| 0.5 | 23 | 10 | 3 |
+| 1.0 | 35 | 26 | 353 |
 
 ## RQ3: Grader Behavior Consistency Across Generated Inputs
 
@@ -260,22 +260,22 @@ Description: Summarizes human assessment of Claude-generated state machines by a
 
 | approach | model_element | examples | precision | recall | f1 |
 | --- | --- | --- | --- | --- | --- |
-| one-stage | Composite State | 7 | 1.0 | 0.8809523809476191 | 0.926406926412987 |
-| one-stage | State | 7 | 1.0 | 0.7655620523346948 | 0.86137193437853 |
-| one-stage | Transition | 7 | 1.0 | 0.664126001272269 | 0.7877856852956925 |
-| one-stage | Action | 7 | 1.0 | 0.5257936507944444 | 0.6781103720229121 |
+| one-stage | Composite State | 7 | 1.0 | 0.880952380952381 | 0.9264069264116882 |
+| one-stage | State | 7 | 1.0 | 0.7655620523346948 | 0.8613719343832918 |
+| one-stage | Transition | 7 | 1.0 | 0.6641260012738562 | 0.7877856852997437 |
+| one-stage | Action | 7 | 1.0 | 0.5257936507944444 | 0.6781103720173566 |
 | one-stage | Region | 7 | 1.0 | 0.625 | 0.8888888889 |
 | one-stage | History State | 7 | 1.0 | 0.42857142857142855 | 1.0 |
-| one-stage | Guard | 7 | 1.0 | 0.5501700680224489 | 0.7645343232797225 |
-| one-stage | Overall Score | 7 | 1.0 | 0.66493490471733 | 0.7907300375775952 |
-| two-stage (6 examples) | Composite State | 9 | 1.0 | 0.8518518518555556 | 0.975 |
-| two-stage (6 examples) | State | 9 | 1.0 | 0.8696190791873303 | 0.9252391518154446 |
-| two-stage (6 examples) | Transition | 9 | 1.0 | 0.8862676438825398 | 0.9181970657789174 |
-| two-stage (6 examples) | Action | 9 | 1.0 | 0.7392361111125 | 0.8168645215632653 |
+| one-stage | Guard | 7 | 1.0 | 0.5501700680224489 | 0.7645343232868654 |
+| one-stage | Overall Score | 7 | 1.0 | 0.664934904712568 | 0.7907300375838505 |
+| two-stage (6 examples) | Composite State | 9 | 1.0 | 0.8518518518518519 | 0.975 |
+| two-stage (6 examples) | State | 9 | 1.0 | 0.8696190791816064 | 0.9252391518154446 |
+| two-stage (6 examples) | Transition | 9 | 1.0 | 0.886267643876149 | 0.918197065773541 |
+| two-stage (6 examples) | Action | 9 | 1.0 | 0.7392361111083333 | 0.8168645215585392 |
 | two-stage (6 examples) | Region | 9 | 1.0 | 0.9 | 0.93333333334 |
 | two-stage (6 examples) | History State | 9 | 0.8666666666599999 | 0.6666666666666666 | 0.9 |
-| two-stage (6 examples) | Guard | 9 | 1.0 | 0.7559523809555555 | 0.8894819466204081 |
-| two-stage (6 examples) | Overall Score | 9 | 0.9973386560222222 | 0.8329705781262786 | 0.9027605792366901 |
+| two-stage (6 examples) | Guard | 9 | 1.0 | 0.7559523809523809 | 0.8894819466204081 |
+| two-stage (6 examples) | Overall Score | 9 | 0.9973386560222222 | 0.832970578134892 | 0.9027605792392112 |
 
 ### rq1_generation_quality_by_example.csv
 
@@ -289,30 +289,30 @@ Description: Per-system RQ1 human-assessment metrics used to build the RQ1 summa
 
 | approach | project | model_element | precision | recall | f1 |
 | --- | --- | --- | --- | --- | --- |
-| one-stage | Automatic Bread Maker | Composite State | 1.0 | 0.8333333333 | 0.9090909091 |
-| one-stage | Automatic Bread Maker | State | 1.0 | 0.875 | 0.9333333333 |
-| one-stage | Automatic Bread Maker | Transition | 1.0 | 0.8611111111 | 0.9253731343 |
-| one-stage | Automatic Bread Maker | Action | 1.0 | 0.5 | 0.6666666667 |
+| one-stage | Automatic Bread Maker | Composite State | 1.0 | 0.8333333333333334 | 0.9090909090909091 |
+| one-stage | Automatic Bread Maker | State | 1.0 | 0.875 | 0.9333333333333333 |
+| one-stage | Automatic Bread Maker | Transition | 1.0 | 0.8611111111111112 | 0.9253731343283582 |
+| one-stage | Automatic Bread Maker | Action | 1.0 | 0.5 | 0.6666666666666666 |
 | one-stage | Automatic Bread Maker | Region |  |  |  |
 | one-stage | Automatic Bread Maker | History State |  | 0.0 |  |
-| one-stage | Automatic Bread Maker | Guard | 1.0 | 0.75 | 0.8571428571 |
-| one-stage | Automatic Bread Maker | Overall Score | 1.0 | 0.7604166667 | 0.8639053254 |
+| one-stage | Automatic Bread Maker | Guard | 1.0 | 0.75 | 0.8571428571428571 |
+| one-stage | Automatic Bread Maker | Overall Score | 1.0 | 0.7604166666666666 | 0.8639053254437871 |
 | two-stage (3 examples) | Automatic Bread Maker | Composite State | 1.0 | 1.0 | 1.0 |
-| two-stage (3 examples) | Automatic Bread Maker | State | 1.0 | 0.6666666667 | 0.8 |
-| two-stage (3 examples) | Automatic Bread Maker | Transition | 1.0 | 0.6944444444 | 0.8196721311 |
-| two-stage (3 examples) | Automatic Bread Maker | Action | 1.0 | 0.7 | 0.8235294118 |
+| two-stage (3 examples) | Automatic Bread Maker | State | 1.0 | 0.6666666666666666 | 0.8 |
+| two-stage (3 examples) | Automatic Bread Maker | Transition | 1.0 | 0.6944444444444444 | 0.819672131147541 |
+| two-stage (3 examples) | Automatic Bread Maker | Action | 1.0 | 0.7 | 0.8235294117647058 |
 | two-stage (3 examples) | Automatic Bread Maker | Region |  |  |  |
 | two-stage (3 examples) | Automatic Bread Maker | History State |  | 0.0 |  |
 | two-stage (3 examples) | Automatic Bread Maker | Guard | 1.0 | 1.0 | 1.0 |
-| two-stage (3 examples) | Automatic Bread Maker | Overall Score | 1.0 | 0.71875 | 0.8363636364 |
-| two-stage (6 examples) | Automatic Bread Maker | Composite State | 1.0 | 0.6666666667 | 0.8 |
-| two-stage (6 examples) | Automatic Bread Maker | State | 1.0 | 0.6666666667 | 0.8 |
-| two-stage (6 examples) | Automatic Bread Maker | Transition | 1.0 | 0.7777777778 | 0.875 |
-| two-stage (6 examples) | Automatic Bread Maker | Action | 1.0 | 0.9 | 0.9473684211 |
+| two-stage (3 examples) | Automatic Bread Maker | Overall Score | 1.0 | 0.71875 | 0.8363636363636363 |
+| two-stage (6 examples) | Automatic Bread Maker | Composite State | 1.0 | 0.6666666666666666 | 0.8 |
+| two-stage (6 examples) | Automatic Bread Maker | State | 1.0 | 0.6666666666666666 | 0.8 |
+| two-stage (6 examples) | Automatic Bread Maker | Transition | 1.0 | 0.7777777777777778 | 0.8750000000000001 |
+| two-stage (6 examples) | Automatic Bread Maker | Action | 1.0 | 0.9 | 0.9473684210526316 |
 | two-stage (6 examples) | Automatic Bread Maker | Region |  |  |  |
 | two-stage (6 examples) | Automatic Bread Maker | History State |  | 0.0 |  |
 | two-stage (6 examples) | Automatic Bread Maker | Guard | 1.0 | 1.0 | 1.0 |
-| two-stage (6 examples) | Automatic Bread Maker | Overall Score | 1.0 | 0.7708333333 | 0.8705882353 |
+| two-stage (6 examples) | Automatic Bread Maker | Overall Score | 1.0 | 0.7708333333333334 | 0.8705882352941177 |
 | one-stage | Digital Chess Clock | Composite State | 1.0 | 0.8333333333333334 | 0.9090909090909091 |
 | one-stage | Digital Chess Clock | State | 1.0 | 0.5769230769230769 | 0.7317073170731707 |
 | one-stage | Digital Chess Clock | Transition | 1.0 | 0.75 | 0.8571428571428571 |
@@ -434,13 +434,13 @@ Description: Per-system RQ1 human-assessment metrics used to build the RQ1 summa
 | two-stage (3 examples) | Thermomix TM6 | Guard | 1.0 | 0.42857142857142855 | 0.6 |
 | two-stage (3 examples) | Thermomix TM6 | Overall Score | 0.9444444444444444 | 0.7906976744186046 | 0.8607594936708861 |
 | two-stage (6 examples) | Thermomix TM6 | Composite State |  | 0.0 |  |
-| two-stage (6 examples) | Thermomix TM6 | State | 1.0 | 0.8181818182 | 0.9 |
-| two-stage (6 examples) | Thermomix TM6 | Transition | 1.0 | 0.8235294118 | 0.9032258065 |
-| two-stage (6 examples) | Thermomix TM6 | Action | 1.0 | 0.1666666667 | 0.2857142857 |
+| two-stage (6 examples) | Thermomix TM6 | State | 1.0 | 0.8181818181818182 | 0.9 |
+| two-stage (6 examples) | Thermomix TM6 | Transition | 1.0 | 0.8235294117647058 | 0.9032258064516129 |
+| two-stage (6 examples) | Thermomix TM6 | Action | 1.0 | 0.16666666666666666 | 0.2857142857142857 |
 | two-stage (6 examples) | Thermomix TM6 | Region |  |  |  |
 | two-stage (6 examples) | Thermomix TM6 | History State |  | 0.0 |  |
-| two-stage (6 examples) | Thermomix TM6 | Guard | 1.0 | 0.4285714286 | 0.6 |
-| two-stage (6 examples) | Thermomix TM6 | Overall Score | 1.0 | 0.6279069767 | 0.7714285714 |
+| two-stage (6 examples) | Thermomix TM6 | Guard | 1.0 | 0.42857142857142855 | 0.6 |
+| two-stage (6 examples) | Thermomix TM6 | Overall Score | 1.0 | 0.627906976744186 | 0.7714285714285715 |
 | one-stage | Train Automation System | Composite State | 1.0 | 1.0 | 1.0 |
 | one-stage | Train Automation System | State | 1.0 | 0.7352941176470589 | 0.8474576271186441 |
 | one-stage | Train Automation System | Transition | 1.0 | 0.5 | 0.6666666666666666 |
@@ -486,30 +486,30 @@ Description: Human-vs-LLM agreement metrics computed from workbook weighted-kapp
 
 | grader | model_element | items | exact_agreement | macro_precision | macro_recall | macro_f1 |
 | --- | --- | --- | --- | --- | --- | --- |
-| Claude4.5Sonnet | Composite State | 31 | 0.8387096774193549 | 0.731578947368421 | 0.8833333333333333 | 0.7794871794871795 |
-| Claude4.5Sonnet | State | 131 | 0.8257575757575758 | 0.5483131646497983 | 0.564021164021164 | 0.5397394407103145 |
-| Claude4.5Sonnet | Transition | 189 | 0.8253968253968254 | 0.5214285714285715 | 0.6183760683760684 | 0.551431734765068 |
-| Claude4.5Sonnet | Action | 112 | 0.6428571428571429 | 0.5573987365291714 | 0.5491634491634492 | 0.5106456164665593 |
-| Claude4.5Sonnet | Region | 24 | 0.9583333333333334 | 0.9583333333333333 | 0.9615384615384616 | 0.9582608695652175 |
+| Claude4.5Sonnet | Composite State | 31 | 0.8064516129032258 | 0.674074074074074 | 0.8666666666666667 | 0.7140350877192984 |
+| Claude4.5Sonnet | State | 131 | 0.7744360902255639 | 0.4913735051666086 | 0.5045391255917572 | 0.4871615312791784 |
+| Claude4.5Sonnet | Transition | 189 | 0.7883597883597884 | 0.4871101364522417 | 0.5743589743589744 | 0.5093020500059249 |
+| Claude4.5Sonnet | Action | 112 | 0.6339285714285714 | 0.5473158828748891 | 0.5401544401544401 | 0.5038659015403201 |
+| Claude4.5Sonnet | Region | 24 | 0.9166666666666666 | 0.9230769230769231 | 0.9230769230769231 | 0.9166666666666666 |
 | Claude4.5Sonnet | History State | 18 | 0.7368421052631579 | 0.5714285714285715 | 0.5 | 0.75 |
-| Claude4.5Sonnet | Guard | 66 | 0.7727272727272727 | 0.6848214285714286 | 0.7502334267040149 | 0.6945516945516945 |
-| Claude4.5Sonnet | Overall Score | 571 | 0.787085514834206 | 0.5830921937823458 | 0.6383881230116649 | 0.5990486792925486 |
+| Claude4.5Sonnet | Guard | 66 | 0.7424242424242424 | 0.6598845598845599 | 0.7343604108309991 | 0.669006919006919 |
+| Claude4.5Sonnet | Overall Score | 571 | 0.7543554006968641 | 0.5586134091810363 | 0.6120980728273856 | 0.5712592221512006 |
 | GPT-5.5 | Composite State | 31 | 0.9032258064516129 | 0.75 | 0.9333333333333332 | 0.7649122807017544 |
-| GPT-5.5 | State | 131 | 0.8931297709923665 | 0.7055205520552055 | 0.7369436663554311 | 0.7165673339288418 |
-| GPT-5.5 | Transition | 189 | 0.8359788359788359 | 0.6225374310480692 | 0.682051282051282 | 0.637406586187074 |
+| GPT-5.5 | State | 131 | 0.8549618320610687 | 0.6434126984126983 | 0.6707749766573295 | 0.6485772357723577 |
+| GPT-5.5 | Transition | 189 | 0.783068783068783 | 0.5723233099337595 | 0.6170940170940171 | 0.5730566938461285 |
 | GPT-5.5 | Action | 112 | 0.6785714285714286 | 0.6531885824009452 | 0.6732303732303732 | 0.544799479002542 |
-| GPT-5.5 | Region | 24 | 0.9583333333333334 | 0.6666666666666666 | 0.9545454545454546 | 0.9761904761904762 |
-| GPT-5.5 | History State | 18 | 0.7894736842105263 | 0.5555555555555556 | 0.5416666666666666 | 0.8116883116883117 |
-| GPT-5.5 | Guard | 66 | 0.803030303030303 | 0.6803751803751803 | 0.6237161531279178 | 0.614977614977615 |
-| GPT-5.5 | Overall Score | 571 | 0.8216783216783217 | 0.6440048817012847 | 0.6794171220400728 | 0.6457093014133911 |
+| GPT-5.5 | Region | 24 | 0.9166666666666666 | 0.6666666666666666 | 0.9090909090909092 | 0.95 |
+| GPT-5.5 | History State | 18 | 0.7368421052631579 | 0.5444444444444444 | 0.5 | 0.7622377622377623 |
+| GPT-5.5 | Guard | 66 | 0.7727272727272727 | 0.6611111111111111 | 0.6078431372549019 | 0.5943992773261065 |
+| GPT-5.5 | Overall Score | 571 | 0.7884615384615384 | 0.6130819985698179 | 0.646029671867163 | 0.6118834017836922 |
 | Gemini3.1ProPreview | Composite State | 31 | 0.9032258064516129 | 0.7727272727272728 | 0.9333333333333332 | 0.8237259816207185 |
-| Gemini3.1ProPreview | State | 131 | 0.9083969465648855 | 0.7426984126984126 | 0.7761593526299407 | 0.7487804878048779 |
-| Gemini3.1ProPreview | Transition | 189 | 0.8783068783068783 | 0.6278166278166278 | 0.7247863247863248 | 0.6603983929660714 |
+| Gemini3.1ProPreview | State | 131 | 0.8702290076335878 | 0.6822066822066821 | 0.7099906629318394 | 0.6796169630642955 |
+| Gemini3.1ProPreview | Transition | 189 | 0.8412698412698413 | 0.5840861344537815 | 0.6807692307692307 | 0.6176484176484176 |
 | Gemini3.1ProPreview | Action | 112 | 0.6964285714285714 | 0.5207631874298541 | 0.4903474903474903 | 0.748904818797292 |
-| Gemini3.1ProPreview | Region | 24 | 0.9583333333333334 | 0.9583333333333333 | 0.9615384615384616 | 0.9582608695652175 |
+| Gemini3.1ProPreview | Region | 24 | 0.9166666666666666 | 0.9230769230769231 | 0.9230769230769231 | 0.9166666666666666 |
 | Gemini3.1ProPreview | History State | 18 | 0.7894736842105263 | 0.8571428571428572 | 0.5416666666666666 | 0.8012820512820513 |
-| Gemini3.1ProPreview | Guard | 66 | 0.8333333333333334 | 0.7134502923976608 | 0.7026143790849674 | 0.6897080561714709 |
-| Gemini3.1ProPreview | Overall Score | 571 | 0.8461538461538461 | 0.6438744299855411 | 0.6927417438821574 | 0.6618835821949239 |
+| Gemini3.1ProPreview | Guard | 66 | 0.803030303030303 | 0.6574074074074073 | 0.6867413632119513 | 0.661872003335418 |
+| Gemini3.1ProPreview | Overall Score | 571 | 0.8199300699300699 | 0.6136718254234884 | 0.6664290805416964 | 0.6322650767095211 |
 
 ### rq2_confusion_matrices.csv
 
@@ -523,9 +523,9 @@ Description: Human-vs-LLM score confusion counts by grader and model element.
 
 | grader | model_element | human_score | llm_score | count |
 | --- | --- | --- | --- | --- |
-| Claude4.5Sonnet | Action | 0.0 | 0.0 | 34 |
+| Claude4.5Sonnet | Action | 0.0 | 0.0 | 33 |
 | Claude4.5Sonnet | Action | 0.0 | 0.5 | 2 |
-| Claude4.5Sonnet | Action | 0.0 | 1.0 | 1 |
+| Claude4.5Sonnet | Action | 0.0 | 1.0 | 2 |
 | Claude4.5Sonnet | Action | 0.5 | 0.0 | 3 |
 | Claude4.5Sonnet | Action | 0.5 | 0.5 | 1 |
 | Claude4.5Sonnet | Action | 0.5 | 1.0 | 1 |
@@ -539,17 +539,17 @@ Description: Human-vs-LLM score confusion counts by grader and model element.
 | Claude4.5Sonnet | Composite State | 0.5 | 0.5 | 1 |
 | Claude4.5Sonnet | Composite State | 0.5 | 1.0 | 0 |
 | Claude4.5Sonnet | Composite State | 1.0 | 0.0 | 2 |
-| Claude4.5Sonnet | Composite State | 1.0 | 0.5 | 1 |
-| Claude4.5Sonnet | Composite State | 1.0 | 1.0 | 17 |
+| Claude4.5Sonnet | Composite State | 1.0 | 0.5 | 2 |
+| Claude4.5Sonnet | Composite State | 1.0 | 1.0 | 16 |
 | Claude4.5Sonnet | Guard | 0.0 | 0.0 | 16 |
 | Claude4.5Sonnet | Guard | 0.0 | 0.5 | 0 |
 | Claude4.5Sonnet | Guard | 0.0 | 1.0 | 1 |
 | Claude4.5Sonnet | Guard | 0.5 | 0.0 | 3 |
 | Claude4.5Sonnet | Guard | 0.5 | 0.5 | 4 |
 | Claude4.5Sonnet | Guard | 0.5 | 1.0 | 0 |
-| Claude4.5Sonnet | Guard | 1.0 | 0.0 | 1 |
+| Claude4.5Sonnet | Guard | 1.0 | 0.0 | 3 |
 | Claude4.5Sonnet | Guard | 1.0 | 0.5 | 10 |
-| Claude4.5Sonnet | Guard | 1.0 | 1.0 | 31 |
+| Claude4.5Sonnet | Guard | 1.0 | 1.0 | 29 |
 | Claude4.5Sonnet | History State | 0.0 | 0.0 | 10 |
 | Claude4.5Sonnet | History State | 0.0 | 0.5 | 0 |
 | Claude4.5Sonnet | History State | 0.0 | 1.0 | 0 |
@@ -559,42 +559,42 @@ Description: Human-vs-LLM score confusion counts by grader and model element.
 | Claude4.5Sonnet | History State | 1.0 | 0.0 | 3 |
 | Claude4.5Sonnet | History State | 1.0 | 0.5 | 1 |
 | Claude4.5Sonnet | History State | 1.0 | 1.0 | 4 |
-| Claude4.5Sonnet | Overall Score | 0.0 | 0.0 | 109 |
-| Claude4.5Sonnet | Overall Score | 0.0 | 0.5 | 3 |
-| Claude4.5Sonnet | Overall Score | 0.0 | 1.0 | 11 |
+| Claude4.5Sonnet | Overall Score | 0.0 | 0.0 | 104 |
+| Claude4.5Sonnet | Overall Score | 0.0 | 0.5 | 6 |
+| Claude4.5Sonnet | Overall Score | 0.0 | 1.0 | 14 |
 | Claude4.5Sonnet | Overall Score | 0.5 | 0.0 | 26 |
 | Claude4.5Sonnet | Overall Score | 0.5 | 0.5 | 8 |
 | Claude4.5Sonnet | Overall Score | 0.5 | 1.0 | 2 |
-| Claude4.5Sonnet | Overall Score | 1.0 | 0.0 | 33 |
-| Claude4.5Sonnet | Overall Score | 1.0 | 0.5 | 47 |
-| Claude4.5Sonnet | Overall Score | 1.0 | 1.0 | 334 |
+| Claude4.5Sonnet | Overall Score | 1.0 | 0.0 | 45 |
+| Claude4.5Sonnet | Overall Score | 1.0 | 0.5 | 48 |
+| Claude4.5Sonnet | Overall Score | 1.0 | 1.0 | 321 |
 | Claude4.5Sonnet | Region | 0.0 | 0.0 | 11 |
 | Claude4.5Sonnet | Region | 0.0 | 0.5 | 0 |
 | Claude4.5Sonnet | Region | 0.0 | 1.0 | 0 |
 | Claude4.5Sonnet | Region | 0.5 | 0.0 | 0 |
 | Claude4.5Sonnet | Region | 0.5 | 0.5 | 0 |
 | Claude4.5Sonnet | Region | 0.5 | 1.0 | 0 |
-| Claude4.5Sonnet | Region | 1.0 | 0.0 | 1 |
+| Claude4.5Sonnet | Region | 1.0 | 0.0 | 2 |
 | Claude4.5Sonnet | Region | 1.0 | 0.5 | 0 |
-| Claude4.5Sonnet | Region | 1.0 | 1.0 | 12 |
-| Claude4.5Sonnet | State | 0.0 | 0.0 | 12 |
-| Claude4.5Sonnet | State | 0.0 | 0.5 | 1 |
-| Claude4.5Sonnet | State | 0.0 | 1.0 | 5 |
+| Claude4.5Sonnet | Region | 1.0 | 1.0 | 11 |
+| Claude4.5Sonnet | State | 0.0 | 0.0 | 10 |
+| Claude4.5Sonnet | State | 0.0 | 0.5 | 2 |
+| Claude4.5Sonnet | State | 0.0 | 1.0 | 7 |
 | Claude4.5Sonnet | State | 0.5 | 0.0 | 8 |
 | Claude4.5Sonnet | State | 0.5 | 0.5 | 1 |
 | Claude4.5Sonnet | State | 0.5 | 1.0 | 0 |
-| Claude4.5Sonnet | State | 1.0 | 0.0 | 7 |
+| Claude4.5Sonnet | State | 1.0 | 0.0 | 11 |
 | Claude4.5Sonnet | State | 1.0 | 0.5 | 2 |
-| Claude4.5Sonnet | State | 1.0 | 1.0 | 96 |
-| Claude4.5Sonnet | Transition | 0.0 | 0.0 | 18 |
-| Claude4.5Sonnet | Transition | 0.0 | 0.5 | 0 |
+| Claude4.5Sonnet | State | 1.0 | 1.0 | 92 |
+| Claude4.5Sonnet | Transition | 0.0 | 0.0 | 16 |
+| Claude4.5Sonnet | Transition | 0.0 | 0.5 | 2 |
 | Claude4.5Sonnet | Transition | 0.0 | 1.0 | 2 |
 | Claude4.5Sonnet | Transition | 0.5 | 0.0 | 11 |
 | Claude4.5Sonnet | Transition | 0.5 | 0.5 | 1 |
 | Claude4.5Sonnet | Transition | 0.5 | 1.0 | 1 |
-| Claude4.5Sonnet | Transition | 1.0 | 0.0 | 6 |
+| Claude4.5Sonnet | Transition | 1.0 | 0.0 | 11 |
 | Claude4.5Sonnet | Transition | 1.0 | 0.5 | 13 |
-| Claude4.5Sonnet | Transition | 1.0 | 1.0 | 137 |
+| Claude4.5Sonnet | Transition | 1.0 | 1.0 | 132 |
 | GPT-5.5 | Action | 0.0 | 0.0 | 15 |
 | GPT-5.5 | Action | 0.0 | 0.5 | 21 |
 | GPT-5.5 | Action | 0.0 | 1.0 | 1 |
@@ -619,9 +619,9 @@ Description: Human-vs-LLM score confusion counts by grader and model element.
 | GPT-5.5 | Guard | 0.5 | 0.0 | 5 |
 | GPT-5.5 | Guard | 0.5 | 0.5 | 1 |
 | GPT-5.5 | Guard | 0.5 | 1.0 | 1 |
-| GPT-5.5 | Guard | 1.0 | 0.0 | 3 |
+| GPT-5.5 | Guard | 1.0 | 0.0 | 5 |
 | GPT-5.5 | Guard | 1.0 | 0.5 | 1 |
-| GPT-5.5 | Guard | 1.0 | 1.0 | 38 |
+| GPT-5.5 | Guard | 1.0 | 1.0 | 36 |
 | GPT-5.5 | History State | 0.0 | 0.0 | 10 |
 | GPT-5.5 | History State | 0.0 | 0.5 | 0 |
 | GPT-5.5 | History State | 0.0 | 1.0 | 0 |
@@ -629,19 +629,19 @@ Description: Human-vs-LLM score confusion counts by grader and model element.
 | GPT-5.5 | History State | 0.5 | 0.5 | 0 |
 | GPT-5.5 | History State | 0.5 | 1.0 | 1 |
 | GPT-5.5 | History State | 1.0 | 0.0 | 2 |
-| GPT-5.5 | History State | 1.0 | 0.5 | 1 |
-| GPT-5.5 | History State | 1.0 | 1.0 | 5 |
-| GPT-5.5 | Overall Score | 0.0 | 0.0 | 86 |
-| GPT-5.5 | Overall Score | 0.0 | 0.5 | 28 |
-| GPT-5.5 | Overall Score | 0.0 | 1.0 | 8 |
+| GPT-5.5 | History State | 1.0 | 0.5 | 2 |
+| GPT-5.5 | History State | 1.0 | 1.0 | 4 |
+| GPT-5.5 | Overall Score | 0.0 | 0.0 | 81 |
+| GPT-5.5 | Overall Score | 0.0 | 0.5 | 29 |
+| GPT-5.5 | Overall Score | 0.0 | 1.0 | 12 |
 | GPT-5.5 | Overall Score | 0.5 | 0.0 | 16 |
-| GPT-5.5 | Overall Score | 0.5 | 0.5 | 16 |
-| GPT-5.5 | Overall Score | 0.5 | 1.0 | 4 |
-| GPT-5.5 | Overall Score | 1.0 | 0.0 | 11 |
-| GPT-5.5 | Overall Score | 1.0 | 0.5 | 35 |
-| GPT-5.5 | Overall Score | 1.0 | 1.0 | 368 |
-| GPT-5.5 | Region | 0.0 | 0.0 | 10 |
-| GPT-5.5 | Region | 0.0 | 0.5 | 1 |
+| GPT-5.5 | Overall Score | 0.5 | 0.5 | 15 |
+| GPT-5.5 | Overall Score | 0.5 | 1.0 | 5 |
+| GPT-5.5 | Overall Score | 1.0 | 0.0 | 17 |
+| GPT-5.5 | Overall Score | 1.0 | 0.5 | 42 |
+| GPT-5.5 | Overall Score | 1.0 | 1.0 | 355 |
+| GPT-5.5 | Region | 0.0 | 0.0 | 9 |
+| GPT-5.5 | Region | 0.0 | 0.5 | 2 |
 | GPT-5.5 | Region | 0.0 | 1.0 | 0 |
 | GPT-5.5 | Region | 0.5 | 0.0 | 0 |
 | GPT-5.5 | Region | 0.5 | 0.5 | 0 |
@@ -649,24 +649,24 @@ Description: Human-vs-LLM score confusion counts by grader and model element.
 | GPT-5.5 | Region | 1.0 | 0.0 | 0 |
 | GPT-5.5 | Region | 1.0 | 0.5 | 0 |
 | GPT-5.5 | Region | 1.0 | 1.0 | 13 |
-| GPT-5.5 | State | 0.0 | 0.0 | 14 |
+| GPT-5.5 | State | 0.0 | 0.0 | 13 |
 | GPT-5.5 | State | 0.0 | 0.5 | 1 |
-| GPT-5.5 | State | 0.0 | 1.0 | 2 |
+| GPT-5.5 | State | 0.0 | 1.0 | 3 |
 | GPT-5.5 | State | 0.5 | 0.0 | 5 |
-| GPT-5.5 | State | 0.5 | 0.5 | 4 |
-| GPT-5.5 | State | 0.5 | 1.0 | 0 |
-| GPT-5.5 | State | 1.0 | 0.0 | 3 |
+| GPT-5.5 | State | 0.5 | 0.5 | 3 |
+| GPT-5.5 | State | 0.5 | 1.0 | 1 |
+| GPT-5.5 | State | 1.0 | 0.0 | 6 |
 | GPT-5.5 | State | 1.0 | 0.5 | 3 |
-| GPT-5.5 | State | 1.0 | 1.0 | 99 |
-| GPT-5.5 | Transition | 0.0 | 0.0 | 14 |
+| GPT-5.5 | State | 1.0 | 1.0 | 96 |
+| GPT-5.5 | Transition | 0.0 | 0.0 | 11 |
 | GPT-5.5 | Transition | 0.0 | 0.5 | 4 |
-| GPT-5.5 | Transition | 0.0 | 1.0 | 2 |
+| GPT-5.5 | Transition | 0.0 | 1.0 | 5 |
 | GPT-5.5 | Transition | 0.5 | 0.0 | 6 |
 | GPT-5.5 | Transition | 0.5 | 0.5 | 6 |
 | GPT-5.5 | Transition | 0.5 | 1.0 | 1 |
-| GPT-5.5 | Transition | 1.0 | 0.0 | 1 |
-| GPT-5.5 | Transition | 1.0 | 0.5 | 17 |
-| GPT-5.5 | Transition | 1.0 | 1.0 | 138 |
+| GPT-5.5 | Transition | 1.0 | 0.0 | 2 |
+| GPT-5.5 | Transition | 1.0 | 0.5 | 23 |
+| GPT-5.5 | Transition | 1.0 | 1.0 | 131 |
 | Gemini3.1ProPreview | Action | 0.0 | 0.0 | 28 |
 | Gemini3.1ProPreview | Action | 0.0 | 0.5 | 7 |
 | Gemini3.1ProPreview | Action | 0.0 | 1.0 | 2 |
@@ -692,8 +692,8 @@ Description: Human-vs-LLM score confusion counts by grader and model element.
 | Gemini3.1ProPreview | Guard | 0.5 | 0.5 | 2 |
 | Gemini3.1ProPreview | Guard | 0.5 | 1.0 | 0 |
 | Gemini3.1ProPreview | Guard | 1.0 | 0.0 | 3 |
-| Gemini3.1ProPreview | Guard | 1.0 | 0.5 | 2 |
-| Gemini3.1ProPreview | Guard | 1.0 | 1.0 | 37 |
+| Gemini3.1ProPreview | Guard | 1.0 | 0.5 | 4 |
+| Gemini3.1ProPreview | Guard | 1.0 | 1.0 | 35 |
 | Gemini3.1ProPreview | History State | 0.0 | 0.0 | 10 |
 | Gemini3.1ProPreview | History State | 0.0 | 0.5 | 0 |
 | Gemini3.1ProPreview | History State | 0.0 | 1.0 | 0 |
@@ -703,42 +703,42 @@ Description: Human-vs-LLM score confusion counts by grader and model element.
 | Gemini3.1ProPreview | History State | 1.0 | 0.0 | 3 |
 | Gemini3.1ProPreview | History State | 1.0 | 0.5 | 0 |
 | Gemini3.1ProPreview | History State | 1.0 | 1.0 | 5 |
-| Gemini3.1ProPreview | Overall Score | 0.0 | 0.0 | 109 |
+| Gemini3.1ProPreview | Overall Score | 0.0 | 0.0 | 106 |
 | Gemini3.1ProPreview | Overall Score | 0.0 | 0.5 | 9 |
-| Gemini3.1ProPreview | Overall Score | 0.0 | 1.0 | 4 |
+| Gemini3.1ProPreview | Overall Score | 0.0 | 1.0 | 7 |
 | Gemini3.1ProPreview | Overall Score | 0.5 | 0.0 | 23 |
-| Gemini3.1ProPreview | Overall Score | 0.5 | 0.5 | 11 |
-| Gemini3.1ProPreview | Overall Score | 0.5 | 1.0 | 2 |
-| Gemini3.1ProPreview | Overall Score | 1.0 | 0.0 | 30 |
-| Gemini3.1ProPreview | Overall Score | 1.0 | 0.5 | 20 |
-| Gemini3.1ProPreview | Overall Score | 1.0 | 1.0 | 364 |
+| Gemini3.1ProPreview | Overall Score | 0.5 | 0.5 | 10 |
+| Gemini3.1ProPreview | Overall Score | 0.5 | 1.0 | 3 |
+| Gemini3.1ProPreview | Overall Score | 1.0 | 0.0 | 35 |
+| Gemini3.1ProPreview | Overall Score | 1.0 | 0.5 | 26 |
+| Gemini3.1ProPreview | Overall Score | 1.0 | 1.0 | 353 |
 | Gemini3.1ProPreview | Region | 0.0 | 0.0 | 11 |
 | Gemini3.1ProPreview | Region | 0.0 | 0.5 | 0 |
 | Gemini3.1ProPreview | Region | 0.0 | 1.0 | 0 |
 | Gemini3.1ProPreview | Region | 0.5 | 0.0 | 0 |
 | Gemini3.1ProPreview | Region | 0.5 | 0.5 | 0 |
 | Gemini3.1ProPreview | Region | 0.5 | 1.0 | 0 |
-| Gemini3.1ProPreview | Region | 1.0 | 0.0 | 1 |
+| Gemini3.1ProPreview | Region | 1.0 | 0.0 | 2 |
 | Gemini3.1ProPreview | Region | 1.0 | 0.5 | 0 |
-| Gemini3.1ProPreview | Region | 1.0 | 1.0 | 12 |
-| Gemini3.1ProPreview | State | 0.0 | 0.0 | 16 |
+| Gemini3.1ProPreview | Region | 1.0 | 1.0 | 11 |
+| Gemini3.1ProPreview | State | 0.0 | 0.0 | 15 |
 | Gemini3.1ProPreview | State | 0.0 | 0.5 | 0 |
-| Gemini3.1ProPreview | State | 0.0 | 1.0 | 1 |
+| Gemini3.1ProPreview | State | 0.0 | 1.0 | 2 |
 | Gemini3.1ProPreview | State | 0.5 | 0.0 | 5 |
-| Gemini3.1ProPreview | State | 0.5 | 0.5 | 4 |
-| Gemini3.1ProPreview | State | 0.5 | 1.0 | 0 |
-| Gemini3.1ProPreview | State | 1.0 | 0.0 | 3 |
+| Gemini3.1ProPreview | State | 0.5 | 0.5 | 3 |
+| Gemini3.1ProPreview | State | 0.5 | 1.0 | 1 |
+| Gemini3.1ProPreview | State | 1.0 | 0.0 | 6 |
 | Gemini3.1ProPreview | State | 1.0 | 0.5 | 3 |
-| Gemini3.1ProPreview | State | 1.0 | 1.0 | 99 |
-| Gemini3.1ProPreview | Transition | 0.0 | 0.0 | 19 |
+| Gemini3.1ProPreview | State | 1.0 | 1.0 | 96 |
+| Gemini3.1ProPreview | Transition | 0.0 | 0.0 | 17 |
 | Gemini3.1ProPreview | Transition | 0.0 | 0.5 | 1 |
-| Gemini3.1ProPreview | Transition | 0.0 | 1.0 | 0 |
+| Gemini3.1ProPreview | Transition | 0.0 | 1.0 | 2 |
 | Gemini3.1ProPreview | Transition | 0.5 | 0.0 | 9 |
 | Gemini3.1ProPreview | Transition | 0.5 | 0.5 | 4 |
 | Gemini3.1ProPreview | Transition | 0.5 | 1.0 | 0 |
-| Gemini3.1ProPreview | Transition | 1.0 | 0.0 | 5 |
-| Gemini3.1ProPreview | Transition | 1.0 | 0.5 | 8 |
-| Gemini3.1ProPreview | Transition | 1.0 | 1.0 | 143 |
+| Gemini3.1ProPreview | Transition | 1.0 | 0.0 | 6 |
+| Gemini3.1ProPreview | Transition | 1.0 | 0.5 | 12 |
+| Gemini3.1ProPreview | Transition | 1.0 | 1.0 | 138 |
 
 ### 2stage_6examples_Metrics_CombinedHumanVsLLM.csv
 
