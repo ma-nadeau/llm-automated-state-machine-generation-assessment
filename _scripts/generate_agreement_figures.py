@@ -216,6 +216,7 @@ def plot_confusion_heatmap(
     show_xlabel: bool = True,
     x_label: str = "LLM Score",
     y_label: str = "Human Score",
+    font_size: int = 9,
 ) -> None:
     """Draw a single row-normalized confusion-matrix heatmap onto ax."""
     norm = row_normalize(matrix)
@@ -225,7 +226,7 @@ def plot_confusion_heatmap(
         for j in range(3):
             pct = norm[i, j]
             cnt = matrix[i, j]
-            annots[i, j] = "—" if np.isnan(pct) else f"{pct:.0%}\n({cnt})"
+            annots[i, j] = "—" if np.isnan(pct) else f"{pct:.2%}\n({cnt})"
 
     sns.heatmap(
         np.where(np.isnan(norm), 0, norm),
@@ -240,6 +241,7 @@ def plot_confusion_heatmap(
         cbar=False,
         linewidths=0.5,
         linecolor="white",
+        annot_kws={"size": font_size},
     )
     for i in range(3):
         ax.add_patch(
@@ -251,10 +253,11 @@ def plot_confusion_heatmap(
     n_total = int(matrix.sum())
     n_agree = int(np.trace(matrix))
     agree_pct = n_agree / n_total if n_total > 0 else 0
-    ax.set_title(f"{title}\n(agree {agree_pct:.0%}, n={n_total})", fontsize=9, pad=4)
-    ax.set_xlabel(x_label if show_xlabel else "", fontsize=8)
-    ax.set_ylabel(y_label if show_ylabel else "", fontsize=8)
-    ax.tick_params(labelsize=8)
+    title_prefix = f"Aggregate result for {title}\n" if title else ""
+    ax.set_title(f"{title_prefix} Overall Agreement {agree_pct:.2%}, n={n_total}", fontsize=font_size, pad=4)
+    ax.set_xlabel(x_label if show_xlabel else "", fontsize=font_size)
+    ax.set_ylabel(y_label if show_ylabel else "", fontsize=font_size)
+    ax.tick_params(labelsize=font_size)
 
 
 # ---------------------------------------------------------------------------

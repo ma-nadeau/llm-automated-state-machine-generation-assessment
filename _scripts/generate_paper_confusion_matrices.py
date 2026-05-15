@@ -44,14 +44,15 @@ def _llm_file_slug(autograding_llm: str) -> str:
 def save_global_figure(
     df: pd.DataFrame,
     out_path: Path,
+    llm_name: str = "",
     x_label: str = "LLM Score",
     y_label: str = "Human Score",
 ) -> None:
-    """Save the title-free Global (all element types) confusion matrix as PDF and PNG."""
+    """Save the Global (all element types) confusion matrix as PNG."""
     matrix = build_confusion_matrix(df, type_filter=None)
     fig, ax = plt.subplots(figsize=(5, 4.5))
-    plot_confusion_heatmap(ax, matrix, "Global", show_ylabel=True, show_xlabel=True,
-                           x_label=x_label, y_label=y_label)
+    plot_confusion_heatmap(ax, matrix, llm_name, show_ylabel=True, show_xlabel=True,
+                           x_label=x_label, y_label=y_label, font_size=15)
     fig.tight_layout()
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=1000, bbox_inches="tight")
