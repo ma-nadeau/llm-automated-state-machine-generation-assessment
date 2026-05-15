@@ -39,6 +39,53 @@ RQ3_GENERATORS = {"Claude4.5Sonnet", "GPT-5.5", "Gemini3.1ProPreview"}
 RQ3_BASELINE_GENERATOR = "Claude4.5Sonnet"
 RQ3_COMPARISON_GENERATORS = ("GPT-5.5", "Gemini3.1ProPreview")
 
+CSV_SOURCES = {
+    "data_availability.csv": {
+        "script": "_scripts/summarize_paper_experiments.py",
+        "note": "Counts available workbook/TSV inputs by generator, grader, and data kind.",
+    },
+    "Distribution_of_State_Machine_Elements_Across_Systems.csv": {
+        "script": "_scripts/compute_element_distribution.py",
+        "note": "Counts reference/ground-truth state-machine elements by system.",
+    },
+    "rq1_generation_quality_summary.csv": {
+        "script": "_scripts/summarize_paper_experiments.py",
+        "note": "Summarizes human assessment of Claude-generated state machines by approach and element type.",
+    },
+    "rq1_generation_quality_by_example.csv": {
+        "script": "_scripts/summarize_paper_experiments.py",
+        "note": "Per-system RQ1 human-assessment metrics used to build the RQ1 summary.",
+    },
+    "rq2_grading_quality_summary.csv": {
+        "script": "_scripts/summarize_paper_experiments.py",
+        "note": "Human-vs-LLM agreement metrics computed from workbook weighted-kappa sheets.",
+    },
+    "rq2_confusion_matrices.csv": {
+        "script": "_scripts/summarize_paper_experiments.py",
+        "note": "Human-vs-LLM score confusion counts by grader and model element.",
+    },
+    "2stage_6examples_Metrics_CombinedHumanVsLLM.csv": {
+        "script": "_scripts/compute_raw_grading_counts.py",
+        "note": "Aggregated raw N/TP/FP/FN metrics recomputed directly from raw workbook sheets.",
+    },
+    "2stage_6examples_PerExample_RawCounts_CombinedHumanVsLLM.csv": {
+        "script": "_scripts/compute_raw_grading_counts.py",
+        "note": "Per-system raw N/TP/FP/FN metrics recomputed directly from raw workbook sheets.",
+    },
+    "rq3_grading_score_distribution.csv": {
+        "script": "_scripts/summarize_paper_experiments.py",
+        "note": "RQ3 LLM-only score distributions for every generator/grader/model-element combination.",
+    },
+    "rq3_per_grader_stability.csv": {
+        "script": "_scripts/summarize_paper_experiments.py",
+        "note": "RQ3 baseline-vs-comparison deltas for each grader and model element.",
+    },
+    "rq3_cross_grader_rankings.csv": {
+        "script": "_scripts/summarize_paper_experiments.py",
+        "note": "RQ3 grader ordering by score-1 rate for each generator and model element.",
+    },
+}
+
 
 @dataclass(frozen=True)
 class MetricRow:
@@ -165,10 +212,14 @@ def _fmt(value: float | None) -> str:
     return "n/a" if value is None else f"{value:.3f}"
 
 
+def _md_cell(value: object) -> str:
+    return str(value).replace("|", r"\|").replace("\n", "<br>")
+
+
 def _table(headers: list[str], rows: list[list[str]]) -> str:
-    out = ["| " + " | ".join(headers) + " |"]
+    out = ["| " + " | ".join(_md_cell(header) for header in headers) + " |"]
     out.append("| " + " | ".join("---" for _ in headers) + " |")
-    out.extend("| " + " | ".join(row) + " |" for row in rows)
+    out.extend("| " + " | ".join(_md_cell(cell) for cell in row) + " |" for row in rows)
     return "\n".join(out)
 
 
@@ -643,6 +694,52 @@ def data_availability(root: Path) -> list[dict[str, object]]:
     ]
 
 
+def _csv_as_markdown(path: Path) -> str:
+    with path.open(newline="", encoding="utf-8-sig") as handle:
+        reader = csv.DictReader(handle)
+        rows = list(reader)
+    if reader.fieldnames is None:
+        return f"**{path.name}**\n\nNo columns found."
+    source = CSV_SOURCES.get(path.name, {})
+    script = source.get("script", "unknown")
+    note = source.get("note", "")
+    table_rows = [[row.get(header, "") for header in reader.fieldnames] for row in rows]
+    lines = [
+        f"### {path.name}",
+        f"Source CSV: `{path.resolve().relative_to(BASE_DIR)}`",
+        f"Source script: `{script}`",
+        f"Rows: {len(rows)}",
+    ]
+    if note:
+        lines.append(f"Description: {note}")
+    lines.append(_table(reader.fieldnames, table_rows))
+    return "\n\n".join(lines)
+
+
+def data_appendix(out_dir: Path) -> str:
+    csv_names = [
+        "data_availability.csv",
+        "Distribution_of_State_Machine_Elements_Across_Systems.csv",
+        "rq1_generation_quality_summary.csv",
+        "rq1_generation_quality_by_example.csv",
+        "rq2_grading_quality_summary.csv",
+        "rq2_confusion_matrices.csv",
+        "2stage_6examples_Metrics_CombinedHumanVsLLM.csv",
+        "2stage_6examples_PerExample_RawCounts_CombinedHumanVsLLM.csv",
+        "rq3_grading_score_distribution.csv",
+        "rq3_per_grader_stability.csv",
+        "rq3_cross_grader_rankings.csv",
+    ]
+    sections = []
+    for name in csv_names:
+        path = out_dir / name
+        if path.exists():
+            sections.append(_csv_as_markdown(path))
+        else:
+            sections.append(f"### {name}\n\nMissing: `{path}`")
+    return "\n\n".join(sections)
+
+
 def write_outputs(root: Path, out_dir: Path) -> None:
     rq1_rows = summarize_rq1(root)
     _write_csv(
@@ -737,19 +834,41 @@ def write_outputs(root: Path, out_dir: Path) -> None:
             "",
             "## RQ1: Claude Generation Quality From Human Assessment",
             "",
+            "Source script: `_scripts/summarize_paper_experiments.py`",
+            "",
+            "Source CSVs: `_Figures/PaperExperimentData/rq1_generation_quality_summary.csv`, `_Figures/PaperExperimentData/rq1_generation_quality_by_example.csv`",
+            "",
             rq1(root),
             "",
             "## RQ2: LLM Grading Quality Against Human Assessment",
+            "",
+            "Source script: `_scripts/summarize_paper_experiments.py`",
+            "",
+            "Source CSV: `_Figures/PaperExperimentData/rq2_grading_quality_summary.csv`",
             "",
             rq2(root),
             "",
             "## RQ2: Overall Confusion Matrices",
             "",
+            "Source script: `_scripts/summarize_paper_experiments.py`",
+            "",
+            "Source CSV: `_Figures/PaperExperimentData/rq2_confusion_matrices.csv`",
+            "",
             rq2_confusions(root),
             "",
             "## RQ3: Grader Behavior Consistency Across Generated Inputs",
             "",
+            "Source script: `_scripts/summarize_paper_experiments.py`",
+            "",
+            "Source CSVs: `_Figures/PaperExperimentData/rq3_grading_score_distribution.csv`, `_Figures/PaperExperimentData/rq3_per_grader_stability.csv`, `_Figures/PaperExperimentData/rq3_cross_grader_rankings.csv`",
+            "",
             rq3(root),
+            "",
+            "## Full CSV Data Appendix",
+            "",
+            "This appendix embeds the generated experiment CSV outputs so the Markdown summary contains the full paper-facing data tables in one place.",
+            "",
+            data_appendix(out_dir),
             "",
         ]
     )

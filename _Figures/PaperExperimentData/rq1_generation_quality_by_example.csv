@@ -23,14 +23,14 @@ two-stage (6 examples),Automatic Bread Maker,Region,,,
 two-stage (6 examples),Automatic Bread Maker,History State,,0.0,
 two-stage (6 examples),Automatic Bread Maker,Guard,1.0,1.0,1.0
 two-stage (6 examples),Automatic Bread Maker,Overall Score,1.0,0.7708333333,0.8705882353
-one-stage,Digital Chess Clock,Composite State,1.0,0.8333333333,0.9090909091
-one-stage,Digital Chess Clock,State,1.0,0.5769230769,0.7317073171
-one-stage,Digital Chess Clock,Transition,1.0,0.75,0.8571428571
-one-stage,Digital Chess Clock,Action,1.0,0.375,0.5454545455
+one-stage,Digital Chess Clock,Composite State,1.0,0.8333333333333334,0.9090909090909091
+one-stage,Digital Chess Clock,State,1.0,0.5769230769230769,0.7317073170731707
+one-stage,Digital Chess Clock,Transition,1.0,0.75,0.8571428571428571
+one-stage,Digital Chess Clock,Action,1.0,0.375,0.5454545454545454
 one-stage,Digital Chess Clock,Region,,0.0,
 one-stage,Digital Chess Clock,History State,,1.0,
 one-stage,Digital Chess Clock,Guard,,0.0,
-one-stage,Digital Chess Clock,Overall Score,1.0,0.5444444444,0.7050359712
+one-stage,Digital Chess Clock,Overall Score,1.0,0.5444444444444444,0.7050359712230216
 two-stage (3 examples),Digital Chess Clock,Composite State,1.0,1.0,1.0
 two-stage (3 examples),Digital Chess Clock,State,1.0,0.8461538461538461,0.9166666666666666
 two-stage (3 examples),Digital Chess Clock,Transition,0.9230769230769231,0.8571428571428571,0.888888888888889
@@ -40,13 +40,13 @@ two-stage (3 examples),Digital Chess Clock,History State,,1.0,
 two-stage (3 examples),Digital Chess Clock,Guard,1.0,1.0,1.0
 two-stage (3 examples),Digital Chess Clock,Overall Score,0.9759036144578314,0.9,0.9364161849710982
 two-stage (6 examples),Digital Chess Clock,Composite State,1.0,1.0,1.0
-two-stage (6 examples),Digital Chess Clock,State,1.0,0.8846153846,0.9387755102
-two-stage (6 examples),Digital Chess Clock,Transition,1.0,0.8571428571,0.9230769231
+two-stage (6 examples),Digital Chess Clock,State,1.0,0.8846153846153846,0.9387755102040816
+two-stage (6 examples),Digital Chess Clock,Transition,1.0,0.8571428571428571,0.923076923076923
 two-stage (6 examples),Digital Chess Clock,Action,1.0,1.0,1.0
 two-stage (6 examples),Digital Chess Clock,Region,1.0,1.0,1.0
 two-stage (6 examples),Digital Chess Clock,History State,,1.0,
 two-stage (6 examples),Digital Chess Clock,Guard,1.0,1.0,1.0
-two-stage (6 examples),Digital Chess Clock,Overall Score,1.0,0.9222222222,0.9595375723
+two-stage (6 examples),Digital Chess Clock,Overall Score,1.0,0.9222222222222223,0.9595375722543353
 one-stage,Dishwasher,Composite State,1.0,1.0,1.0
 one-stage,Dishwasher,State,1.0,0.6666666667,0.8
 one-stage,Dishwasher,Transition,1.0,0.5789473684,0.7333333333
@@ -105,12 +105,12 @@ two-stage (6 examples),SSC7,Guard,1.0,1.0,
 two-stage (6 examples),SSC7,Overall Score,1.0,0.8939393939,0.944
 one-stage,Spa Manager,Composite State,1.0,1.0,1.0
 one-stage,Spa Manager,State,1.0,1.0,1.0
-one-stage,Spa Manager,Transition,1.0,0.9,0.9473684211
+one-stage,Spa Manager,Transition,1.0,0.9,0.9473684210526316
 one-stage,Spa Manager,Action,,,
 one-stage,Spa Manager,Region,1.0,1.0,1.0
 one-stage,Spa Manager,History State,1.0,1.0,1.0
 one-stage,Spa Manager,Guard,1.0,1.0,1.0
-one-stage,Spa Manager,Overall Score,1.0,0.9659090909,0.9826589595
+one-stage,Spa Manager,Overall Score,1.0,0.9659090909090909,0.9826589595375723
 two-stage (3 examples),Spa Manager,Composite State,1.0,1.0,1.0
 two-stage (3 examples),Spa Manager,State,0.8888888889,1.0,0.9411764706
 two-stage (3 examples),Spa Manager,Transition,1.0,0.9666666667,0.9830508475
@@ -152,13 +152,13 @@ two-stage (6 examples),Thermomix TM6,History State,,0.0,
 two-stage (6 examples),Thermomix TM6,Guard,1.0,0.4285714286,0.6
 two-stage (6 examples),Thermomix TM6,Overall Score,1.0,0.6279069767,0.7714285714
 one-stage,Train Automation System,Composite State,1.0,1.0,1.0
-one-stage,Train Automation System,State,1.0,0.7352941176,0.8474576271
-one-stage,Train Automation System,Transition,1.0,0.5,0.6666666667
-one-stage,Train Automation System,Action,1.0,0.7083333333,0.8292682927
+one-stage,Train Automation System,State,1.0,0.7352941176470589,0.8474576271186441
+one-stage,Train Automation System,Transition,1.0,0.5,0.6666666666666666
+one-stage,Train Automation System,Action,1.0,0.7083333333333334,0.8292682926829268
 one-stage,Train Automation System,Region,1.0,1.0,1.0
 one-stage,Train Automation System,History State,,0.0,
-one-stage,Train Automation System,Guard,1.0,0.5357142857,0.6976744186
-one-stage,Train Automation System,Overall Score,1.0,0.6357142857,0.7772925764
+one-stage,Train Automation System,Guard,1.0,0.5357142857142857,0.6976744186046512
+one-stage,Train Automation System,Overall Score,1.0,0.6357142857142857,0.7772925764192139
 two-stage (3 examples),Train Automation System,Composite State,1.0,1.0,1.0
 two-stage (3 examples),Train Automation System,State,0.9333333333,0.8235294118,0.875
 two-stage (3 examples),Train Automation System,Transition,0.9166666667,0.55,0.6875
@@ -168,13 +168,13 @@ two-stage (3 examples),Train Automation System,History State,1.0,1.0,1.0
 two-stage (3 examples),Train Automation System,Guard,0.8666666667,0.4642857143,0.6046511628
 two-stage (3 examples),Train Automation System,Overall Score,0.94,0.6714285714,0.7833333333
 two-stage (6 examples),Train Automation System,Composite State,1.0,1.0,1.0
-two-stage (6 examples),Train Automation System,State,1.0,0.8529411765,0.9206349206
-two-stage (6 examples),Train Automation System,Transition,1.0,0.875,0.9333333333
-two-stage (6 examples),Train Automation System,Action,1.0,0.75,0.8571428571
+two-stage (6 examples),Train Automation System,State,1.0,0.8529411764705882,0.9206349206349206
+two-stage (6 examples),Train Automation System,Transition,1.0,0.875,0.9333333333333333
+two-stage (6 examples),Train Automation System,Action,1.0,0.75,0.8571428571428571
 two-stage (6 examples),Train Automation System,Region,1.0,1.0,1.0
 two-stage (6 examples),Train Automation System,History State,1.0,1.0,1.0
-two-stage (6 examples),Train Automation System,Guard,1.0,0.75,0.8571428571
-two-stage (6 examples),Train Automation System,Overall Score,1.0,0.8357142857,0.9105058366
+two-stage (6 examples),Train Automation System,Guard,1.0,0.75,0.8571428571428571
+two-stage (6 examples),Train Automation System,Overall Score,1.0,0.8357142857142857,0.9105058365758755
 two-stage (6 examples),Wumple,Composite State,1.0,1.0,1.0
 two-stage (6 examples),Wumple,State,1.0,0.9375,0.9677419355
 two-stage (6 examples),Wumple,Transition,1.0,0.9324324324,0.965034965
