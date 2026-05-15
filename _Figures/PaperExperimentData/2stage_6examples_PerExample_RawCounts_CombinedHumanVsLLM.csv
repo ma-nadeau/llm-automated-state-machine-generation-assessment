@@ -1,0 +1,289 @@
+Example,Grader,ElementType,TotalN,TotalTP,TotalFP,TotalFN,TotalElements,Precision,Recall,F1
+Automatic Bread Maker,Human,Action,10.0,9.0,0.0,1.0,10.0,1.0,0.9,0.947368
+Automatic Bread Maker,Human,Composite State,3.0,2.5,0.0,0.5,3.0,1.0,0.833333,0.909091
+Automatic Bread Maker,Human,Guard,4.0,4.0,0.0,0.0,4.0,1.0,1.0,1.0
+Automatic Bread Maker,Human,History State,1.0,0.5,0.0,0.5,1.0,1.0,0.5,0.666667
+Automatic Bread Maker,Human,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Automatic Bread Maker,Human,State,12.0,10.0,0.0,2.0,12.0,1.0,0.833333,0.909091
+Automatic Bread Maker,Human,Transition,18.0,16.0,0.0,2.0,18.0,1.0,0.888889,0.941176
+Automatic Bread Maker,Human,Overall,48.0,42.0,0.0,6.0,48.0,1.0,0.875,0.933333
+Automatic Bread Maker,Claude4.5Sonnet,Action,10.0,7.0,0.0,3.0,10.0,1.0,0.7,0.823529
+Automatic Bread Maker,Claude4.5Sonnet,Composite State,3.0,2.5,0.0,0.5,3.0,1.0,0.833333,0.909091
+Automatic Bread Maker,Claude4.5Sonnet,Guard,4.0,3.0,0.0,1.0,4.0,1.0,0.75,0.857143
+Automatic Bread Maker,Claude4.5Sonnet,History State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Automatic Bread Maker,Claude4.5Sonnet,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Automatic Bread Maker,Claude4.5Sonnet,State,12.0,8.0,0.0,4.0,12.0,1.0,0.666667,0.8
+Automatic Bread Maker,Claude4.5Sonnet,Transition,18.0,14.0,0.0,4.0,18.0,1.0,0.777778,0.875
+Automatic Bread Maker,Claude4.5Sonnet,Overall,48.0,34.5,0.0,13.5,48.0,1.0,0.71875,0.836364
+Automatic Bread Maker,GPT-5.5,Action,10.0,8.5,0.0,1.5,10.0,1.0,0.85,0.918919
+Automatic Bread Maker,GPT-5.5,Composite State,3.0,2.5,0.0,0.5,3.0,1.0,0.833333,0.909091
+Automatic Bread Maker,GPT-5.5,Guard,4.0,4.0,0.0,0.0,4.0,1.0,1.0,1.0
+Automatic Bread Maker,GPT-5.5,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Automatic Bread Maker,GPT-5.5,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Automatic Bread Maker,GPT-5.5,State,12.0,9.5,0.0,2.5,12.0,1.0,0.791667,0.883721
+Automatic Bread Maker,GPT-5.5,Transition,18.0,16.0,0.0,2.0,18.0,1.0,0.888889,0.941176
+Automatic Bread Maker,GPT-5.5,Overall,48.0,41.5,0.0,6.5,48.0,1.0,0.864583,0.927374
+Automatic Bread Maker,Gemini3.1ProPreview,Action,10.0,7.0,0.0,3.0,10.0,1.0,0.7,0.823529
+Automatic Bread Maker,Gemini3.1ProPreview,Composite State,3.0,2.5,0.0,0.5,3.0,1.0,0.833333,0.909091
+Automatic Bread Maker,Gemini3.1ProPreview,Guard,4.0,4.0,0.0,0.0,4.0,1.0,1.0,1.0
+Automatic Bread Maker,Gemini3.1ProPreview,History State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Automatic Bread Maker,Gemini3.1ProPreview,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Automatic Bread Maker,Gemini3.1ProPreview,State,12.0,8.0,0.0,4.0,12.0,1.0,0.666667,0.8
+Automatic Bread Maker,Gemini3.1ProPreview,Transition,18.0,15.5,0.0,2.5,18.0,1.0,0.861111,0.925373
+Automatic Bread Maker,Gemini3.1ProPreview,Overall,48.0,37.0,0.0,11.0,48.0,1.0,0.770833,0.870588
+Digital Chess Clock,Human,Action,8.0,8.0,0.0,0.0,8.0,1.0,1.0,1.0
+Digital Chess Clock,Human,Composite State,3.0,3.0,0.0,0.0,3.0,1.0,1.0,1.0
+Digital Chess Clock,Human,Guard,4.0,4.0,0.0,0.0,4.0,1.0,1.0,1.0
+Digital Chess Clock,Human,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Digital Chess Clock,Human,Region,2.0,1.0,0.0,1.0,2.0,1.0,0.5,0.666667
+Digital Chess Clock,Human,State,13.0,11.5,0.0,1.5,13.0,1.0,0.884615,0.938776
+Digital Chess Clock,Human,Transition,14.0,12.0,0.0,2.0,14.0,1.0,0.857143,0.923077
+Digital Chess Clock,Human,Overall,45.0,40.5,0.0,4.5,45.0,1.0,0.9,0.947368
+Digital Chess Clock,Claude4.5Sonnet,Action,8.0,8.0,1.0,0.0,9.0,0.888889,1.0,0.941176
+Digital Chess Clock,Claude4.5Sonnet,Composite State,3.0,2.5,0.0,0.5,3.0,1.0,0.833333,0.909091
+Digital Chess Clock,Claude4.5Sonnet,Guard,4.0,2.0,0.0,2.0,4.0,1.0,0.5,0.666667
+Digital Chess Clock,Claude4.5Sonnet,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Digital Chess Clock,Claude4.5Sonnet,Region,2.0,0.0,0.0,2.0,2.0,N/A,0.0,N/A
+Digital Chess Clock,Claude4.5Sonnet,State,13.0,8.0,2.0,5.0,15.0,0.8,0.615385,0.695652
+Digital Chess Clock,Claude4.5Sonnet,Transition,14.0,8.0,0.0,6.0,14.0,1.0,0.571429,0.727273
+Digital Chess Clock,Claude4.5Sonnet,Overall,45.0,29.5,3.0,15.5,48.0,0.907692,0.655556,0.76129
+Digital Chess Clock,GPT-5.5,Action,8.0,8.0,0.0,0.0,8.0,1.0,1.0,1.0
+Digital Chess Clock,GPT-5.5,Composite State,3.0,3.0,0.0,0.0,3.0,1.0,1.0,1.0
+Digital Chess Clock,GPT-5.5,Guard,4.0,2.0,0.0,2.0,4.0,1.0,0.5,0.666667
+Digital Chess Clock,GPT-5.5,History State,1.0,0.5,0.0,0.5,1.0,1.0,0.5,0.666667
+Digital Chess Clock,GPT-5.5,Region,2.0,1.5,0.0,0.5,2.0,1.0,0.75,0.857143
+Digital Chess Clock,GPT-5.5,State,13.0,10.0,0.0,3.0,13.0,1.0,0.769231,0.869565
+Digital Chess Clock,GPT-5.5,Transition,14.0,10.0,1.0,4.0,15.0,0.909091,0.714286,0.8
+Digital Chess Clock,GPT-5.5,Overall,45.0,35.0,1.0,10.0,46.0,0.972222,0.777778,0.864198
+Digital Chess Clock,Gemini3.1ProPreview,Action,8.0,8.0,0.0,0.0,8.0,1.0,1.0,1.0
+Digital Chess Clock,Gemini3.1ProPreview,Composite State,3.0,3.0,0.0,0.0,3.0,1.0,1.0,1.0
+Digital Chess Clock,Gemini3.1ProPreview,Guard,4.0,3.0,0.0,1.0,4.0,1.0,0.75,0.857143
+Digital Chess Clock,Gemini3.1ProPreview,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Digital Chess Clock,Gemini3.1ProPreview,Region,2.0,0.0,0.0,2.0,2.0,N/A,0.0,N/A
+Digital Chess Clock,Gemini3.1ProPreview,State,13.0,10.0,0.0,3.0,13.0,1.0,0.769231,0.869565
+Digital Chess Clock,Gemini3.1ProPreview,Transition,14.0,11.0,0.0,3.0,14.0,1.0,0.785714,0.88
+Digital Chess Clock,Gemini3.1ProPreview,Overall,45.0,36.0,0.0,9.0,45.0,1.0,0.8,0.888889
+Dishwasher,Human,Action,7.0,5.5,0.0,1.5,7.0,1.0,0.785714,0.88
+Dishwasher,Human,Composite State,2.0,2.0,0.0,0.0,2.0,1.0,1.0,1.0
+Dishwasher,Human,Guard,4.0,3.0,0.0,1.0,4.0,1.0,0.75,0.857143
+Dishwasher,Human,History State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Dishwasher,Human,Region,2.0,1.0,0.0,1.0,2.0,1.0,0.5,0.666667
+Dishwasher,Human,State,12.0,9.0,0.0,3.0,12.0,1.0,0.75,0.857143
+Dishwasher,Human,Transition,19.0,13.5,0.0,5.5,19.0,1.0,0.710526,0.830769
+Dishwasher,Human,Overall,47.0,34.0,0.0,13.0,47.0,1.0,0.723404,0.839506
+Dishwasher,Claude4.5Sonnet,Action,7.0,4.5,0.0,2.5,7.0,1.0,0.642857,0.782609
+Dishwasher,Claude4.5Sonnet,Composite State,2.0,1.0,0.0,1.0,2.0,1.0,0.5,0.666667
+Dishwasher,Claude4.5Sonnet,Guard,4.0,2.0,0.0,2.0,4.0,1.0,0.5,0.666667
+Dishwasher,Claude4.5Sonnet,History State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Dishwasher,Claude4.5Sonnet,Region,2.0,0.0,0.0,2.0,2.0,N/A,0.0,N/A
+Dishwasher,Claude4.5Sonnet,State,12.0,8.0,0.0,4.0,12.0,1.0,0.666667,0.8
+Dishwasher,Claude4.5Sonnet,Transition,19.0,11.5,0.0,7.5,19.0,1.0,0.605263,0.754098
+Dishwasher,Claude4.5Sonnet,Overall,47.0,27.0,0.0,20.0,47.0,1.0,0.574468,0.72973
+Dishwasher,GPT-5.5,Action,7.0,5.5,0.0,1.5,7.0,1.0,0.785714,0.88
+Dishwasher,GPT-5.5,Composite State,2.0,1.5,0.0,0.5,2.0,1.0,0.75,0.857143
+Dishwasher,GPT-5.5,Guard,4.0,2.0,0.0,2.0,4.0,1.0,0.5,0.666667
+Dishwasher,GPT-5.5,History State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Dishwasher,GPT-5.5,Region,2.0,1.5,0.0,0.5,2.0,1.0,0.75,0.857143
+Dishwasher,GPT-5.5,State,12.0,9.0,0.0,3.0,12.0,1.0,0.75,0.857143
+Dishwasher,GPT-5.5,Transition,19.0,15.0,0.0,4.0,19.0,1.0,0.789474,0.882353
+Dishwasher,GPT-5.5,Overall,47.0,34.5,0.0,12.5,47.0,1.0,0.734043,0.846626
+Dishwasher,Gemini3.1ProPreview,Action,7.0,5.5,0.0,1.5,7.0,1.0,0.785714,0.88
+Dishwasher,Gemini3.1ProPreview,Composite State,2.0,1.0,0.0,1.0,2.0,1.0,0.5,0.666667
+Dishwasher,Gemini3.1ProPreview,Guard,4.0,2.0,0.0,2.0,4.0,1.0,0.5,0.666667
+Dishwasher,Gemini3.1ProPreview,History State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Dishwasher,Gemini3.1ProPreview,Region,2.0,0.0,0.0,2.0,2.0,N/A,0.0,N/A
+Dishwasher,Gemini3.1ProPreview,State,12.0,8.5,0.0,3.5,12.0,1.0,0.708333,0.829268
+Dishwasher,Gemini3.1ProPreview,Transition,19.0,12.5,0.0,6.5,19.0,1.0,0.657895,0.793651
+Dishwasher,Gemini3.1ProPreview,Overall,47.0,29.5,0.0,17.5,47.0,1.0,0.62766,0.771242
+Printer,Human,Action,3.0,3.0,0.0,0.0,3.0,1.0,1.0,1.0
+Printer,Human,Composite State,2.0,2.0,0.0,0.0,2.0,1.0,1.0,1.0
+Printer,Human,Guard,6.0,6.0,0.0,0.0,6.0,1.0,1.0,1.0
+Printer,Human,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Printer,Human,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Printer,Human,State,8.0,8.0,0.0,0.0,8.0,1.0,1.0,1.0
+Printer,Human,Transition,17.0,17.0,0.0,0.0,17.0,1.0,1.0,1.0
+Printer,Human,Overall,37.0,37.0,0.0,0.0,37.0,1.0,1.0,1.0
+Printer,Claude4.5Sonnet,Action,3.0,0.0,0.0,3.0,3.0,N/A,0.0,N/A
+Printer,Claude4.5Sonnet,Composite State,2.0,1.5,0.0,0.5,2.0,1.0,0.75,0.857143
+Printer,Claude4.5Sonnet,Guard,6.0,4.0,0.0,2.0,6.0,1.0,0.666667,0.8
+Printer,Claude4.5Sonnet,History State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Printer,Claude4.5Sonnet,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Printer,Claude4.5Sonnet,State,8.0,8.0,0.0,0.0,8.0,1.0,1.0,1.0
+Printer,Claude4.5Sonnet,Transition,17.0,14.5,0.0,2.5,17.0,1.0,0.852941,0.920635
+Printer,Claude4.5Sonnet,Overall,37.0,28.0,0.0,9.0,37.0,1.0,0.756757,0.861538
+Printer,GPT-5.5,Action,3.0,2.0,0.0,1.0,3.0,1.0,0.666667,0.8
+Printer,GPT-5.5,Composite State,2.0,2.0,0.0,0.0,2.0,1.0,1.0,1.0
+Printer,GPT-5.5,Guard,6.0,6.0,0.0,0.0,6.0,1.0,1.0,1.0
+Printer,GPT-5.5,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Printer,GPT-5.5,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Printer,GPT-5.5,State,8.0,8.0,0.0,0.0,8.0,1.0,1.0,1.0
+Printer,GPT-5.5,Transition,17.0,16.0,0.0,1.0,17.0,1.0,0.941176,0.969697
+Printer,GPT-5.5,Overall,37.0,35.0,0.0,2.0,37.0,1.0,0.945946,0.972222
+Printer,Gemini3.1ProPreview,Action,3.0,0.0,0.0,3.0,3.0,N/A,0.0,N/A
+Printer,Gemini3.1ProPreview,Composite State,2.0,2.0,0.0,0.0,2.0,1.0,1.0,1.0
+Printer,Gemini3.1ProPreview,Guard,6.0,6.0,0.0,0.0,6.0,1.0,1.0,1.0
+Printer,Gemini3.1ProPreview,History State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Printer,Gemini3.1ProPreview,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Printer,Gemini3.1ProPreview,State,8.0,8.0,0.0,0.0,8.0,1.0,1.0,1.0
+Printer,Gemini3.1ProPreview,Transition,17.0,15.0,0.0,2.0,17.0,1.0,0.882353,0.9375
+Printer,Gemini3.1ProPreview,Overall,37.0,31.0,0.0,6.0,37.0,1.0,0.837838,0.911765
+SSC7,Human,Action,21.0,15.0,0.0,6.0,21.0,1.0,0.714286,0.833333
+SSC7,Human,Composite State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+SSC7,Human,Guard,11.0,11.0,0.0,0.0,11.0,1.0,1.0,1.0
+SSC7,Human,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+SSC7,Human,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+SSC7,Human,State,9.0,9.0,0.0,0.0,9.0,1.0,1.0,1.0
+SSC7,Human,Transition,23.0,23.0,0.0,0.0,23.0,1.0,1.0,1.0
+SSC7,Human,Overall,66.0,60.0,0.0,6.0,66.0,1.0,0.909091,0.952381
+SSC7,Claude4.5Sonnet,Action,21.0,15.0,1.0,6.0,22.0,0.9375,0.714286,0.810811
+SSC7,Claude4.5Sonnet,Composite State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+SSC7,Claude4.5Sonnet,Guard,11.0,11.0,0.0,0.0,11.0,1.0,1.0,1.0
+SSC7,Claude4.5Sonnet,History State,1.0,0.5,0.0,0.5,1.0,1.0,0.5,0.666667
+SSC7,Claude4.5Sonnet,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+SSC7,Claude4.5Sonnet,State,9.0,9.0,2.0,0.0,11.0,0.818182,1.0,0.9
+SSC7,Claude4.5Sonnet,Transition,23.0,22.0,1.0,1.0,24.0,0.956522,0.956522,0.956522
+SSC7,Claude4.5Sonnet,Overall,66.0,58.5,4.0,7.5,70.0,0.936,0.886364,0.910506
+SSC7,GPT-5.5,Action,21.0,16.0,0.0,5.0,21.0,1.0,0.761905,0.864865
+SSC7,GPT-5.5,Composite State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+SSC7,GPT-5.5,Guard,11.0,11.0,0.0,0.0,11.0,1.0,1.0,1.0
+SSC7,GPT-5.5,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+SSC7,GPT-5.5,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+SSC7,GPT-5.5,State,9.0,9.0,0.0,0.0,9.0,1.0,1.0,1.0
+SSC7,GPT-5.5,Transition,23.0,22.5,0.0,0.5,23.0,1.0,0.978261,0.989011
+SSC7,GPT-5.5,Overall,66.0,60.5,0.0,5.5,66.0,1.0,0.916667,0.956522
+SSC7,Gemini3.1ProPreview,Action,21.0,16.5,0.0,4.5,21.0,1.0,0.785714,0.88
+SSC7,Gemini3.1ProPreview,Composite State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+SSC7,Gemini3.1ProPreview,Guard,11.0,10.0,0.0,1.0,11.0,1.0,0.909091,0.952381
+SSC7,Gemini3.1ProPreview,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+SSC7,Gemini3.1ProPreview,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+SSC7,Gemini3.1ProPreview,State,9.0,9.0,0.0,0.0,9.0,1.0,1.0,1.0
+SSC7,Gemini3.1ProPreview,Transition,23.0,22.5,0.0,0.5,23.0,1.0,0.978261,0.989011
+SSC7,Gemini3.1ProPreview,Overall,66.0,60.0,0.0,6.0,66.0,1.0,0.909091,0.952381
+Spa Manager,Human,Action,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Spa Manager,Human,Composite State,3.0,3.0,0.0,0.0,3.0,1.0,1.0,1.0
+Spa Manager,Human,Guard,4.0,4.0,0.0,0.0,4.0,1.0,1.0,1.0
+Spa Manager,Human,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Spa Manager,Human,Region,5.0,5.0,0.0,0.0,5.0,1.0,1.0,1.0
+Spa Manager,Human,State,16.0,16.0,0.0,0.0,16.0,1.0,1.0,1.0
+Spa Manager,Human,Transition,15.0,15.0,0.0,0.0,15.0,1.0,1.0,1.0
+Spa Manager,Human,Overall,44.0,44.0,0.0,0.0,44.0,1.0,1.0,1.0
+Spa Manager,Claude4.5Sonnet,Action,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Spa Manager,Claude4.5Sonnet,Composite State,3.0,3.0,1.0,0.0,4.0,0.75,1.0,0.857143
+Spa Manager,Claude4.5Sonnet,Guard,4.0,4.0,0.0,0.0,4.0,1.0,1.0,1.0
+Spa Manager,Claude4.5Sonnet,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Spa Manager,Claude4.5Sonnet,Region,5.0,5.0,0.0,0.0,5.0,1.0,1.0,1.0
+Spa Manager,Claude4.5Sonnet,State,16.0,16.0,1.0,0.0,17.0,0.941176,1.0,0.969697
+Spa Manager,Claude4.5Sonnet,Transition,15.0,14.5,0.0,0.5,15.0,1.0,0.966667,0.983051
+Spa Manager,Claude4.5Sonnet,Overall,44.0,43.5,2.0,0.5,46.0,0.956044,0.988636,0.972067
+Spa Manager,GPT-5.5,Action,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Spa Manager,GPT-5.5,Composite State,3.0,3.0,0.0,0.0,3.0,1.0,1.0,1.0
+Spa Manager,GPT-5.5,Guard,4.0,4.0,0.0,0.0,4.0,1.0,1.0,1.0
+Spa Manager,GPT-5.5,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Spa Manager,GPT-5.5,Region,5.0,5.0,0.0,0.0,5.0,1.0,1.0,1.0
+Spa Manager,GPT-5.5,State,16.0,16.0,0.0,0.0,16.0,1.0,1.0,1.0
+Spa Manager,GPT-5.5,Transition,15.0,15.0,0.0,0.0,15.0,1.0,1.0,1.0
+Spa Manager,GPT-5.5,Overall,44.0,44.0,0.0,0.0,44.0,1.0,1.0,1.0
+Spa Manager,Gemini3.1ProPreview,Action,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Spa Manager,Gemini3.1ProPreview,Composite State,3.0,3.0,0.0,0.0,3.0,1.0,1.0,1.0
+Spa Manager,Gemini3.1ProPreview,Guard,4.0,4.0,0.0,0.0,4.0,1.0,1.0,1.0
+Spa Manager,Gemini3.1ProPreview,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Spa Manager,Gemini3.1ProPreview,Region,5.0,5.0,0.0,0.0,5.0,1.0,1.0,1.0
+Spa Manager,Gemini3.1ProPreview,State,16.0,16.0,0.0,0.0,16.0,1.0,1.0,1.0
+Spa Manager,Gemini3.1ProPreview,Transition,15.0,15.0,0.0,0.0,15.0,1.0,1.0,1.0
+Spa Manager,Gemini3.1ProPreview,Overall,44.0,44.0,0.0,0.0,44.0,1.0,1.0,1.0
+Thermomix TM6,Human,Action,6.0,1.0,0.0,5.0,6.0,1.0,0.166667,0.285714
+Thermomix TM6,Human,Composite State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Thermomix TM6,Human,Guard,7.0,3.0,0.0,4.0,7.0,1.0,0.428571,0.6
+Thermomix TM6,Human,History State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Thermomix TM6,Human,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Thermomix TM6,Human,State,11.0,9.0,0.0,2.0,11.0,1.0,0.818182,0.9
+Thermomix TM6,Human,Transition,17.0,14.0,0.0,3.0,17.0,1.0,0.823529,0.903226
+Thermomix TM6,Human,Overall,43.0,27.0,0.0,16.0,43.0,1.0,0.627907,0.771429
+Thermomix TM6,Claude4.5Sonnet,Action,6.0,0.0,0.0,6.0,6.0,N/A,0.0,N/A
+Thermomix TM6,Claude4.5Sonnet,Composite State,1.0,0.0,1.0,1.0,2.0,0.0,0.0,N/A
+Thermomix TM6,Claude4.5Sonnet,Guard,7.0,2.0,0.0,5.0,7.0,1.0,0.285714,0.444444
+Thermomix TM6,Claude4.5Sonnet,History State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Thermomix TM6,Claude4.5Sonnet,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Thermomix TM6,Claude4.5Sonnet,State,11.0,10.5,0.0,0.5,11.0,1.0,0.954545,0.976744
+Thermomix TM6,Claude4.5Sonnet,Transition,17.0,13.5,1.0,3.5,18.0,0.931034,0.794118,0.857143
+Thermomix TM6,Claude4.5Sonnet,Overall,43.0,26.0,2.0,17.0,45.0,0.928571,0.604651,0.732394
+Thermomix TM6,GPT-5.5,Action,6.0,2.0,0.0,4.0,6.0,1.0,0.333333,0.5
+Thermomix TM6,GPT-5.5,Composite State,1.0,0.5,0.0,0.5,1.0,1.0,0.5,0.666667
+Thermomix TM6,GPT-5.5,Guard,7.0,3.5,0.0,3.5,7.0,1.0,0.5,0.666667
+Thermomix TM6,GPT-5.5,History State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Thermomix TM6,GPT-5.5,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Thermomix TM6,GPT-5.5,State,11.0,11.0,0.0,0.0,11.0,1.0,1.0,1.0
+Thermomix TM6,GPT-5.5,Transition,17.0,12.5,0.0,4.5,17.0,1.0,0.735294,0.847458
+Thermomix TM6,GPT-5.5,Overall,43.0,29.5,0.0,13.5,43.0,1.0,0.686047,0.813793
+Thermomix TM6,Gemini3.1ProPreview,Action,6.0,2.0,0.0,4.0,6.0,1.0,0.333333,0.5
+Thermomix TM6,Gemini3.1ProPreview,Composite State,1.0,0.5,0.0,0.5,1.0,1.0,0.5,0.666667
+Thermomix TM6,Gemini3.1ProPreview,Guard,7.0,3.0,0.0,4.0,7.0,1.0,0.428571,0.6
+Thermomix TM6,Gemini3.1ProPreview,History State,1.0,0.0,0.0,1.0,1.0,N/A,0.0,N/A
+Thermomix TM6,Gemini3.1ProPreview,Region,0.0,0.0,0.0,0.0,0.0,N/A,N/A,N/A
+Thermomix TM6,Gemini3.1ProPreview,State,11.0,10.0,0.0,1.0,11.0,1.0,0.909091,0.952381
+Thermomix TM6,Gemini3.1ProPreview,Transition,17.0,13.5,0.0,3.5,17.0,1.0,0.794118,0.885246
+Thermomix TM6,Gemini3.1ProPreview,Overall,43.0,29.0,0.0,14.0,43.0,1.0,0.674419,0.805556
+Train Automation System,Human,Action,12.0,9.5,0.0,2.5,12.0,1.0,0.791667,0.883721
+Train Automation System,Human,Composite State,2.0,2.0,0.0,0.0,2.0,1.0,1.0,1.0
+Train Automation System,Human,Guard,14.0,10.5,0.0,3.5,14.0,1.0,0.75,0.857143
+Train Automation System,Human,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Train Automation System,Human,Region,4.0,4.0,0.0,0.0,4.0,1.0,1.0,1.0
+Train Automation System,Human,State,17.0,14.5,0.0,2.5,17.0,1.0,0.852941,0.920635
+Train Automation System,Human,Transition,20.0,17.5,0.0,2.5,20.0,1.0,0.875,0.933333
+Train Automation System,Human,Overall,70.0,59.0,0.0,11.0,70.0,1.0,0.842857,0.914729
+Train Automation System,Claude4.5Sonnet,Action,12.0,8.5,0.0,3.5,12.0,1.0,0.708333,0.829268
+Train Automation System,Claude4.5Sonnet,Composite State,2.0,2.0,0.0,0.0,2.0,1.0,1.0,1.0
+Train Automation System,Claude4.5Sonnet,Guard,14.0,8.0,0.0,6.0,14.0,1.0,0.571429,0.727273
+Train Automation System,Claude4.5Sonnet,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Train Automation System,Claude4.5Sonnet,Region,4.0,4.0,0.0,0.0,4.0,1.0,1.0,1.0
+Train Automation System,Claude4.5Sonnet,State,17.0,6.5,0.0,10.5,17.0,1.0,0.382353,0.553191
+Train Automation System,Claude4.5Sonnet,Transition,20.0,10.0,0.0,10.0,20.0,1.0,0.5,0.666667
+Train Automation System,Claude4.5Sonnet,Overall,70.0,40.0,0.0,30.0,70.0,1.0,0.571429,0.727273
+Train Automation System,GPT-5.5,Action,12.0,8.0,0.0,4.0,12.0,1.0,0.666667,0.8
+Train Automation System,GPT-5.5,Composite State,2.0,1.5,0.0,0.5,2.0,1.0,0.75,0.857143
+Train Automation System,GPT-5.5,Guard,14.0,5.5,0.0,8.5,14.0,1.0,0.392857,0.564103
+Train Automation System,GPT-5.5,History State,1.0,0.5,0.0,0.5,1.0,1.0,0.5,0.666667
+Train Automation System,GPT-5.5,Region,4.0,4.0,0.0,0.0,4.0,1.0,1.0,1.0
+Train Automation System,GPT-5.5,State,17.0,9.0,0.0,8.0,17.0,1.0,0.529412,0.692308
+Train Automation System,GPT-5.5,Transition,20.0,9.0,1.0,11.0,21.0,0.9,0.45,0.6
+Train Automation System,GPT-5.5,Overall,70.0,37.5,1.0,32.5,71.0,0.974026,0.535714,0.691244
+Train Automation System,Gemini3.1ProPreview,Action,12.0,8.0,0.0,4.0,12.0,1.0,0.666667,0.8
+Train Automation System,Gemini3.1ProPreview,Composite State,2.0,2.0,0.0,0.0,2.0,1.0,1.0,1.0
+Train Automation System,Gemini3.1ProPreview,Guard,14.0,6.0,0.0,8.0,14.0,1.0,0.428571,0.6
+Train Automation System,Gemini3.1ProPreview,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Train Automation System,Gemini3.1ProPreview,Region,4.0,4.0,0.0,0.0,4.0,1.0,1.0,1.0
+Train Automation System,Gemini3.1ProPreview,State,17.0,11.0,0.0,6.0,17.0,1.0,0.647059,0.785714
+Train Automation System,Gemini3.1ProPreview,Transition,20.0,10.0,0.0,10.0,20.0,1.0,0.5,0.666667
+Train Automation System,Gemini3.1ProPreview,Overall,70.0,42.0,0.0,28.0,70.0,1.0,0.6,0.75
+Wumple,Human,Action,36.0,21.5,0.0,14.5,36.0,1.0,0.597222,0.747826
+Wumple,Human,Composite State,5.0,5.0,0.0,0.0,5.0,1.0,1.0,1.0
+Wumple,Human,Guard,3.0,0.0,0.0,3.0,3.0,N/A,0.0,N/A
+Wumple,Human,History State,1.0,1.0,2.0,0.0,3.0,0.333333,1.0,0.5
+Wumple,Human,Region,2.0,2.0,0.0,0.0,2.0,1.0,1.0,1.0
+Wumple,Human,State,24.0,22.5,0.0,1.5,24.0,1.0,0.9375,0.967742
+Wumple,Human,Transition,37.0,34.5,0.0,2.5,37.0,1.0,0.932432,0.965035
+Wumple,Human,Overall,108.0,86.5,2.0,21.5,110.0,0.977401,0.800926,0.880407
+Wumple,Claude4.5Sonnet,Action,36.0,6.5,0.0,29.5,36.0,1.0,0.180556,0.305882
+Wumple,Claude4.5Sonnet,Composite State,5.0,4.0,0.0,1.0,5.0,1.0,0.8,0.888889
+Wumple,Claude4.5Sonnet,Guard,3.0,1.0,0.0,2.0,3.0,1.0,0.333333,0.5
+Wumple,Claude4.5Sonnet,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Wumple,Claude4.5Sonnet,Region,2.0,2.0,0.0,0.0,2.0,1.0,1.0,1.0
+Wumple,Claude4.5Sonnet,State,24.0,22.5,0.0,1.5,24.0,1.0,0.9375,0.967742
+Wumple,Claude4.5Sonnet,Transition,37.0,33.0,0.0,4.0,37.0,1.0,0.891892,0.942857
+Wumple,Claude4.5Sonnet,Overall,108.0,70.0,0.0,38.0,108.0,1.0,0.648148,0.786517
+Wumple,GPT-5.5,Action,36.0,27.0,0.0,9.0,36.0,1.0,0.75,0.857143
+Wumple,GPT-5.5,Composite State,5.0,5.0,0.0,0.0,5.0,1.0,1.0,1.0
+Wumple,GPT-5.5,Guard,3.0,3.0,0.0,0.0,3.0,1.0,1.0,1.0
+Wumple,GPT-5.5,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Wumple,GPT-5.5,Region,2.0,2.0,0.0,0.0,2.0,1.0,1.0,1.0
+Wumple,GPT-5.5,State,24.0,22.0,0.0,2.0,24.0,1.0,0.916667,0.956522
+Wumple,GPT-5.5,Transition,37.0,35.5,0.0,1.5,37.0,1.0,0.959459,0.97931
+Wumple,GPT-5.5,Overall,108.0,95.5,0.0,12.5,108.0,1.0,0.884259,0.938575
+Wumple,Gemini3.1ProPreview,Action,36.0,14.0,0.0,22.0,36.0,1.0,0.388889,0.56
+Wumple,Gemini3.1ProPreview,Composite State,5.0,4.0,0.0,1.0,5.0,1.0,0.8,0.888889
+Wumple,Gemini3.1ProPreview,Guard,3.0,1.0,0.0,2.0,3.0,1.0,0.333333,0.5
+Wumple,Gemini3.1ProPreview,History State,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0
+Wumple,Gemini3.1ProPreview,Region,2.0,2.0,0.0,0.0,2.0,1.0,1.0,1.0
+Wumple,Gemini3.1ProPreview,State,24.0,21.5,0.0,2.5,24.0,1.0,0.895833,0.945055
+Wumple,Gemini3.1ProPreview,Transition,37.0,33.5,0.0,3.5,37.0,1.0,0.905405,0.950355
+Wumple,Gemini3.1ProPreview,Overall,108.0,77.0,0.0,31.0,108.0,1.0,0.712963,0.832432
