@@ -76,12 +76,38 @@
 | 0.5 | 23 | 11 | 2 |
 | 1.0 | 30 | 20 | 364 |
 
-## RQ3: Available Grading Trends For GPT/Gemini Generations
+## RQ3: Grader Behavior Consistency Across Generated Inputs
 
-Note: the current repository contains GPT-5.5- and Gemini-generated state machines graded by Claude 4.5 Sonnet only. Additional GPT/Gemini grader runs are needed to compare all three grading trends for these generators.
+RQ3 tests whether grader behavior patterns observed on Claude-generated state machines persist when the generated inputs change to GPT-5.5 and Gemini 3.1 Pro Preview outputs. Claude-generated state machines are the baseline condition; GPT-5.5- and Gemini-generated state machines are comparison conditions. These tables use only LLM-assigned score distributions and do not evaluate GPT/Gemini generation quality because human ground truth is not available for those generated state machines.
+
+**Score distributions**
 
 | Generator | Grader | Model element | Items | Score 0 | Score 0.5 | Score 1 |
 | --- | --- | --- | --- | --- | --- | --- |
+| Claude4.5Sonnet | Claude4.5Sonnet | Action | 111 | 0.441 | 0.207 | 0.351 |
+| Claude4.5Sonnet | Claude4.5Sonnet | Composite State | 31 | 0.323 | 0.097 | 0.581 |
+| Claude4.5Sonnet | Claude4.5Sonnet | Guard | 66 | 0.333 | 0.212 | 0.455 |
+| Claude4.5Sonnet | Claude4.5Sonnet | History State | 18 | 0.722 | 0.056 | 0.222 |
+| Claude4.5Sonnet | Claude4.5Sonnet | Overall Score | 569 | 0.306 | 0.109 | 0.585 |
+| Claude4.5Sonnet | Claude4.5Sonnet | Region | 24 | 0.542 | 0.000 | 0.458 |
+| Claude4.5Sonnet | Claude4.5Sonnet | State | 129 | 0.225 | 0.039 | 0.736 |
+| Claude4.5Sonnet | Claude4.5Sonnet | Transition | 190 | 0.200 | 0.084 | 0.716 |
+| Claude4.5Sonnet | GPT-5.5 | Action | 111 | 0.153 | 0.324 | 0.523 |
+| Claude4.5Sonnet | GPT-5.5 | Composite State | 31 | 0.290 | 0.129 | 0.581 |
+| Claude4.5Sonnet | GPT-5.5 | Guard | 66 | 0.364 | 0.030 | 0.606 |
+| Claude4.5Sonnet | GPT-5.5 | History State | 18 | 0.611 | 0.111 | 0.278 |
+| Claude4.5Sonnet | GPT-5.5 | Overall Score | 571 | 0.198 | 0.151 | 0.651 |
+| Claude4.5Sonnet | GPT-5.5 | Region | 24 | 0.375 | 0.083 | 0.542 |
+| Claude4.5Sonnet | GPT-5.5 | State | 131 | 0.183 | 0.053 | 0.763 |
+| Claude4.5Sonnet | GPT-5.5 | Transition | 190 | 0.100 | 0.174 | 0.726 |
+| Claude4.5Sonnet | Gemini3.1ProPreview | Action | 111 | 0.396 | 0.126 | 0.477 |
+| Claude4.5Sonnet | Gemini3.1ProPreview | Composite State | 31 | 0.355 | 0.065 | 0.581 |
+| Claude4.5Sonnet | Gemini3.1ProPreview | Guard | 66 | 0.364 | 0.091 | 0.545 |
+| Claude4.5Sonnet | Gemini3.1ProPreview | History State | 18 | 0.722 | 0.000 | 0.278 |
+| Claude4.5Sonnet | Gemini3.1ProPreview | Overall Score | 571 | 0.285 | 0.079 | 0.636 |
+| Claude4.5Sonnet | Gemini3.1ProPreview | Region | 24 | 0.542 | 0.000 | 0.458 |
+| Claude4.5Sonnet | Gemini3.1ProPreview | State | 131 | 0.198 | 0.046 | 0.756 |
+| Claude4.5Sonnet | Gemini3.1ProPreview | Transition | 190 | 0.168 | 0.089 | 0.742 |
 | GPT-5.5 | Claude4.5Sonnet | Action | 111 | 0.144 | 0.027 | 0.829 |
 | GPT-5.5 | Claude4.5Sonnet | Composite State | 31 | 0.355 | 0.000 | 0.645 |
 | GPT-5.5 | Claude4.5Sonnet | Guard | 66 | 0.182 | 0.015 | 0.803 |
@@ -90,6 +116,22 @@ Note: the current repository contains GPT-5.5- and Gemini-generated state machin
 | GPT-5.5 | Claude4.5Sonnet | Region | 23 | 0.391 | 0.087 | 0.522 |
 | GPT-5.5 | Claude4.5Sonnet | State | 131 | 0.130 | 0.008 | 0.863 |
 | GPT-5.5 | Claude4.5Sonnet | Transition | 190 | 0.095 | 0.053 | 0.853 |
+| GPT-5.5 | GPT-5.5 | Action | 111 | 0.108 | 0.045 | 0.847 |
+| GPT-5.5 | GPT-5.5 | Composite State | 31 | 0.290 | 0.032 | 0.677 |
+| GPT-5.5 | GPT-5.5 | Guard | 66 | 0.197 | 0.030 | 0.773 |
+| GPT-5.5 | GPT-5.5 | History State | 18 | 0.500 | 0.111 | 0.389 |
+| GPT-5.5 | GPT-5.5 | Overall Score | 571 | 0.131 | 0.049 | 0.820 |
+| GPT-5.5 | GPT-5.5 | Region | 24 | 0.417 | 0.000 | 0.583 |
+| GPT-5.5 | GPT-5.5 | State | 131 | 0.084 | 0.053 | 0.863 |
+| GPT-5.5 | GPT-5.5 | Transition | 190 | 0.058 | 0.058 | 0.884 |
+| GPT-5.5 | Gemini3.1ProPreview | Action | 111 | 0.108 | 0.063 | 0.829 |
+| GPT-5.5 | Gemini3.1ProPreview | Composite State | 31 | 0.290 | 0.000 | 0.710 |
+| GPT-5.5 | Gemini3.1ProPreview | Guard | 66 | 0.182 | 0.076 | 0.742 |
+| GPT-5.5 | Gemini3.1ProPreview | History State | 18 | 0.611 | 0.056 | 0.333 |
+| GPT-5.5 | Gemini3.1ProPreview | Overall Score | 571 | 0.154 | 0.039 | 0.807 |
+| GPT-5.5 | Gemini3.1ProPreview | Region | 24 | 0.500 | 0.000 | 0.500 |
+| GPT-5.5 | Gemini3.1ProPreview | State | 131 | 0.115 | 0.031 | 0.855 |
+| GPT-5.5 | Gemini3.1ProPreview | Transition | 190 | 0.089 | 0.026 | 0.884 |
 | Gemini3.1ProPreview | Claude4.5Sonnet | Action | 111 | 0.477 | 0.072 | 0.450 |
 | Gemini3.1ProPreview | Claude4.5Sonnet | Composite State | 31 | 0.355 | 0.032 | 0.613 |
 | Gemini3.1ProPreview | Claude4.5Sonnet | Guard | 66 | 0.318 | 0.121 | 0.561 |
@@ -98,3 +140,44 @@ Note: the current repository contains GPT-5.5- and Gemini-generated state machin
 | Gemini3.1ProPreview | Claude4.5Sonnet | Region | 24 | 0.458 | 0.042 | 0.500 |
 | Gemini3.1ProPreview | Claude4.5Sonnet | State | 131 | 0.153 | 0.046 | 0.802 |
 | Gemini3.1ProPreview | Claude4.5Sonnet | Transition | 190 | 0.142 | 0.079 | 0.779 |
+| Gemini3.1ProPreview | GPT-5.5 | Action | 111 | 0.162 | 0.135 | 0.703 |
+| Gemini3.1ProPreview | GPT-5.5 | Composite State | 31 | 0.290 | 0.032 | 0.677 |
+| Gemini3.1ProPreview | GPT-5.5 | Guard | 66 | 0.288 | 0.091 | 0.621 |
+| Gemini3.1ProPreview | GPT-5.5 | History State | 18 | 0.556 | 0.111 | 0.333 |
+| Gemini3.1ProPreview | GPT-5.5 | Overall Score | 571 | 0.172 | 0.086 | 0.743 |
+| Gemini3.1ProPreview | GPT-5.5 | Region | 24 | 0.375 | 0.125 | 0.500 |
+| Gemini3.1ProPreview | GPT-5.5 | State | 131 | 0.115 | 0.046 | 0.840 |
+| Gemini3.1ProPreview | GPT-5.5 | Transition | 190 | 0.095 | 0.084 | 0.821 |
+| Gemini3.1ProPreview | Gemini3.1ProPreview | Action | 111 | 0.270 | 0.099 | 0.631 |
+| Gemini3.1ProPreview | Gemini3.1ProPreview | Composite State | 31 | 0.290 | 0.032 | 0.677 |
+| Gemini3.1ProPreview | Gemini3.1ProPreview | Guard | 66 | 0.303 | 0.076 | 0.621 |
+| Gemini3.1ProPreview | Gemini3.1ProPreview | History State | 18 | 0.611 | 0.000 | 0.389 |
+| Gemini3.1ProPreview | Gemini3.1ProPreview | Overall Score | 571 | 0.217 | 0.042 | 0.741 |
+| Gemini3.1ProPreview | Gemini3.1ProPreview | Region | 24 | 0.500 | 0.000 | 0.500 |
+| Gemini3.1ProPreview | Gemini3.1ProPreview | State | 131 | 0.145 | 0.015 | 0.840 |
+| Gemini3.1ProPreview | Gemini3.1ProPreview | Transition | 190 | 0.121 | 0.026 | 0.853 |
+
+**Per-grader stability (Overall Score)**
+
+| Grader | Comparison generator | Baseline %1 | Comparison %1 | Delta %1 | Baseline %0.5 | Comparison %0.5 | Delta %0.5 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Claude4.5Sonnet | GPT-5.5 | 0.585 | 0.804 | 0.218 | 0.109 | 0.030 | -0.079 |
+| Claude4.5Sonnet | Gemini3.1ProPreview | 0.585 | 0.658 | 0.073 | 0.109 | 0.068 | -0.041 |
+| GPT-5.5 | GPT-5.5 | 0.651 | 0.820 | 0.168 | 0.151 | 0.049 | -0.102 |
+| GPT-5.5 | Gemini3.1ProPreview | 0.651 | 0.743 | 0.091 | 0.151 | 0.086 | -0.065 |
+| Gemini3.1ProPreview | GPT-5.5 | 0.636 | 0.807 | 0.172 | 0.079 | 0.039 | -0.040 |
+| Gemini3.1ProPreview | Gemini3.1ProPreview | 0.636 | 0.741 | 0.105 | 0.079 | 0.042 | -0.037 |
+
+**Cross-grader rankings by %1 (Overall Score)**
+
+| Generator | Grader | Score 1 | Rank |
+| --- | --- | --- | --- |
+| Claude4.5Sonnet | GPT-5.5 | 0.651 | 1 |
+| Claude4.5Sonnet | Gemini3.1ProPreview | 0.636 | 2 |
+| Claude4.5Sonnet | Claude4.5Sonnet | 0.585 | 3 |
+| GPT-5.5 | GPT-5.5 | 0.820 | 1 |
+| GPT-5.5 | Gemini3.1ProPreview | 0.807 | 2 |
+| GPT-5.5 | Claude4.5Sonnet | 0.804 | 3 |
+| Gemini3.1ProPreview | GPT-5.5 | 0.743 | 1 |
+| Gemini3.1ProPreview | Gemini3.1ProPreview | 0.741 | 2 |
+| Gemini3.1ProPreview | Claude4.5Sonnet | 0.658 | 3 |

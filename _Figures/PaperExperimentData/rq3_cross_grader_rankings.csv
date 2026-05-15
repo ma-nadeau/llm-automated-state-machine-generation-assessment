@@ -1,0 +1,73 @@
+generator,model_element,grader,score_1_pct,rank_by_score_1
+Claude4.5Sonnet,Composite State,Claude4.5Sonnet,0.5806451612903226,1
+Claude4.5Sonnet,Composite State,GPT-5.5,0.5806451612903226,1
+Claude4.5Sonnet,Composite State,Gemini3.1ProPreview,0.5806451612903226,1
+Claude4.5Sonnet,State,GPT-5.5,0.7633587786259542,1
+Claude4.5Sonnet,State,Gemini3.1ProPreview,0.7557251908396947,2
+Claude4.5Sonnet,State,Claude4.5Sonnet,0.7364341085271318,3
+Claude4.5Sonnet,Transition,Gemini3.1ProPreview,0.7421052631578947,1
+Claude4.5Sonnet,Transition,GPT-5.5,0.7263157894736842,2
+Claude4.5Sonnet,Transition,Claude4.5Sonnet,0.7157894736842105,3
+Claude4.5Sonnet,Action,GPT-5.5,0.5225225225225225,1
+Claude4.5Sonnet,Action,Gemini3.1ProPreview,0.4774774774774775,2
+Claude4.5Sonnet,Action,Claude4.5Sonnet,0.35135135135135137,3
+Claude4.5Sonnet,Region,GPT-5.5,0.5416666666666666,1
+Claude4.5Sonnet,Region,Claude4.5Sonnet,0.4583333333333333,2
+Claude4.5Sonnet,Region,Gemini3.1ProPreview,0.4583333333333333,2
+Claude4.5Sonnet,History State,GPT-5.5,0.2777777777777778,1
+Claude4.5Sonnet,History State,Gemini3.1ProPreview,0.2777777777777778,1
+Claude4.5Sonnet,History State,Claude4.5Sonnet,0.2222222222222222,3
+Claude4.5Sonnet,Guard,GPT-5.5,0.6060606060606061,1
+Claude4.5Sonnet,Guard,Gemini3.1ProPreview,0.5454545454545454,2
+Claude4.5Sonnet,Guard,Claude4.5Sonnet,0.45454545454545453,3
+Claude4.5Sonnet,Overall Score,GPT-5.5,0.6514886164623468,1
+Claude4.5Sonnet,Overall Score,Gemini3.1ProPreview,0.6357267950963222,2
+Claude4.5Sonnet,Overall Score,Claude4.5Sonnet,0.5852372583479789,3
+GPT-5.5,Composite State,Gemini3.1ProPreview,0.7096774193548387,1
+GPT-5.5,Composite State,GPT-5.5,0.6774193548387096,2
+GPT-5.5,Composite State,Claude4.5Sonnet,0.6451612903225806,3
+GPT-5.5,State,Claude4.5Sonnet,0.8625954198473282,1
+GPT-5.5,State,GPT-5.5,0.8625954198473282,1
+GPT-5.5,State,Gemini3.1ProPreview,0.8549618320610687,3
+GPT-5.5,Transition,GPT-5.5,0.8842105263157894,1
+GPT-5.5,Transition,Gemini3.1ProPreview,0.8842105263157894,1
+GPT-5.5,Transition,Claude4.5Sonnet,0.8526315789473684,3
+GPT-5.5,Action,GPT-5.5,0.8468468468468469,1
+GPT-5.5,Action,Claude4.5Sonnet,0.8288288288288288,2
+GPT-5.5,Action,Gemini3.1ProPreview,0.8288288288288288,2
+GPT-5.5,Region,GPT-5.5,0.5833333333333334,1
+GPT-5.5,Region,Claude4.5Sonnet,0.5217391304347826,2
+GPT-5.5,Region,Gemini3.1ProPreview,0.5,3
+GPT-5.5,History State,GPT-5.5,0.3888888888888889,1
+GPT-5.5,History State,Claude4.5Sonnet,0.3333333333333333,2
+GPT-5.5,History State,Gemini3.1ProPreview,0.3333333333333333,2
+GPT-5.5,Guard,Claude4.5Sonnet,0.803030303030303,1
+GPT-5.5,Guard,GPT-5.5,0.7727272727272727,2
+GPT-5.5,Guard,Gemini3.1ProPreview,0.7424242424242424,3
+GPT-5.5,Overall Score,GPT-5.5,0.819614711033275,1
+GPT-5.5,Overall Score,Gemini3.1ProPreview,0.8073555166374781,2
+GPT-5.5,Overall Score,Claude4.5Sonnet,0.8035087719298246,3
+Gemini3.1ProPreview,Composite State,GPT-5.5,0.6774193548387096,1
+Gemini3.1ProPreview,Composite State,Gemini3.1ProPreview,0.6774193548387096,1
+Gemini3.1ProPreview,Composite State,Claude4.5Sonnet,0.6129032258064516,3
+Gemini3.1ProPreview,State,GPT-5.5,0.8396946564885496,1
+Gemini3.1ProPreview,State,Gemini3.1ProPreview,0.8396946564885496,1
+Gemini3.1ProPreview,State,Claude4.5Sonnet,0.8015267175572519,3
+Gemini3.1ProPreview,Transition,Gemini3.1ProPreview,0.8526315789473684,1
+Gemini3.1ProPreview,Transition,GPT-5.5,0.8210526315789474,2
+Gemini3.1ProPreview,Transition,Claude4.5Sonnet,0.7789473684210526,3
+Gemini3.1ProPreview,Action,GPT-5.5,0.7027027027027027,1
+Gemini3.1ProPreview,Action,Gemini3.1ProPreview,0.6306306306306306,2
+Gemini3.1ProPreview,Action,Claude4.5Sonnet,0.45045045045045046,3
+Gemini3.1ProPreview,Region,Claude4.5Sonnet,0.5,1
+Gemini3.1ProPreview,Region,GPT-5.5,0.5,1
+Gemini3.1ProPreview,Region,Gemini3.1ProPreview,0.5,1
+Gemini3.1ProPreview,History State,Gemini3.1ProPreview,0.3888888888888889,1
+Gemini3.1ProPreview,History State,GPT-5.5,0.3333333333333333,2
+Gemini3.1ProPreview,History State,Claude4.5Sonnet,0.2777777777777778,3
+Gemini3.1ProPreview,Guard,GPT-5.5,0.6212121212121212,1
+Gemini3.1ProPreview,Guard,Gemini3.1ProPreview,0.6212121212121212,1
+Gemini3.1ProPreview,Guard,Claude4.5Sonnet,0.5606060606060606,3
+Gemini3.1ProPreview,Overall Score,GPT-5.5,0.7425569176882661,1
+Gemini3.1ProPreview,Overall Score,Gemini3.1ProPreview,0.7408056042031523,2
+Gemini3.1ProPreview,Overall Score,Claude4.5Sonnet,0.658493870402802,3

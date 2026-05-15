@@ -7,7 +7,7 @@ Markdown tables for the three paper-facing experiment groups:
 
 * RQ1: human assessment of Claude-generated state machines.
 * RQ2: human-vs-LLM grading quality on Claude-generated state machines.
-* RQ3: available grading trends for GPT/Gemini-generated state machines.
+* RQ3: grader behavior consistency across Claude/GPT/Gemini-generated state machines.
 """
 
 from __future__ import annotations
@@ -35,6 +35,9 @@ TYPES = (
     "Guard",
     "Overall Score",
 )
+RQ3_GENERATORS = {"Claude4.5Sonnet", "GPT-5.5", "Gemini3.1ProPreview"}
+RQ3_BASELINE_GENERATOR = "Claude4.5Sonnet"
+RQ3_COMPARISON_GENERATORS = ("GPT-5.5", "Gemini3.1ProPreview")
 
 
 @dataclass(frozen=True)
@@ -424,9 +427,9 @@ def rq2_confusions(root: Path) -> str:
 
 
 def rq3(root: Path) -> str:
-    table_rows = []
+    distribution_rows = []
     for row in summarize_rq3(root):
-        table_rows.append(
+        distribution_rows.append(
             [
                 str(row["generator"]),
                 str(row["grader"]),
@@ -437,14 +440,79 @@ def rq3(root: Path) -> str:
                 _fmt(row["score_1_pct"]),
             ]
         )
+
+    stability_rows = []
+    for row in summarize_rq3_per_grader_stability(root):
+        if row["model_element"] != "Overall Score":
+            continue
+        stability_rows.append(
+            [
+                str(row["grader"]),
+                str(row["comparison_generator"]),
+                _fmt(row["baseline_score_1_pct"]),
+                _fmt(row["comparison_score_1_pct"]),
+                _fmt(row["delta_score_1_pct"]),
+                _fmt(row["baseline_score_0_5_pct"]),
+                _fmt(row["comparison_score_0_5_pct"]),
+                _fmt(row["delta_score_0_5_pct"]),
+            ]
+        )
+
+    ranking_rows = []
+    for row in summarize_rq3_cross_grader_rankings(root):
+        if row["model_element"] != "Overall Score":
+            continue
+        ranking_rows.append(
+            [
+                str(row["generator"]),
+                str(row["grader"]),
+                _fmt(row["score_1_pct"]),
+                str(row["rank_by_score_1"]),
+            ]
+        )
+
     note = (
-        "Note: the current repository contains GPT-5.5- and Gemini-generated "
-        "state machines graded by Claude 4.5 Sonnet only. Additional GPT/Gemini "
-        "grader runs are needed to compare all three grading trends for these generators."
+        "RQ3 tests whether grader behavior patterns observed on Claude-generated "
+        "state machines persist when the generated inputs change to GPT-5.5 and "
+        "Gemini 3.1 Pro Preview outputs. Claude-generated state machines are the "
+        "baseline condition; GPT-5.5- and Gemini-generated state machines are "
+        "comparison conditions. These tables use only LLM-assigned score "
+        "distributions and do not evaluate GPT/Gemini generation quality because "
+        "human ground truth is not available for those generated state machines."
     )
-    return note + "\n\n" + _table(
-        ["Generator", "Grader", "Model element", "Items", "Score 0", "Score 0.5", "Score 1"],
-        table_rows,
+    return "\n\n".join(
+        [
+            note,
+            "**Score distributions**",
+            _table(
+                [
+                    "Generator",
+                    "Grader",
+                    "Model element",
+                    "Items",
+                    "Score 0",
+                    "Score 0.5",
+                    "Score 1",
+                ],
+                distribution_rows,
+            ),
+            "**Per-grader stability (Overall Score)**",
+            _table(
+                [
+                    "Grader",
+                    "Comparison generator",
+                    "Baseline %1",
+                    "Comparison %1",
+                    "Delta %1",
+                    "Baseline %0.5",
+                    "Comparison %0.5",
+                    "Delta %0.5",
+                ],
+                stability_rows,
+            ),
+            "**Cross-grader rankings by %1 (Overall Score)**",
+            _table(["Generator", "Grader", "Score 1", "Rank"], ranking_rows),
+        ]
     )
 
 
@@ -457,7 +525,7 @@ def _rq3_files(root: Path) -> list[Path]:
     return [
         p
         for p in files
-        if _canonical_model_name(_generator_from_tsv(p)) in {"GPT-5.5", "Gemini3.1ProPreview"}
+        if _canonical_model_name(_generator_from_tsv(p)) in RQ3_GENERATORS
     ]
 
 
@@ -482,6 +550,77 @@ def summarize_rq3(root: Path) -> list[dict[str, object]]:
                 "score_1_pct": counts[1.0] / total if total else None,
             }
         )
+    return rows
+
+
+def _rq3_lookup(root: Path) -> dict[tuple[str, str, str], dict[str, object]]:
+    return {
+        (str(row["generator"]), str(row["grader"]), str(row["model_element"])): row
+        for row in summarize_rq3(root)
+    }
+
+
+def summarize_rq3_per_grader_stability(root: Path) -> list[dict[str, object]]:
+    lookup = _rq3_lookup(root)
+    graders = sorted({grader for _, grader, _ in lookup})
+    rows = []
+    for grader in graders:
+        for model_element in TYPES:
+            baseline = lookup.get((RQ3_BASELINE_GENERATOR, grader, model_element))
+            if baseline is None:
+                continue
+            for comparison_generator in RQ3_COMPARISON_GENERATORS:
+                comparison = lookup.get((comparison_generator, grader, model_element))
+                if comparison is None:
+                    continue
+                rows.append(
+                    {
+                        "grader": grader,
+                        "model_element": model_element,
+                        "baseline_generator": RQ3_BASELINE_GENERATOR,
+                        "comparison_generator": comparison_generator,
+                        "baseline_score_0_pct": baseline["score_0_pct"],
+                        "baseline_score_0_5_pct": baseline["score_0_5_pct"],
+                        "baseline_score_1_pct": baseline["score_1_pct"],
+                        "comparison_score_0_pct": comparison["score_0_pct"],
+                        "comparison_score_0_5_pct": comparison["score_0_5_pct"],
+                        "comparison_score_1_pct": comparison["score_1_pct"],
+                        "delta_score_0_pct": comparison["score_0_pct"] - baseline["score_0_pct"],
+                        "delta_score_0_5_pct": comparison["score_0_5_pct"]
+                        - baseline["score_0_5_pct"],
+                        "delta_score_1_pct": comparison["score_1_pct"] - baseline["score_1_pct"],
+                    }
+                )
+    return rows
+
+
+def summarize_rq3_cross_grader_rankings(root: Path) -> list[dict[str, object]]:
+    lookup = _rq3_lookup(root)
+    rows = []
+    for generator in sorted({generator for generator, _, _ in lookup}):
+        for model_element in TYPES:
+            candidates = [
+                row
+                for (row_generator, _, row_model_element), row in lookup.items()
+                if row_generator == generator and row_model_element == model_element
+            ]
+            candidates.sort(key=lambda row: (-row["score_1_pct"], str(row["grader"])))
+            previous_score = None
+            previous_rank = 0
+            for index, row in enumerate(candidates, start=1):
+                score = row["score_1_pct"]
+                rank = previous_rank if previous_score == score else index
+                previous_score = score
+                previous_rank = rank
+                rows.append(
+                    {
+                        "generator": generator,
+                        "model_element": model_element,
+                        "grader": row["grader"],
+                        "score_1_pct": score,
+                        "rank_by_score_1": rank,
+                    }
+                )
     return rows
 
 
@@ -563,6 +702,30 @@ def write_outputs(root: Path, out_dir: Path) -> None:
         summarize_rq3(root),
     )
     _write_csv(
+        out_dir / "rq3_per_grader_stability.csv",
+        [
+            "grader",
+            "model_element",
+            "baseline_generator",
+            "comparison_generator",
+            "baseline_score_0_pct",
+            "baseline_score_0_5_pct",
+            "baseline_score_1_pct",
+            "comparison_score_0_pct",
+            "comparison_score_0_5_pct",
+            "comparison_score_1_pct",
+            "delta_score_0_pct",
+            "delta_score_0_5_pct",
+            "delta_score_1_pct",
+        ],
+        summarize_rq3_per_grader_stability(root),
+    )
+    _write_csv(
+        out_dir / "rq3_cross_grader_rankings.csv",
+        ["generator", "model_element", "grader", "score_1_pct", "rank_by_score_1"],
+        summarize_rq3_cross_grader_rankings(root),
+    )
+    _write_csv(
         out_dir / "data_availability.csv",
         ["generator", "grader", "data_kind", "file_count"],
         data_availability(root),
@@ -584,7 +747,7 @@ def write_outputs(root: Path, out_dir: Path) -> None:
             "",
             rq2_confusions(root),
             "",
-            "## RQ3: Available Grading Trends For GPT/Gemini Generations",
+            "## RQ3: Grader Behavior Consistency Across Generated Inputs",
             "",
             rq3(root),
             "",
@@ -616,7 +779,7 @@ def main() -> None:
     print(rq2(args.root))
     print("\n## RQ2: Overall Confusion Matrices\n")
     print(rq2_confusions(args.root))
-    print("\n## RQ3: Available Grading Trends For GPT/Gemini Generations\n")
+    print("\n## RQ3: Grader Behavior Consistency Across Generated Inputs\n")
     print(rq3(args.root))
 
 
