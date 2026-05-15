@@ -183,6 +183,18 @@ def _grader_from_filename(path: Path) -> str:
     return match.group(1) if match else "Unknown"
 
 
+def _stage_shot_from_path(path: Path) -> tuple[str, str]:
+    """Return (stage, shot) extracted from the Grading/… path components.
+
+    Example: …/Grading/2 stage/6-examples/… → ("2", "6-examples")
+    """
+    parts = path.parts
+    idx = parts.index("Grading")
+    stage = parts[idx + 1].split()[0]   # "2 stage" → "2"
+    shot  = parts[idx + 2]              # "6-examples"
+    return stage, shot
+
+
 def _generator_from_tsv(path: Path) -> str:
     match = re.search(r"generated-by-(.+?)__graded-by-", path.name)
     return match.group(1) if match else "Unknown"
@@ -438,15 +450,29 @@ def summarize_rq2(root: Path) -> list[dict[str, object]]:
 
 
 def summarize_rq2_confusions(root: Path) -> list[dict[str, object]]:
-    grouped = _rq2_grouped(root)
+    files = sorted(
+        root.glob(
+            "*/Grading/2 stage/6-examples/*CombinedHumanGradingVs*AutoGrading_Claude4.5SonnetGeneration.xlsx"
+        )
+    )
+    grouped: dict[tuple[str, str, str, str], list[GradeRow]] = defaultdict(list)
+    for path in files:
+        grader = _grader_from_filename(path)
+        stage, shot = _stage_shot_from_path(path)
+        for row in load_grade_rows(path):
+            grouped[(grader, stage, shot, "Overall Score")].append(row)
+            grouped[(grader, stage, shot, row.model_element)].append(row)
+
     rows = []
-    for (grader, model_element), values in sorted(grouped.items()):
+    for (grader, stage, shot, model_element), values in sorted(grouped.items()):
         matrix = confusion(values)
         for human_score in SCORES:
             for llm_score in SCORES:
                 rows.append(
                     {
                         "grader": grader,
+                        "stage": stage,
+                        "shot": shot,
                         "model_element": model_element,
                         "human_score": human_score,
                         "llm_score": llm_score,
@@ -779,7 +805,7 @@ def write_outputs(root: Path, out_dir: Path) -> None:
     )
     _write_csv(
         out_dir / "rq2_confusion_matrices.csv",
-        ["grader", "model_element", "human_score", "llm_score", "count"],
+        ["grader", "stage", "shot", "model_element", "human_score", "llm_score", "count"],
         summarize_rq2_confusions(root),
     )
     _write_csv(

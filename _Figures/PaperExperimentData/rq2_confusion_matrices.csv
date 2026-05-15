@@ -1,217 +1,217 @@
-grader,model_element,human_score,llm_score,count
-Claude4.5Sonnet,Action,0.0,0.0,33
-Claude4.5Sonnet,Action,0.0,0.5,2
-Claude4.5Sonnet,Action,0.0,1.0,2
-Claude4.5Sonnet,Action,0.5,0.0,3
-Claude4.5Sonnet,Action,0.5,0.5,1
-Claude4.5Sonnet,Action,0.5,1.0,1
-Claude4.5Sonnet,Action,1.0,0.0,13
-Claude4.5Sonnet,Action,1.0,0.5,20
-Claude4.5Sonnet,Action,1.0,1.0,37
-Claude4.5Sonnet,Composite State,0.0,0.0,8
-Claude4.5Sonnet,Composite State,0.0,0.5,0
-Claude4.5Sonnet,Composite State,0.0,1.0,2
-Claude4.5Sonnet,Composite State,0.5,0.0,0
-Claude4.5Sonnet,Composite State,0.5,0.5,1
-Claude4.5Sonnet,Composite State,0.5,1.0,0
-Claude4.5Sonnet,Composite State,1.0,0.0,2
-Claude4.5Sonnet,Composite State,1.0,0.5,2
-Claude4.5Sonnet,Composite State,1.0,1.0,16
-Claude4.5Sonnet,Guard,0.0,0.0,16
-Claude4.5Sonnet,Guard,0.0,0.5,0
-Claude4.5Sonnet,Guard,0.0,1.0,1
-Claude4.5Sonnet,Guard,0.5,0.0,3
-Claude4.5Sonnet,Guard,0.5,0.5,4
-Claude4.5Sonnet,Guard,0.5,1.0,0
-Claude4.5Sonnet,Guard,1.0,0.0,3
-Claude4.5Sonnet,Guard,1.0,0.5,10
-Claude4.5Sonnet,Guard,1.0,1.0,29
-Claude4.5Sonnet,History State,0.0,0.0,10
-Claude4.5Sonnet,History State,0.0,0.5,0
-Claude4.5Sonnet,History State,0.0,1.0,0
-Claude4.5Sonnet,History State,0.5,0.0,1
-Claude4.5Sonnet,History State,0.5,0.5,0
-Claude4.5Sonnet,History State,0.5,1.0,0
-Claude4.5Sonnet,History State,1.0,0.0,3
-Claude4.5Sonnet,History State,1.0,0.5,1
-Claude4.5Sonnet,History State,1.0,1.0,4
-Claude4.5Sonnet,Overall Score,0.0,0.0,104
-Claude4.5Sonnet,Overall Score,0.0,0.5,6
-Claude4.5Sonnet,Overall Score,0.0,1.0,14
-Claude4.5Sonnet,Overall Score,0.5,0.0,26
-Claude4.5Sonnet,Overall Score,0.5,0.5,8
-Claude4.5Sonnet,Overall Score,0.5,1.0,2
-Claude4.5Sonnet,Overall Score,1.0,0.0,45
-Claude4.5Sonnet,Overall Score,1.0,0.5,48
-Claude4.5Sonnet,Overall Score,1.0,1.0,321
-Claude4.5Sonnet,Region,0.0,0.0,11
-Claude4.5Sonnet,Region,0.0,0.5,0
-Claude4.5Sonnet,Region,0.0,1.0,0
-Claude4.5Sonnet,Region,0.5,0.0,0
-Claude4.5Sonnet,Region,0.5,0.5,0
-Claude4.5Sonnet,Region,0.5,1.0,0
-Claude4.5Sonnet,Region,1.0,0.0,2
-Claude4.5Sonnet,Region,1.0,0.5,0
-Claude4.5Sonnet,Region,1.0,1.0,11
-Claude4.5Sonnet,State,0.0,0.0,10
-Claude4.5Sonnet,State,0.0,0.5,2
-Claude4.5Sonnet,State,0.0,1.0,7
-Claude4.5Sonnet,State,0.5,0.0,8
-Claude4.5Sonnet,State,0.5,0.5,1
-Claude4.5Sonnet,State,0.5,1.0,0
-Claude4.5Sonnet,State,1.0,0.0,11
-Claude4.5Sonnet,State,1.0,0.5,2
-Claude4.5Sonnet,State,1.0,1.0,92
-Claude4.5Sonnet,Transition,0.0,0.0,16
-Claude4.5Sonnet,Transition,0.0,0.5,2
-Claude4.5Sonnet,Transition,0.0,1.0,2
-Claude4.5Sonnet,Transition,0.5,0.0,11
-Claude4.5Sonnet,Transition,0.5,0.5,1
-Claude4.5Sonnet,Transition,0.5,1.0,1
-Claude4.5Sonnet,Transition,1.0,0.0,11
-Claude4.5Sonnet,Transition,1.0,0.5,13
-Claude4.5Sonnet,Transition,1.0,1.0,132
-GPT-5.5,Action,0.0,0.0,15
-GPT-5.5,Action,0.0,0.5,21
-GPT-5.5,Action,0.0,1.0,1
-GPT-5.5,Action,0.5,0.0,0
-GPT-5.5,Action,0.5,0.5,4
-GPT-5.5,Action,0.5,1.0,1
-GPT-5.5,Action,1.0,0.0,2
-GPT-5.5,Action,1.0,0.5,11
-GPT-5.5,Action,1.0,1.0,57
-GPT-5.5,Composite State,0.0,0.0,9
-GPT-5.5,Composite State,0.0,0.5,1
-GPT-5.5,Composite State,0.0,1.0,0
-GPT-5.5,Composite State,0.5,0.0,0
-GPT-5.5,Composite State,0.5,0.5,1
-GPT-5.5,Composite State,0.5,1.0,0
-GPT-5.5,Composite State,1.0,0.0,0
-GPT-5.5,Composite State,1.0,0.5,2
-GPT-5.5,Composite State,1.0,1.0,18
-GPT-5.5,Guard,0.0,0.0,14
-GPT-5.5,Guard,0.0,0.5,0
-GPT-5.5,Guard,0.0,1.0,3
-GPT-5.5,Guard,0.5,0.0,5
-GPT-5.5,Guard,0.5,0.5,1
-GPT-5.5,Guard,0.5,1.0,1
-GPT-5.5,Guard,1.0,0.0,5
-GPT-5.5,Guard,1.0,0.5,1
-GPT-5.5,Guard,1.0,1.0,36
-GPT-5.5,History State,0.0,0.0,10
-GPT-5.5,History State,0.0,0.5,0
-GPT-5.5,History State,0.0,1.0,0
-GPT-5.5,History State,0.5,0.0,0
-GPT-5.5,History State,0.5,0.5,0
-GPT-5.5,History State,0.5,1.0,1
-GPT-5.5,History State,1.0,0.0,2
-GPT-5.5,History State,1.0,0.5,2
-GPT-5.5,History State,1.0,1.0,4
-GPT-5.5,Overall Score,0.0,0.0,81
-GPT-5.5,Overall Score,0.0,0.5,29
-GPT-5.5,Overall Score,0.0,1.0,12
-GPT-5.5,Overall Score,0.5,0.0,16
-GPT-5.5,Overall Score,0.5,0.5,15
-GPT-5.5,Overall Score,0.5,1.0,5
-GPT-5.5,Overall Score,1.0,0.0,17
-GPT-5.5,Overall Score,1.0,0.5,42
-GPT-5.5,Overall Score,1.0,1.0,355
-GPT-5.5,Region,0.0,0.0,9
-GPT-5.5,Region,0.0,0.5,2
-GPT-5.5,Region,0.0,1.0,0
-GPT-5.5,Region,0.5,0.0,0
-GPT-5.5,Region,0.5,0.5,0
-GPT-5.5,Region,0.5,1.0,0
-GPT-5.5,Region,1.0,0.0,0
-GPT-5.5,Region,1.0,0.5,0
-GPT-5.5,Region,1.0,1.0,13
-GPT-5.5,State,0.0,0.0,13
-GPT-5.5,State,0.0,0.5,1
-GPT-5.5,State,0.0,1.0,3
-GPT-5.5,State,0.5,0.0,5
-GPT-5.5,State,0.5,0.5,3
-GPT-5.5,State,0.5,1.0,1
-GPT-5.5,State,1.0,0.0,6
-GPT-5.5,State,1.0,0.5,3
-GPT-5.5,State,1.0,1.0,96
-GPT-5.5,Transition,0.0,0.0,11
-GPT-5.5,Transition,0.0,0.5,4
-GPT-5.5,Transition,0.0,1.0,5
-GPT-5.5,Transition,0.5,0.0,6
-GPT-5.5,Transition,0.5,0.5,6
-GPT-5.5,Transition,0.5,1.0,1
-GPT-5.5,Transition,1.0,0.0,2
-GPT-5.5,Transition,1.0,0.5,23
-GPT-5.5,Transition,1.0,1.0,131
-Gemini3.1ProPreview,Action,0.0,0.0,28
-Gemini3.1ProPreview,Action,0.0,0.5,7
-Gemini3.1ProPreview,Action,0.0,1.0,2
-Gemini3.1ProPreview,Action,0.5,0.0,3
-Gemini3.1ProPreview,Action,0.5,0.5,0
-Gemini3.1ProPreview,Action,0.5,1.0,2
-Gemini3.1ProPreview,Action,1.0,0.0,13
-Gemini3.1ProPreview,Action,1.0,0.5,7
-Gemini3.1ProPreview,Action,1.0,1.0,50
-Gemini3.1ProPreview,Composite State,0.0,0.0,9
-Gemini3.1ProPreview,Composite State,0.0,0.5,1
-Gemini3.1ProPreview,Composite State,0.0,1.0,0
-Gemini3.1ProPreview,Composite State,0.5,0.0,0
-Gemini3.1ProPreview,Composite State,0.5,0.5,1
-Gemini3.1ProPreview,Composite State,0.5,1.0,0
-Gemini3.1ProPreview,Composite State,1.0,0.0,2
-Gemini3.1ProPreview,Composite State,1.0,0.5,0
-Gemini3.1ProPreview,Composite State,1.0,1.0,18
-Gemini3.1ProPreview,Guard,0.0,0.0,16
-Gemini3.1ProPreview,Guard,0.0,0.5,0
-Gemini3.1ProPreview,Guard,0.0,1.0,1
-Gemini3.1ProPreview,Guard,0.5,0.0,5
-Gemini3.1ProPreview,Guard,0.5,0.5,2
-Gemini3.1ProPreview,Guard,0.5,1.0,0
-Gemini3.1ProPreview,Guard,1.0,0.0,3
-Gemini3.1ProPreview,Guard,1.0,0.5,4
-Gemini3.1ProPreview,Guard,1.0,1.0,35
-Gemini3.1ProPreview,History State,0.0,0.0,10
-Gemini3.1ProPreview,History State,0.0,0.5,0
-Gemini3.1ProPreview,History State,0.0,1.0,0
-Gemini3.1ProPreview,History State,0.5,0.0,1
-Gemini3.1ProPreview,History State,0.5,0.5,0
-Gemini3.1ProPreview,History State,0.5,1.0,0
-Gemini3.1ProPreview,History State,1.0,0.0,3
-Gemini3.1ProPreview,History State,1.0,0.5,0
-Gemini3.1ProPreview,History State,1.0,1.0,5
-Gemini3.1ProPreview,Overall Score,0.0,0.0,106
-Gemini3.1ProPreview,Overall Score,0.0,0.5,9
-Gemini3.1ProPreview,Overall Score,0.0,1.0,7
-Gemini3.1ProPreview,Overall Score,0.5,0.0,23
-Gemini3.1ProPreview,Overall Score,0.5,0.5,10
-Gemini3.1ProPreview,Overall Score,0.5,1.0,3
-Gemini3.1ProPreview,Overall Score,1.0,0.0,35
-Gemini3.1ProPreview,Overall Score,1.0,0.5,26
-Gemini3.1ProPreview,Overall Score,1.0,1.0,353
-Gemini3.1ProPreview,Region,0.0,0.0,11
-Gemini3.1ProPreview,Region,0.0,0.5,0
-Gemini3.1ProPreview,Region,0.0,1.0,0
-Gemini3.1ProPreview,Region,0.5,0.0,0
-Gemini3.1ProPreview,Region,0.5,0.5,0
-Gemini3.1ProPreview,Region,0.5,1.0,0
-Gemini3.1ProPreview,Region,1.0,0.0,2
-Gemini3.1ProPreview,Region,1.0,0.5,0
-Gemini3.1ProPreview,Region,1.0,1.0,11
-Gemini3.1ProPreview,State,0.0,0.0,15
-Gemini3.1ProPreview,State,0.0,0.5,0
-Gemini3.1ProPreview,State,0.0,1.0,2
-Gemini3.1ProPreview,State,0.5,0.0,5
-Gemini3.1ProPreview,State,0.5,0.5,3
-Gemini3.1ProPreview,State,0.5,1.0,1
-Gemini3.1ProPreview,State,1.0,0.0,6
-Gemini3.1ProPreview,State,1.0,0.5,3
-Gemini3.1ProPreview,State,1.0,1.0,96
-Gemini3.1ProPreview,Transition,0.0,0.0,17
-Gemini3.1ProPreview,Transition,0.0,0.5,1
-Gemini3.1ProPreview,Transition,0.0,1.0,2
-Gemini3.1ProPreview,Transition,0.5,0.0,9
-Gemini3.1ProPreview,Transition,0.5,0.5,4
-Gemini3.1ProPreview,Transition,0.5,1.0,0
-Gemini3.1ProPreview,Transition,1.0,0.0,6
-Gemini3.1ProPreview,Transition,1.0,0.5,12
-Gemini3.1ProPreview,Transition,1.0,1.0,138
+grader,stage,shot,model_element,human_score,llm_score,count
+Claude4.5Sonnet,2,6-examples,Action,0.0,0.0,33
+Claude4.5Sonnet,2,6-examples,Action,0.0,0.5,2
+Claude4.5Sonnet,2,6-examples,Action,0.0,1.0,2
+Claude4.5Sonnet,2,6-examples,Action,0.5,0.0,3
+Claude4.5Sonnet,2,6-examples,Action,0.5,0.5,1
+Claude4.5Sonnet,2,6-examples,Action,0.5,1.0,1
+Claude4.5Sonnet,2,6-examples,Action,1.0,0.0,13
+Claude4.5Sonnet,2,6-examples,Action,1.0,0.5,20
+Claude4.5Sonnet,2,6-examples,Action,1.0,1.0,37
+Claude4.5Sonnet,2,6-examples,Composite State,0.0,0.0,8
+Claude4.5Sonnet,2,6-examples,Composite State,0.0,0.5,0
+Claude4.5Sonnet,2,6-examples,Composite State,0.0,1.0,2
+Claude4.5Sonnet,2,6-examples,Composite State,0.5,0.0,0
+Claude4.5Sonnet,2,6-examples,Composite State,0.5,0.5,1
+Claude4.5Sonnet,2,6-examples,Composite State,0.5,1.0,0
+Claude4.5Sonnet,2,6-examples,Composite State,1.0,0.0,2
+Claude4.5Sonnet,2,6-examples,Composite State,1.0,0.5,2
+Claude4.5Sonnet,2,6-examples,Composite State,1.0,1.0,16
+Claude4.5Sonnet,2,6-examples,Guard,0.0,0.0,16
+Claude4.5Sonnet,2,6-examples,Guard,0.0,0.5,0
+Claude4.5Sonnet,2,6-examples,Guard,0.0,1.0,1
+Claude4.5Sonnet,2,6-examples,Guard,0.5,0.0,3
+Claude4.5Sonnet,2,6-examples,Guard,0.5,0.5,4
+Claude4.5Sonnet,2,6-examples,Guard,0.5,1.0,0
+Claude4.5Sonnet,2,6-examples,Guard,1.0,0.0,3
+Claude4.5Sonnet,2,6-examples,Guard,1.0,0.5,10
+Claude4.5Sonnet,2,6-examples,Guard,1.0,1.0,29
+Claude4.5Sonnet,2,6-examples,History State,0.0,0.0,10
+Claude4.5Sonnet,2,6-examples,History State,0.0,0.5,0
+Claude4.5Sonnet,2,6-examples,History State,0.0,1.0,0
+Claude4.5Sonnet,2,6-examples,History State,0.5,0.0,1
+Claude4.5Sonnet,2,6-examples,History State,0.5,0.5,0
+Claude4.5Sonnet,2,6-examples,History State,0.5,1.0,0
+Claude4.5Sonnet,2,6-examples,History State,1.0,0.0,3
+Claude4.5Sonnet,2,6-examples,History State,1.0,0.5,1
+Claude4.5Sonnet,2,6-examples,History State,1.0,1.0,4
+Claude4.5Sonnet,2,6-examples,Overall Score,0.0,0.0,104
+Claude4.5Sonnet,2,6-examples,Overall Score,0.0,0.5,6
+Claude4.5Sonnet,2,6-examples,Overall Score,0.0,1.0,14
+Claude4.5Sonnet,2,6-examples,Overall Score,0.5,0.0,26
+Claude4.5Sonnet,2,6-examples,Overall Score,0.5,0.5,8
+Claude4.5Sonnet,2,6-examples,Overall Score,0.5,1.0,2
+Claude4.5Sonnet,2,6-examples,Overall Score,1.0,0.0,45
+Claude4.5Sonnet,2,6-examples,Overall Score,1.0,0.5,48
+Claude4.5Sonnet,2,6-examples,Overall Score,1.0,1.0,321
+Claude4.5Sonnet,2,6-examples,Region,0.0,0.0,11
+Claude4.5Sonnet,2,6-examples,Region,0.0,0.5,0
+Claude4.5Sonnet,2,6-examples,Region,0.0,1.0,0
+Claude4.5Sonnet,2,6-examples,Region,0.5,0.0,0
+Claude4.5Sonnet,2,6-examples,Region,0.5,0.5,0
+Claude4.5Sonnet,2,6-examples,Region,0.5,1.0,0
+Claude4.5Sonnet,2,6-examples,Region,1.0,0.0,2
+Claude4.5Sonnet,2,6-examples,Region,1.0,0.5,0
+Claude4.5Sonnet,2,6-examples,Region,1.0,1.0,11
+Claude4.5Sonnet,2,6-examples,State,0.0,0.0,10
+Claude4.5Sonnet,2,6-examples,State,0.0,0.5,2
+Claude4.5Sonnet,2,6-examples,State,0.0,1.0,7
+Claude4.5Sonnet,2,6-examples,State,0.5,0.0,8
+Claude4.5Sonnet,2,6-examples,State,0.5,0.5,1
+Claude4.5Sonnet,2,6-examples,State,0.5,1.0,0
+Claude4.5Sonnet,2,6-examples,State,1.0,0.0,11
+Claude4.5Sonnet,2,6-examples,State,1.0,0.5,2
+Claude4.5Sonnet,2,6-examples,State,1.0,1.0,92
+Claude4.5Sonnet,2,6-examples,Transition,0.0,0.0,16
+Claude4.5Sonnet,2,6-examples,Transition,0.0,0.5,2
+Claude4.5Sonnet,2,6-examples,Transition,0.0,1.0,2
+Claude4.5Sonnet,2,6-examples,Transition,0.5,0.0,11
+Claude4.5Sonnet,2,6-examples,Transition,0.5,0.5,1
+Claude4.5Sonnet,2,6-examples,Transition,0.5,1.0,1
+Claude4.5Sonnet,2,6-examples,Transition,1.0,0.0,11
+Claude4.5Sonnet,2,6-examples,Transition,1.0,0.5,13
+Claude4.5Sonnet,2,6-examples,Transition,1.0,1.0,132
+GPT-5.5,2,6-examples,Action,0.0,0.0,15
+GPT-5.5,2,6-examples,Action,0.0,0.5,21
+GPT-5.5,2,6-examples,Action,0.0,1.0,1
+GPT-5.5,2,6-examples,Action,0.5,0.0,0
+GPT-5.5,2,6-examples,Action,0.5,0.5,4
+GPT-5.5,2,6-examples,Action,0.5,1.0,1
+GPT-5.5,2,6-examples,Action,1.0,0.0,2
+GPT-5.5,2,6-examples,Action,1.0,0.5,11
+GPT-5.5,2,6-examples,Action,1.0,1.0,57
+GPT-5.5,2,6-examples,Composite State,0.0,0.0,9
+GPT-5.5,2,6-examples,Composite State,0.0,0.5,1
+GPT-5.5,2,6-examples,Composite State,0.0,1.0,0
+GPT-5.5,2,6-examples,Composite State,0.5,0.0,0
+GPT-5.5,2,6-examples,Composite State,0.5,0.5,1
+GPT-5.5,2,6-examples,Composite State,0.5,1.0,0
+GPT-5.5,2,6-examples,Composite State,1.0,0.0,0
+GPT-5.5,2,6-examples,Composite State,1.0,0.5,2
+GPT-5.5,2,6-examples,Composite State,1.0,1.0,18
+GPT-5.5,2,6-examples,Guard,0.0,0.0,14
+GPT-5.5,2,6-examples,Guard,0.0,0.5,0
+GPT-5.5,2,6-examples,Guard,0.0,1.0,3
+GPT-5.5,2,6-examples,Guard,0.5,0.0,5
+GPT-5.5,2,6-examples,Guard,0.5,0.5,1
+GPT-5.5,2,6-examples,Guard,0.5,1.0,1
+GPT-5.5,2,6-examples,Guard,1.0,0.0,5
+GPT-5.5,2,6-examples,Guard,1.0,0.5,1
+GPT-5.5,2,6-examples,Guard,1.0,1.0,36
+GPT-5.5,2,6-examples,History State,0.0,0.0,10
+GPT-5.5,2,6-examples,History State,0.0,0.5,0
+GPT-5.5,2,6-examples,History State,0.0,1.0,0
+GPT-5.5,2,6-examples,History State,0.5,0.0,0
+GPT-5.5,2,6-examples,History State,0.5,0.5,0
+GPT-5.5,2,6-examples,History State,0.5,1.0,1
+GPT-5.5,2,6-examples,History State,1.0,0.0,2
+GPT-5.5,2,6-examples,History State,1.0,0.5,2
+GPT-5.5,2,6-examples,History State,1.0,1.0,4
+GPT-5.5,2,6-examples,Overall Score,0.0,0.0,81
+GPT-5.5,2,6-examples,Overall Score,0.0,0.5,29
+GPT-5.5,2,6-examples,Overall Score,0.0,1.0,12
+GPT-5.5,2,6-examples,Overall Score,0.5,0.0,16
+GPT-5.5,2,6-examples,Overall Score,0.5,0.5,15
+GPT-5.5,2,6-examples,Overall Score,0.5,1.0,5
+GPT-5.5,2,6-examples,Overall Score,1.0,0.0,17
+GPT-5.5,2,6-examples,Overall Score,1.0,0.5,42
+GPT-5.5,2,6-examples,Overall Score,1.0,1.0,355
+GPT-5.5,2,6-examples,Region,0.0,0.0,9
+GPT-5.5,2,6-examples,Region,0.0,0.5,2
+GPT-5.5,2,6-examples,Region,0.0,1.0,0
+GPT-5.5,2,6-examples,Region,0.5,0.0,0
+GPT-5.5,2,6-examples,Region,0.5,0.5,0
+GPT-5.5,2,6-examples,Region,0.5,1.0,0
+GPT-5.5,2,6-examples,Region,1.0,0.0,0
+GPT-5.5,2,6-examples,Region,1.0,0.5,0
+GPT-5.5,2,6-examples,Region,1.0,1.0,13
+GPT-5.5,2,6-examples,State,0.0,0.0,13
+GPT-5.5,2,6-examples,State,0.0,0.5,1
+GPT-5.5,2,6-examples,State,0.0,1.0,3
+GPT-5.5,2,6-examples,State,0.5,0.0,5
+GPT-5.5,2,6-examples,State,0.5,0.5,3
+GPT-5.5,2,6-examples,State,0.5,1.0,1
+GPT-5.5,2,6-examples,State,1.0,0.0,6
+GPT-5.5,2,6-examples,State,1.0,0.5,3
+GPT-5.5,2,6-examples,State,1.0,1.0,96
+GPT-5.5,2,6-examples,Transition,0.0,0.0,11
+GPT-5.5,2,6-examples,Transition,0.0,0.5,4
+GPT-5.5,2,6-examples,Transition,0.0,1.0,5
+GPT-5.5,2,6-examples,Transition,0.5,0.0,6
+GPT-5.5,2,6-examples,Transition,0.5,0.5,6
+GPT-5.5,2,6-examples,Transition,0.5,1.0,1
+GPT-5.5,2,6-examples,Transition,1.0,0.0,2
+GPT-5.5,2,6-examples,Transition,1.0,0.5,23
+GPT-5.5,2,6-examples,Transition,1.0,1.0,131
+Gemini3.1ProPreview,2,6-examples,Action,0.0,0.0,28
+Gemini3.1ProPreview,2,6-examples,Action,0.0,0.5,7
+Gemini3.1ProPreview,2,6-examples,Action,0.0,1.0,2
+Gemini3.1ProPreview,2,6-examples,Action,0.5,0.0,3
+Gemini3.1ProPreview,2,6-examples,Action,0.5,0.5,0
+Gemini3.1ProPreview,2,6-examples,Action,0.5,1.0,2
+Gemini3.1ProPreview,2,6-examples,Action,1.0,0.0,13
+Gemini3.1ProPreview,2,6-examples,Action,1.0,0.5,7
+Gemini3.1ProPreview,2,6-examples,Action,1.0,1.0,50
+Gemini3.1ProPreview,2,6-examples,Composite State,0.0,0.0,9
+Gemini3.1ProPreview,2,6-examples,Composite State,0.0,0.5,1
+Gemini3.1ProPreview,2,6-examples,Composite State,0.0,1.0,0
+Gemini3.1ProPreview,2,6-examples,Composite State,0.5,0.0,0
+Gemini3.1ProPreview,2,6-examples,Composite State,0.5,0.5,1
+Gemini3.1ProPreview,2,6-examples,Composite State,0.5,1.0,0
+Gemini3.1ProPreview,2,6-examples,Composite State,1.0,0.0,2
+Gemini3.1ProPreview,2,6-examples,Composite State,1.0,0.5,0
+Gemini3.1ProPreview,2,6-examples,Composite State,1.0,1.0,18
+Gemini3.1ProPreview,2,6-examples,Guard,0.0,0.0,16
+Gemini3.1ProPreview,2,6-examples,Guard,0.0,0.5,0
+Gemini3.1ProPreview,2,6-examples,Guard,0.0,1.0,1
+Gemini3.1ProPreview,2,6-examples,Guard,0.5,0.0,5
+Gemini3.1ProPreview,2,6-examples,Guard,0.5,0.5,2
+Gemini3.1ProPreview,2,6-examples,Guard,0.5,1.0,0
+Gemini3.1ProPreview,2,6-examples,Guard,1.0,0.0,3
+Gemini3.1ProPreview,2,6-examples,Guard,1.0,0.5,4
+Gemini3.1ProPreview,2,6-examples,Guard,1.0,1.0,35
+Gemini3.1ProPreview,2,6-examples,History State,0.0,0.0,10
+Gemini3.1ProPreview,2,6-examples,History State,0.0,0.5,0
+Gemini3.1ProPreview,2,6-examples,History State,0.0,1.0,0
+Gemini3.1ProPreview,2,6-examples,History State,0.5,0.0,1
+Gemini3.1ProPreview,2,6-examples,History State,0.5,0.5,0
+Gemini3.1ProPreview,2,6-examples,History State,0.5,1.0,0
+Gemini3.1ProPreview,2,6-examples,History State,1.0,0.0,3
+Gemini3.1ProPreview,2,6-examples,History State,1.0,0.5,0
+Gemini3.1ProPreview,2,6-examples,History State,1.0,1.0,5
+Gemini3.1ProPreview,2,6-examples,Overall Score,0.0,0.0,106
+Gemini3.1ProPreview,2,6-examples,Overall Score,0.0,0.5,9
+Gemini3.1ProPreview,2,6-examples,Overall Score,0.0,1.0,7
+Gemini3.1ProPreview,2,6-examples,Overall Score,0.5,0.0,23
+Gemini3.1ProPreview,2,6-examples,Overall Score,0.5,0.5,10
+Gemini3.1ProPreview,2,6-examples,Overall Score,0.5,1.0,3
+Gemini3.1ProPreview,2,6-examples,Overall Score,1.0,0.0,35
+Gemini3.1ProPreview,2,6-examples,Overall Score,1.0,0.5,26
+Gemini3.1ProPreview,2,6-examples,Overall Score,1.0,1.0,353
+Gemini3.1ProPreview,2,6-examples,Region,0.0,0.0,11
+Gemini3.1ProPreview,2,6-examples,Region,0.0,0.5,0
+Gemini3.1ProPreview,2,6-examples,Region,0.0,1.0,0
+Gemini3.1ProPreview,2,6-examples,Region,0.5,0.0,0
+Gemini3.1ProPreview,2,6-examples,Region,0.5,0.5,0
+Gemini3.1ProPreview,2,6-examples,Region,0.5,1.0,0
+Gemini3.1ProPreview,2,6-examples,Region,1.0,0.0,2
+Gemini3.1ProPreview,2,6-examples,Region,1.0,0.5,0
+Gemini3.1ProPreview,2,6-examples,Region,1.0,1.0,11
+Gemini3.1ProPreview,2,6-examples,State,0.0,0.0,15
+Gemini3.1ProPreview,2,6-examples,State,0.0,0.5,0
+Gemini3.1ProPreview,2,6-examples,State,0.0,1.0,2
+Gemini3.1ProPreview,2,6-examples,State,0.5,0.0,5
+Gemini3.1ProPreview,2,6-examples,State,0.5,0.5,3
+Gemini3.1ProPreview,2,6-examples,State,0.5,1.0,1
+Gemini3.1ProPreview,2,6-examples,State,1.0,0.0,6
+Gemini3.1ProPreview,2,6-examples,State,1.0,0.5,3
+Gemini3.1ProPreview,2,6-examples,State,1.0,1.0,96
+Gemini3.1ProPreview,2,6-examples,Transition,0.0,0.0,17
+Gemini3.1ProPreview,2,6-examples,Transition,0.0,0.5,1
+Gemini3.1ProPreview,2,6-examples,Transition,0.0,1.0,2
+Gemini3.1ProPreview,2,6-examples,Transition,0.5,0.0,9
+Gemini3.1ProPreview,2,6-examples,Transition,0.5,0.5,4
+Gemini3.1ProPreview,2,6-examples,Transition,0.5,1.0,0
+Gemini3.1ProPreview,2,6-examples,Transition,1.0,0.0,6
+Gemini3.1ProPreview,2,6-examples,Transition,1.0,0.5,12
+Gemini3.1ProPreview,2,6-examples,Transition,1.0,1.0,138

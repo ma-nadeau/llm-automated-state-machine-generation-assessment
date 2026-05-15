@@ -1,0 +1,25 @@
+LLM,Category,Kappa,n
+Claude4.5Sonnet,Action,0.507151,112
+Claude4.5Sonnet,Composite State,0.646925,31
+Claude4.5Sonnet,Guard,0.658452,66
+Claude4.5Sonnet,History State,0.552941,19
+Claude4.5Sonnet,Region,0.834483,24
+Claude4.5Sonnet,State,0.450791,133
+Claude4.5Sonnet,Transition,0.55123,189
+Claude4.5Sonnet,Overall,0.590386,574
+GPT-5.5,Action,0.602113,112
+GPT-5.5,Composite State,0.892734,31
+GPT-5.5,Guard,0.614916,66
+GPT-5.5,History State,0.614493,19
+GPT-5.5,Region,0.915493,24
+GPT-5.5,State,0.647646,131
+GPT-5.5,Transition,0.52858,189
+GPT-5.5,Overall,0.655078,572
+Gemini3.1ProPreview,Action,0.54809,112
+Gemini3.1ProPreview,Composite State,0.825647,31
+Gemini3.1ProPreview,Guard,0.720478,66
+Gemini3.1ProPreview,History State,0.612245,19
+Gemini3.1ProPreview,Region,0.834483,24
+Gemini3.1ProPreview,State,0.693438,131
+Gemini3.1ProPreview,Transition,0.654911,189
+Gemini3.1ProPreview,Overall,0.689893,572
