@@ -1,0 +1,13 @@
+generator,grader,data_kind,file_count
+Claude4.5Sonnet,Claude4.5Sonnet,human-vs-llm xlsx,9
+Claude4.5Sonnet,Claude4.5Sonnet,llm-grading tsv,9
+Claude4.5Sonnet,GPT-5.5,human-vs-llm xlsx,9
+Claude4.5Sonnet,GPT-5.5,llm-grading tsv,9
+Claude4.5Sonnet,Gemini3.1ProPreview,human-vs-llm xlsx,9
+Claude4.5Sonnet,Gemini3.1ProPreview,llm-grading tsv,9
+GPT-5.5,Claude4.5Sonnet,llm-grading tsv,9
+GPT-5.5,GPT-5.5,llm-grading tsv,9
+GPT-5.5,Gemini3.1ProPreview,llm-grading tsv,9
+Gemini3.1ProPreview,Claude4.5Sonnet,llm-grading tsv,9
+Gemini3.1ProPreview,GPT-5.5,llm-grading tsv,9
+Gemini3.1ProPreview,Gemini3.1ProPreview,llm-grading tsv,9

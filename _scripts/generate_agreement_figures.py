@@ -216,6 +216,7 @@ def plot_confusion_heatmap(
     show_xlabel: bool = True,
     x_label: str = "LLM Score",
     y_label: str = "Human Score",
+    font_size: int = 9,
 ) -> None:
     """Draw a single row-normalized confusion-matrix heatmap onto ax."""
     norm = row_normalize(matrix)
@@ -225,7 +226,7 @@ def plot_confusion_heatmap(
         for j in range(3):
             pct = norm[i, j]
             cnt = matrix[i, j]
-            annots[i, j] = "—" if np.isnan(pct) else f"{pct:.0%}\n({cnt})"
+            annots[i, j] = "—" if np.isnan(pct) else f"{pct:.2%}\n({cnt})"
 
     sns.heatmap(
         np.where(np.isnan(norm), 0, norm),
@@ -240,6 +241,7 @@ def plot_confusion_heatmap(
         cbar=False,
         linewidths=0.5,
         linecolor="white",
+        annot_kws={"size": font_size},
     )
     for i in range(3):
         ax.add_patch(
@@ -251,10 +253,11 @@ def plot_confusion_heatmap(
     n_total = int(matrix.sum())
     n_agree = int(np.trace(matrix))
     agree_pct = n_agree / n_total if n_total > 0 else 0
-    ax.set_title(f"{title}\n(agree {agree_pct:.0%}, n={n_total})", fontsize=9, pad=4)
-    ax.set_xlabel(x_label if show_xlabel else "", fontsize=8)
-    ax.set_ylabel(y_label if show_ylabel else "", fontsize=8)
-    ax.tick_params(labelsize=8)
+    title_prefix = f"Aggregate result for {title}\n" if title else ""
+    ax.set_title(f"{title_prefix} Overall Agreement {agree_pct:.2%}, n={n_total}", fontsize=font_size, pad=4)
+    ax.set_xlabel(x_label if show_xlabel else "", fontsize=font_size)
+    ax.set_ylabel(y_label if show_ylabel else "", fontsize=font_size)
+    ax.tick_params(labelsize=font_size)
 
 
 # ---------------------------------------------------------------------------
@@ -448,6 +451,33 @@ def file_short_label(xlsx_path: Path) -> str:
         return xlsx_path.stem[:80]
 
 
+def extract_autograding_llm(key: str) -> str:
+    """
+    Extract just the AutoGrading LLM portion from a key like
+    'Claude4.5SonnetAutoGrading_Claude4.5SonnetGeneration'.
+    Returns 'Claude4.5SonnetAutoGrading' (drops the generation part).
+    """
+    for part in key.split("_"):
+        if "AutoGrading" in part:
+            return part
+    return key
+
+
+def extract_stage_examples(xlsx_path: Path) -> tuple[str, str] | None:
+    """
+    Return (stage, examples) from a path like …/Grading/<stage>/<examples>/…
+    e.g. ('2-stage', '6-examples').  Returns None on parse failure.
+    """
+    parts = xlsx_path.parts
+    try:
+        grading_idx = parts.index("Grading")
+        stage = parts[grading_idx + 1].replace(" ", "-")
+        examples = parts[grading_idx + 2]
+        return stage, examples
+    except (ValueError, IndexError):
+        return None
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -505,7 +535,8 @@ def main() -> None:
         folder_name = f"ConfusionMatrices_CombinedHumanVs{key}"
         group_dir = confusion_matrices_dir / folder_name
         per_file_dir = group_dir / "per_file"
-        comparison_title = f"Human vs {key}"
+        autograding_llm = extract_autograding_llm(key)
+        comparison_title = f"CombinedHumanGradingVs{autograding_llm}"
         global_prefix = f"AllExamples_CombinedHumanVs{key}"
 
         print("=" * 60)
@@ -514,12 +545,16 @@ def main() -> None:
 
         print("Per-file confusion matrices:")
         all_frames_group: list[pd.DataFrame] = []
+        sub_groups: dict[tuple[str, str], list[pd.DataFrame]] = {}
         for xlsx_path in group_files:
             df = load_grading_data(xlsx_path)
             if df is None or len(df) == 0:
                 print(f"  [SKIP] {xlsx_path.name}")
                 continue
             all_frames_group.append(df)
+            se = extract_stage_examples(xlsx_path)
+            if se is not None:
+                sub_groups.setdefault(se, []).append(df)
             label = label_from_path(xlsx_path)
             short = file_short_label(xlsx_path)
             generate_confusion_outputs(
@@ -537,7 +572,7 @@ def main() -> None:
             continue
 
         print()
-        print("Aggregated confusion matrices:")
+        print("Aggregated confusion matrices (all stages/examples):")
         df_all = pd.concat(all_frames_group, ignore_index=True)
         generate_confusion_outputs(
             df_all,
@@ -548,6 +583,23 @@ def main() -> None:
             x_label="LLM Score",
             y_label="Human Score",
         )
+
+        print()
+        print("Aggregated confusion matrices (per stage / examples):")
+        for (stage, examples), frames in sorted(sub_groups.items()):
+            se_label = f"{stage}_{examples}"
+            se_dir = group_dir / f"global_{se_label}"
+            se_prefix = f"AllExamples_CombinedHumanVs{key}_{se_label}"
+            df_sub = pd.concat(frames, ignore_index=True)
+            generate_confusion_outputs(
+                df_sub,
+                se_dir,
+                title_prefix=f"All Examples — {stage} — {examples}",
+                file_prefix=se_prefix,
+                comparison_title=comparison_title,
+                x_label="LLM Score",
+                y_label="Human Score",
+            )
         print()
 
     print("\nDone.")

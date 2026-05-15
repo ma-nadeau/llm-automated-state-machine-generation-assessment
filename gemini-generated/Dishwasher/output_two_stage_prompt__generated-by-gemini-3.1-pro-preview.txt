@@ -1,0 +1,63 @@
+stateDiagram-v2
+    state Dishwasher
+    [*] --> Dishwasher
+    
+    state Dishwasher {
+        region Operation {
+            state Setup
+            state Running
+            [*] --> Setup
+            
+            Setup --> Setup : selectProgram / setMaxCycles()
+            Setup --> Running : start / cycles = 0
+            
+            state Running {
+                state WashingPhase
+                state DryingPhase
+                [*] --> WashingPhase
+                
+                state WashingPhase {
+                    state WaterIntake
+                    state Washing
+                    state Draining
+                    [*] --> WaterIntake
+                    
+                    WaterIntake --> Washing : waterTaken
+                    Washing --> Draining : after 10min
+                    Draining --> WaterIntake : drained [cycles < maxCycles] / cycles++
+                }
+                
+                note right of WashingPhase
+                    entry / lockDoor()
+                    exit / unlockDoor()
+                end note
+                
+                Draining --> DryingPhase : drained [cycles == maxCycles]
+                
+                state DryingPhase {
+                    state Drying
+                    state DryingSuspended
+                    [*] --> Drying
+                    
+                    note right of Drying
+                        do: dryDishesWithHotAir()
+                    end note
+                    
+                    Drying --> DryingSuspended : doorOpened / suspendTimer()
+                    DryingSuspended --> Drying : doorClosed / resumeTimer()
+                }
+            }
+            
+            Drying --> Setup : after dryingTime
+            DryingSuspended --> Setup : after 5min
+        }
+        
+        region DryingTimeSetting {
+            state StandardDryingTime
+            state ExtendedDryingTime
+            [*] --> StandardDryingTime
+            
+            StandardDryingTime --> ExtendedDryingTime : extendDryingTime / dryingTime = 40m
+            ExtendedDryingTime --> StandardDryingTime : reduceDryingTime [not in DryingPhase] / dryingTime = 20m
+        }
+    }

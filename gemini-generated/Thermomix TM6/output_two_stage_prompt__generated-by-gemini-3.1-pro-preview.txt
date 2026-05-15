@@ -1,0 +1,69 @@
+stateDiagram-v2
+    state TransportationMode
+    state Off
+    state SwitchingOff
+    
+    note right of SwitchingOff
+        entry / displaySwitchingOffMessage()
+    end note
+    
+    state On {
+        state HomeScreen
+        state RecipeSelected
+        state ShutdownWarning
+        
+        note right of ShutdownWarning
+            entry / displayShutdownWarning()
+        end note
+        
+        state Cooking {
+            state AddIngredients
+            note right of AddIngredients
+                do: weighIngredients()
+            end note
+            
+            state Chopping
+            note right of Chopping
+                do: chopIngredients()
+            end note
+            
+            state ChoppingDone
+            
+            state CookingStep
+            note right of CookingStep
+                do: cookMeal()
+            end note
+            
+            state CookingDone
+            
+            state MealReady
+            note right of MealReady
+                entry / displayMealReady()
+            end note
+            
+            [*] --> AddIngredients
+            AddIngredients --> Chopping : next [correctAmountAdded]
+            Chopping --> ChoppingDone : choppingCompleted
+            ChoppingDone --> CookingStep : next
+            CookingStep --> CookingDone : cookingCompleted
+            CookingDone --> AddIngredients : promptAddIngredients
+            CookingDone --> MealReady : lastStepCompleted
+        }
+        
+        [*] --> HomeScreen
+        HomeScreen --> RecipeSelected : selectRecipe
+        RecipeSelected --> Cooking : start [bowlPlaced]
+        
+        HomeScreen --> ShutdownWarning : after 14m30s
+        ShutdownWarning --> HomeScreen : cancel
+        ShutdownWarning --> HomeScreen : bowlRemoved
+        
+        Cooking --> HomeScreen : bowlRemoved
+    }
+    
+    [*] --> TransportationMode
+    TransportationMode --> On : selectorPressed / deactivateTransportationMode()
+    Off --> On : selectorPressed
+    On --> SwitchingOff : selectorHeld [time >= 5s]
+    SwitchingOff --> Off : selectorReleased
+    ShutdownWarning --> Off : after 30s

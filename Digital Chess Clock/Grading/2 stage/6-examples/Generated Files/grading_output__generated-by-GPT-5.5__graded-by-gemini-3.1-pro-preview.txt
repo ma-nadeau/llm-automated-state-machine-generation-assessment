@@ -1,0 +1,53 @@
+Type,Element,Grading,Notes
+State,"initial state (off)",1,Initial state transitions to Off.
+Transition,"initial state (off) => off",1,Transition from initial state to Off is present.
+State,"Off",1,Off state is present.
+Transition,"off => on",1,Transition from Off to On with onOff event is present.
+Composite State,"On",1,On is a composite state.
+State,"initial state (on)",1,Initial state inside On transitions to Setup.
+Composite State,"GameSetup",1,Setup composite state represents GameSetup.
+Region,"GameSetup Region 1",0,Not modeled as a region; flattened into sequential states.
+State,"Initial state (region 1)",0.5,Initial state exists but within a flattened structure.
+State,"TimingSelection",1,ChoosingTiming represents TimingSelection.
+Action,"incrTimingProgram()",1,Action showNextPredefinedTiming() represents incrementing timing.
+Action,"decrTimingProgram()",1,Action showPreviousPredefinedTiming() represents decrementing timing.
+Transition,"timing selection => timing selection",1,Self-transitions for plus and minus are present.
+Transition,"game setup => ready to start",1,Transitions from ChoosingTiming to TimingSelected on select.
+Region,"GameSetup Region 2",0,Not modeled as a region; flattened into sequential states.
+State,"Initial state (region 2)",0,Missing due to lack of orthogonal region.
+State,"WhiteKingOnLeft",0.5,Represented implicitly by Left variations of states.
+State,"WhiteKingOnRight",0.5,Represented implicitly by Right variations of states.
+Transition,"initial state => white king on left",0.5,Initial transition goes to BrowseWhiteLeft.
+Transition,"white king on left => white king on right",1,Transition on flip is present.
+Transition,"white king on right => white king on left",1,Transition on flip is present.
+State,"ReadyToStart",1,TimingSelected represents ReadyToStart.
+Transition,"ready to start => game running",1,Transition from TimingSelected to Game on startStop.
+Composite State,"GameRunning",1,GameRunning is a composite state.
+History State,"H",1,History state H is present inside GameRunning.
+State,"WhiteClockRunning",1,WhiteRunning represents WhiteClockRunning.
+Action,"startTimer(wc)",1,startWhiteCountdown() on entry.
+Action,"stopTimer(wc)",1,stopWhiteCountdown() on exit.
+Guard,"[wc > 0]",1,Guard [whiteTime > 1] represents [wc > 0].
+Action,"decrTimer(wc)",1,decrementWhiteClock() represents decrTimer.
+Transition,"white clock running => white clock running",1,Self-transition for decrementing clock is present.
+State,"BlackClockRunning",1,BlackRunning represents BlackClockRunning.
+Action,"startTimer(bc)",1,startBlackCountdown() on entry.
+Action,"stopTimer(bc)",1,stopBlackCountdown() on exit.
+Guard,"[bc > 0]",1,Guard [blackTime > 1] represents [bc > 0].
+Action,"decrTimer(bc)",1,decrementBlackClock() represents decrTimer.
+Transition,"balck clock running => black clock running",1,Self-transition for decrementing clock is present.
+Transition,"game running => game paused",1,Transition from GameRunning to Paused on startStop.
+Transition,"game running => game finished",1,Transitions to flag states represent game finished.
+Guard,"[wc == 0]",1,Guard [whiteTime <= 1] represents [wc == 0].
+Guard,"[bc == 0]",1,Guard [blackTime <= 1] represents [bc == 0].
+State,"GamePaused",1,Paused represents GamePaused.
+Transition,"game paused => game running",1,Transition from Paused to H on startStop.
+State,"GameFinished",1,WhiteFlag and BlackFlag represent GameFinished.
+Transition,"on => off",1,Transition from On to Off on onOff.
+State,"additional elements",0,No fundamentally incorrect additional states.
+Transition,"additional elements",0,No fundamentally incorrect additional transitions.
+Guard,"additional elements",0,No fundamentally incorrect additional guards.
+Action,"additional elements",0,Additional actions correctly model the increment logic described in the system description.
+Composite State,"additional elements",0,Extra composite state Game is a reasonable grouping.
+Region,"additional elements",0,No additional regions.
+History State,"additional elements",0,No additional history states.

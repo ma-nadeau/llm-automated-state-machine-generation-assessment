@@ -1,0 +1,55 @@
+Type,Element,Grading,Notes
+Composite State,DishwasherOn,1,Represented by state Dishwasher
+Region,Door,0,Door states not explicitly modeled as a region
+State,initial state (⇒ Closed),0,Door region missing
+State,Closed,0,Door region missing
+Transition,open (Closed ⇒ Open),0,Door region missing
+Transition,lock (Closed ⇒ Locked),0,Door region missing
+State,Open,0,Door region missing
+Transition,close (Open ⇒ Closed),0,Door region missing
+State,Locked,0,Door region missing
+Transition,unlock (Locked ⇒ Closed),0,Door region missing
+Region,Washer,1,Represented by region Operation
+State,initial state,1,Initial state to Setup
+Transition,r =1; dT=20; (initial state ⇒ Idle),0.5,Initial transition exists but lacks explicit variable initialization
+State,Idle,1,Represented by Setup state
+Transition,selectProgram(n) (Idle ⇒ Idle),1,Represented by selectProgram transition on Setup
+Guard,[n ≥ 1],0,Missing guard for program selection
+Action,r = n;,1,Represented by setMaxCycles() action
+Transition,toggleDryingTime (Idle ⇒ Idle),1,Handled correctly via parallel region DryingTimeSetting
+Action,if dT = 20 then dT = 40 else dT = 20;,1,Handled via transitions in parallel region
+Transition,start (Idle ⇒ Cleaning),1,Represented by start transition from Setup to Running
+Guard,[door.isClosed()],0,Missing guard checking if door is closed on start
+Action,door.lock(); c = 1;,1,cycles initialized on start and door locked via entry action on WashingPhase
+Composite State,Cleaning,1,Represented by WashingPhase
+State,initial state (⇒ Intake),1,Initial state to WaterIntake
+State,Intake,1,Represented by WaterIntake
+Transition,Intake ⇒ Washing,1,Represented by waterTaken transition
+State,Washing,1,Represented by Washing
+Transition,after 10 min (Washing ⇒ Drain),1,Represented by after 10min transition
+State,Drain,1,Represented by Draining
+Guard,[c < r],1,Represented by [cycles < maxCycles]
+Transition,Drain ⇒ Intake,1,Represented by transition to WaterIntake
+Action,c++,1,Represented by cycles++
+Transition,(Drain ⇒ end state),1,Represented by transition to DryingPhase
+Guard,[c ≥ r],1,Represented by [cycles == maxCycles]
+History State,History State for Cleaning,0,Not used due to alternative parallel region approach
+Transition,toggleDryingTime (Cleaning ⇒ History State),1,Handled correctly via parallel region without interrupting cleaning
+Action,if dT = 20 then dT = 40 else dT = 20;,1,Handled via parallel region transitions
+Transition,Cleaning ⇒ Drying,1,Represented by transition from Draining to DryingPhase
+Action,door.unlock();,1,Represented by exit action unlockDoor() on WashingPhase
+State,Drying,1,Represented by DryingPhase and Drying states
+Transition,after dT min (Drying ⇒ Idle),1,Represented by after dryingTime transition to Setup
+Transition,extend DryingTime (Drying ⇒ Drying),1,Handled via parallel region
+Action,dT = 40;,1,Handled via parallel region
+Transition,open (Drying ⇒ Suspended),1,Represented by doorOpened transition
+State,Suspended,1,Represented by DryingSuspended
+Transition,close (Suspended ⇒ Drying),1,Represented by doorClosed transition
+Transition,after 5 min (Suspended ⇒ Idle),1,Represented by after 5min transition to Setup
+State,additional elements,0,No unnecessary states
+Transition,additional elements,0,No unnecessary transitions
+Guard,additional elements,0,No unnecessary guards
+Action,additional elements,0,No unnecessary actions
+Composite State,additional elements,0,No unnecessary composite states
+Region,additional elements,0,Parallel region for drying time is a valid alternative modeling choice
+History State,additional elements,0,No unnecessary history states

@@ -1,0 +1,53 @@
+Type,Element,Grading,Notes
+State,initial state (off),1,Initial state pointing to Off is present
+Transition,initial state (off) => off,1,Transition from initial state to Off is present
+State,Off,1,Off state is present
+Transition,off => on,1,Transition from Off to On is present
+Composite State,On,1,On is a composite state
+State,initial state (on),1,Initial state inside On is present
+Composite State,GameSetup,0.5,Setup state exists as Configuring but is not composite
+Region,GameSetup Region 1,0,No parallel regions used in setup
+State,Initial state (region 1),0,No region 1 present
+State,TimingSelection,0.5,Handled within Configuring state
+Action,incrTimingProgram(),1,Action nextTiming() is present
+Action,decrTimingProgram(),1,Action prevTiming() is present
+Transition,timing selection => timing selection,1,Self-transitions for timing selection are present
+Transition,game setup => ready to start,1,Transition to ReadyToStart is present
+Region,GameSetup Region 2,0,No parallel regions used
+State,Initial state (region 2),0,No region 2 present
+State,WhiteKingOnLeft,0,Not explicitly modeled as a state
+State,WhiteKingOnRight,0,Not explicitly modeled as a state
+Transition,initial state => white king on left,0,Not modeled
+Transition,white king on left => white king on right,0.5,Modeled as a self-transition with swapColors action
+Transition,white king on right => white king on left,0.5,Modeled as a self-transition with swapColors action
+State,ReadyToStart,1,ReadyToStart state is present
+Transition,ready to start => game running,1,Transition to ActiveGame is present
+Composite State,GameRunning,1,ActiveGame is a composite state
+History State,H,1,History state H is present
+State,WhiteClockRunning,1,WhiteTurn state is present
+Action,startTimer(wc),0,No explicit startTimer action; timer modeled via after1sec transitions
+Action,stopTimer(wc),0,No explicit stopTimer action
+Guard,[wc > 0],1,Guard whiteTime > 0 is present
+Action,decrTimer(wc),1,Action decrementWhite() is present
+Transition,white clock running => white clock running,1,Self-transition for white clock is present
+State,BlackClockRunning,1,BlackTurn state is present
+Action,startTimer(bc),0,No explicit startTimer action; timer modeled via after1sec transitions
+Action,stopTimer(bc),0,No explicit stopTimer action
+Guard,[bc > 0],1,Guard blackTime > 0 is present
+Action,decrTimer(bc),1,Action decrementBlack() is present
+Transition,balck clock running => black clock running,1,Self-transition for black clock is present
+Transition,game running => game paused,1,Transition to Paused is present
+Transition,game running => game finished,1,Transitions to Flagged state are present
+Guard,[wc == 0],1,Guard whiteTime == 0 is present
+Guard,[bc == 0],1,Guard blackTime == 0 is present
+State,GamePaused,1,Paused state is present
+Transition,game paused => game running,1,Transition from Paused to History state is present
+State,GameFinished,1,Flagged state is present
+Transition,on => off,1,Transition from On to Off is present
+State,additional elements,0,No fundamentally incorrect additional states
+Transition,additional elements,0,Extra transitions are reasonable modeling choices
+Guard,additional elements,0,No incorrect additional guards
+Action,additional elements,0,Additional actions correctly model the increment logic
+Composite State,additional elements,0,No incorrect additional composite states
+Region,additional elements,0,No incorrect additional regions
+History State,additional elements,0,No incorrect additional history states

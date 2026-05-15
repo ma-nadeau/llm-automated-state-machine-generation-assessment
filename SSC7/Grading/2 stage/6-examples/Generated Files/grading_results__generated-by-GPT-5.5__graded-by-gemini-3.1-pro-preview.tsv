@@ -1,0 +1,74 @@
+Type	Element	Grading	Notes
+State	Initial state (→ Active)	1	Initial state points to Shopping (Active equivalent)
+Composite State	Active	1	Shopping composite state represents Active
+State	Initial state (Active → Ready)	1	Initial state inside Shopping points to ReadyForNextItem
+State	Ready	1	ReadyForNextItem represents Ready
+Transition	scannedNr (Ready ⇒ Ready)	1	barcodeScanned transition from ReadyForNextItem to itself
+Guard	[!existsNr()]	1	Guard !barcodeExists(code) is present
+Action	error()	1	Action showError() is present
+Transition	productCodeEntered (Ready ⇒ Ready)	1	productCodeEntered transition from ReadyForNextItem to itself
+Guard	[!existsCode()]	1	Guard !productCodeExists(code) is present
+Action	error()	1	Action showError() is present
+Transition	productCodeEntered (Ready ⇒ WeighItem)	1	productCodeEntered transition to WeighingProductCodeItem
+Guard	[existsCode()]	1	Guard productCodeExists(code) is present
+Transition	scannedNr (Ready ⇒ CheckWeight)	1	barcodeScanned transition to AwaitingSecurityCheck
+Guard	[existsNr()]	1	Guard barcodeExists(code) is present
+Action	addItem()	1	Action showItem(code) represents adding the item
+Transition	cancelCheckout (Ready ⇒ Override)	1	cancelEverything transition to OverrideClearAll
+Action	setTypeEverything()	1	Implicitly handled by transitioning to specific OverrideClearAll state
+Transition	removeItem (Ready ⇒ Override)	1	removeItem transition to OverrideClearItem
+Guard	[billHasItem()]	1	Guard billHasItems() is present
+Action	setTypeItem()	1	Implicitly handled by transitioning to specific OverrideClearItem state
+Transition	broughtOwnBag (Ready ⇒ WeighBag)	1	ownBags transition to WeighingBag
+Transition	pay (Ready ⇒ PayRequested)	1	pay transition to PaymentProcessing
+Guard	[billHasItem()]	1	Guard billHasItems() is present
+Action	sendPaymentRequest()	1	Action sendPaymentRequest() is handled as an entry action in PaymentProcessing
+State	WeighItem	1	WeighingProductCodeItem represents WeighItem
+Transition	cancel (WeighItem ⇒ Ready)	1	cancel transition to ReadyForNextItem
+Transition	weighedItem (WeighItem ⇒ CheckWeight)	1	itemWeightReceived transition to AwaitingSecurityCheck
+Action	addWeighedItem()	1	Action showItemWithWeight(weight) represents adding the weighed item
+State	CheckWeight	1	AwaitingSecurityCheck represents CheckWeight
+Transition	secWeighedItem (CheckWeight ⇒ Ready)	1	securityWeightReceived transition to ReadyForNextItem
+Guard	[weightMatched()]	1	Guard weightMatches(weight) is present
+Transition	secWeighedItem (CheckWeight ⇒ Override)	1	securityWeightReceived transition to OverrideClearItem
+Guard	[!weightMatched()]	1	Guard !weightMatches(weight) is present
+Action	setTypeItem()	1	Implicitly handled by transitioning to specific OverrideClearItem state
+Transition	cancelCheckout (CheckWeight ⇒ Override)	1	cancelEverything transition to OverrideClearAll
+Action	setTypeEverything()	1	Implicitly handled by transitioning to specific OverrideClearAll state
+State	WeighBag	1	WeighingBag state is present
+Transition	secWeighedItem (WeighBag ⇒ Ready)	1	securityWeightReceived transition to ReadyForNextItem
+Action	addBag()	1	Action addBag(weight) is present
+Transition	cancel (WeighBag ⇒ Ready)	1	cancel transition to ReadyForNextItem
+State	Override	1	OverrideRequired composite state represents Override
+Action	entry / lightOn()	1	entry action turnLightOn() is present
+Action	exit / lightOff()	1	exit action turnLightOff() is present
+Transition	codeEntered (Override ⇒ Ready)	1	staffCodeEntered transitions to ReadyForNextItem
+Guard	[codeCorrect() && isTypeItem()]	1	Guard overrideCodeValid(code) from OverrideClearItem implicitly handles isTypeItem()
+Action	clearItem()	1	Action clearItemFromBill() is present
+Transition	codeEntered (Override ⇒ Ready)	1	staffCodeEntered transition to ReadyForNextItem from OverrideClearAll
+Guard	[codeCorrect() && isTypeEverything()]	1	Guard overrideCodeValid(code) from OverrideClearAll implicitly handles isTypeEverything()
+Action	clearEverything()	1	Action clearEverything() is present
+Transition	codeEntered (Override ⇒ Override)	1	staffCodeEntered transitions to self on invalid code
+Guard	[!codeCorrect()]	1	Guard !overrideCodeValid(code) is present
+Transition	timeoutWarning (Active ⇒ TimeoutCountdown)	1	timeoutWarning transition from Shopping to TimeoutWarning
+Transition	error()	1	Action showError() is present on invalid code entry
+History State	H (Active)	1	History state H is present in Shopping
+State	TimeoutCountdown	1	TimeoutWarning represents TimeoutCountdown
+Action	do / countFrom60()	1	entry action startCountdown(60s) represents counting from 60
+Transition	(TimeoutCountdown ⇒ Active)	1	countdownReachedZero transition to ReadyForNextItem (inside Shopping)
+Action	clearEverything()	1	Action clearEverything() is present
+Action	readyForNextCustomer()	1	Action resetForNextCustomer() is present
+State	PayRequested	1	PaymentProcessing represents PayRequested
+Transition	fail (PayRequested ⇒ Ready)	1	paymentFail transition to ReadyForNextItem
+Action	error()	1	Action showError(error) is present
+Transition	cancel (PayRequested ⇒ Ready)	1	paymentCancel transition to ReadyForNextItem
+Transition	success (PayRequested ⇒ Ready)	1	paymentSuccess transition to ReadyForNextItem
+Action	printBill()	1	Action printBill(authCode) is present
+Action	readyForNextCustomer()	1	Action resetForNextCustomer() is present
+State	additional elements	0	No unnecessary additional states
+Transition	additional elements	0	No unnecessary additional transitions
+Guard	additional elements	0	No unnecessary additional guards
+Action	additional elements	0	No unnecessary additional actions
+Composite State	additional elements	0	No unnecessary additional composite states
+Region	additional elements	0	No unnecessary additional regions
+History State	additional elements	0	No unnecessary additional history states

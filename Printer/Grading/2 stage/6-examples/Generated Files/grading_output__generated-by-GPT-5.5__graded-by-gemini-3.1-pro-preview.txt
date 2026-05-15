@@ -1,0 +1,45 @@
+Type,Element,Grading,Notes
+State,"initial state (Off)",1,Correctly represented by initial transition to Off
+State,"Off",1,Correctly represented as Off
+Transition,"on (Off => On)",1,Correctly represented by masterOn transition
+Composite State,"On",1,Correctly represented as composite state On
+Transition,"off (On => Off)",1,Correctly represented by masterOff transition
+State,"initial state (Idle)",1,Correctly represented by initial transition to LoggedOut
+State,"Idle",1,Correctly represented as LoggedOut
+Transition,"login(cardID) (Idle => Idle)",1,Correctly represented by tapCard transition to LoggedOut
+Guard,"[!idAuthorized(cardID)]",1,Correctly represented by [!authorized(cardId)]
+Transition,"login(cardID) (Idle => Ready)",1,Correctly represented by tapCard transition to UserSession
+Guard,"[idAuthorized(cardID)]",1,Correctly represented by [authorized(cardId)]
+Action,"action=""none""",1,Correctly modeled by defaulting to AwaitingOption state
+State,"Ready",1,Correctly represented as TaskSelection and its substates
+Transition,"logoff (Ready => Idle)",1,Correctly represented by logoff transition from TaskSelection to LoggedOut
+Transition,"start (Ready => Ready)",1,Correctly represented by pressStart transition on ScanChosen
+Guard,"[action==""scan"" & !originalLoaded()]",1,Correctly represented by [!originalDetected()]
+Transition,"start (Ready => Ready)",1,Correctly represented by pressStart transition on PrintChosen
+Guard,"[action==""print"" & !documentInQueue()]",1,Correctly represented by [!hasQueuedDocument()]
+Transition,"scan (Ready => Ready)",1,Correctly represented by chooseScan transitions
+Action,"action = ""scan""",1,Correctly modeled by transitioning to ScanChosen state
+Transition,"print (Ready => Ready)",1,Correctly represented by choosePrint transitions
+Action,"action=""print""",1,Correctly modeled by transitioning to PrintChosen state
+Transition,"start (Ready => Scan & Email)",1,Correctly represented by pressStart transition to Scanning
+Guard,"[action==""scan"" && originalLoaded()]",1,Correctly represented by [originalDetected()]
+Composite State,"Busy",1,Correctly represented as ActiveTask composite state
+Transition,"stop (Busy => Ready)",1,Correctly represented by pressStop transition from ActiveTask to TaskSelection
+Transition,"done (Busy => Ready)",1,Correctly represented by printDone and scanDone transitions to TaskSelection
+Transition,"jam (Busy => Suspended)",1,Correctly represented by paperJam transition to PaperJamRecovery
+History State,"for Busy",1,Correctly represented by H state in ActiveTask
+State,"Print",1,Correctly represented as Printing
+Transition,"start (Ready => Print)",1,Correctly represented by pressStart transition to Printing
+Guard,"[action=""print"" && documentInQueue()]",1,Correctly represented by [hasQueuedDocument()]
+Transition,"outOfPaper (Print => Suspended)",1,Correctly represented by outOfPaper transition to OutOfPaperRecovery
+State,"Scan & Email",1,Correctly represented as Scanning
+State,"Suspended",1,Correctly represented by PaperJamRecovery and OutOfPaperRecovery states
+Transition,"resume (Suspended => History State for Busy)",1,Correctly represented by resume transitions to H
+Transition,"cancel (Suspended => Ready)",1,Correctly represented by cancel transitions to TaskSelection
+State,"additional elements",0,No fundamentally incorrect additional states
+Transition,"additional elements",0,No fundamentally incorrect additional transitions
+Guard,"additional elements",0,No fundamentally incorrect additional guards
+Action,"additional elements",0,No fundamentally incorrect additional actions
+Composite State,"additional elements",0,No fundamentally incorrect additional composite states
+Region,"additional elements",0,No fundamentally incorrect additional regions
+History State,"additional elements",0,No fundamentally incorrect additional history states

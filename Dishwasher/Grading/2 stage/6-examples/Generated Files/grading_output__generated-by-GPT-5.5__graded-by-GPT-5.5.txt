@@ -1,0 +1,55 @@
+Type,Element,Grading,Notes
+Composite State,"DishwasherOn",0.5,Has a main running composite but no overall composite covering setup and door behavior.
+Region,"Door",0,No separate concurrent door region is modeled.
+State,"initial state (⇒ Closed)",0,No door initial state leading to a closed state is shown.
+State,"Closed",0,Closed door is not represented as an explicit or clearly equivalent state.
+Transition,"open (Closed ⇒ Open)",0.5,Door opening is modeled during drying but not as a general Closed to Open door transition.
+Transition,"lock (Closed ⇒ Locked)",0.5,Locking is represented by lockDoor on cleaning entry but not as a door state transition.
+State,"Open",0.5,DoorOpenSuspended represents an open door only during suspended drying.
+Transition,"close (Open ⇒ Closed)",0.5,Closing is modeled from suspended drying back to drying but not as a general door transition.
+State,"Locked",0.5,The locked condition is implied by Cleaning entry lockDoor and exit unlockDoor but no explicit state exists.
+Transition,"unlock (Locked ⇒ Closed)",0.5,Unlocking is modeled on Cleaning exit but not as a door state transition.
+Region,"Washer",1,The washing process behavior is represented through setup and process regions.
+State,"initial state",1,The model has an initial transition to the default setup idle condition.
+Transition,"r =1; dT=20; (initial state ⇒ Idle)",0.5,Default drying time is represented but default program repetition count is not initialized.
+State,"Idle",1,SetupDefaultDrying and SetupExtendedDrying serve as idle setup states.
+Transition,"selectProgram(n) (Idle ⇒ Idle)",1,Program selection is modeled as self transitions in setup states.
+Guard,"[n ≥ 1]",0,No validity guard on selected program number is modeled.
+Action,"r = n;",1,setProgram and initializeProgram capture storing the selected program.
+Transition,"toggleDryingTime (Idle ⇒ Idle)",1,Drying time can be changed between default and extended before start.
+Action,"if dT = 20 then dT = 40 else dT = 20;",1,Separate extend and reduce actions set drying time to 40 or 20.
+Transition,"start (Idle ⇒ Cleaning)",1,Starting from setup enters the running program with Cleaning as the process initial state.
+Guard,"[door.isClosed()]",0,Start is guarded only by programSelected and not by door closed.
+Action,"door.lock(); c = 1;",1,Cleaning entry locks the door and initializeProgram sets up the cycle count.
+Composite State,"Cleaning",1,Cleaning is a composite with intake washing and draining.
+State,"initial state (⇒ Intake)",1,Cleaning initial state enters WaterIntake.
+State,"Intake",1,WaterIntake represents taking water from the intake pipe.
+Transition,"Intake ⇒ Washing",1,Water intake completion leads to Washing.
+State,"Washing",1,Washing state is modeled with washing behavior.
+Transition,"after 10 min (Washing ⇒ Drain)",1,Washing starts a 10 minute timer and then transitions to Draining.
+State,"Drain",1,Draining state is modeled.
+Guard,"[c < r]",1,cyclesRemaining greater than 1 is equivalent to more cycles remaining.
+Transition,"Drain ⇒ Intake",1,Draining returns to WaterIntake when more cycles remain.
+Action,"c++",1,Decrementing cyclesRemaining is an equivalent cycle progress update.
+Transition,"(Drain ⇒ end state)",1,Final drain transitions out of Cleaning to Drying.
+Guard,"[c ≥ r]",1,cyclesRemaining equal to 1 correctly identifies the final cycle.
+History State,"History State for Cleaning",1,Parallel drying time control preserves the current cleaning substate without needing explicit history.
+Transition,"toggleDryingTime (Cleaning ⇒ History State)",1,Drying time can be changed during Cleaning via the concurrent drying time region.
+Action,"if dT = 20 then dT = 40 else dT = 20;",1,Running drying time transitions set the time to 40 or back to 20 before drying starts.
+Transition,"Cleaning ⇒ Drying",1,After the final drain the model enters Drying.
+Action,"door.unlock();",1,Cleaning exit unlocks the door before drying.
+State,"Drying",1,Drying is represented as a composite state.
+Transition,"after dT min (Drying ⇒ Idle)",1,Drying timer elapsed ends the program and returns to setup idle.
+Transition,"extend DryingTime (Drying ⇒ Drying)",1,Extending drying time during operation is handled without leaving drying.
+Action,"dT = 40;",1,The extend action sets or extends drying time to 40 minutes.
+Transition,"open (Drying ⇒ Suspended)",1,Opening the door during hot air drying suspends drying.
+State,"Suspended",1,DoorOpenSuspended represents suspended drying.
+Transition,"close (Suspended ⇒ Drying)",1,Closing within the allowed time resumes hot air drying.
+Transition,"after 5 min (Suspended ⇒ Idle)",1,Door open timer elapsed ends the program.
+State,"additional elements",0,No fundamentally incorrect extra states are present.
+Transition,"additional elements",0,No fundamentally incorrect extra transitions are present.
+Guard,"additional elements",0,No fundamentally incorrect extra guards are present.
+Action,"additional elements",0,No fundamentally incorrect extra actions are present.
+Composite State,"additional elements",0,Extra composites are reasonable structural choices.
+Region,"additional elements",0,Extra regions are reasonable for parallel process and drying time control.
+History State,"additional elements",0,No incorrect extra history states are present.
