@@ -1,0 +1,28 @@
+approach,project,kappa,n,pct_above_0.80
+1-stage 3-shot,Automatic Bread Maker,0.899964,55,
+2-stage 3-shot,Automatic Bread Maker,0.72753,55,
+2-stage 6-shot,Automatic Bread Maker,0.587156,55,
+1-stage 3-shot,Digital Chess Clock,0.746246,52,
+2-stage 3-shot,Digital Chess Clock,0.479388,52,
+2-stage 6-shot,Digital Chess Clock,0.853439,52,
+1-stage 3-shot,Dishwasher,0.537354,54,
+2-stage 3-shot,Dishwasher,0.585466,54,
+2-stage 6-shot,Dishwasher,0.564181,54,
+1-stage 3-shot,Printer,0.580508,44,
+2-stage 3-shot,Printer,1.0,48,
+2-stage 6-shot,Printer,1.0,44,
+2-stage 6-shot,SSC7,0.911729,73,
+1-stage 3-shot,Spa Manager,0.963804,51,
+2-stage 3-shot,Spa Manager,0.688623,52,
+2-stage 6-shot,Spa Manager,1.0,51,
+1-stage 3-shot,Thermomix TM6,0.67923,50,
+2-stage 3-shot,Thermomix TM6,0.68599,50,
+2-stage 6-shot,Thermomix TM6,0.878641,50,
+1-stage 3-shot,Train Automation System,0.78559,77,
+2-stage 3-shot,Train Automation System,0.808253,77,
+2-stage 6-shot,Train Automation System,0.838499,77,
+2-stage 6-shot,Wumple,0.725118,116,
+2-stage 6-shot,Aggregate,0.81764,572,66.7
+2-stage 3-shot,Aggregate,0.71075,388,28.6
+1-stage 3-shot,Aggregate,0.741814,383,28.6
+Overall,Aggregate,0.762031,1343,43.5
