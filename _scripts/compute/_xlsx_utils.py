@@ -26,6 +26,20 @@ NS = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
 
 SCORES = (0.0, 0.5, 1.0)
 
+TYPE_ALIASES: dict[str, str] = {
+    "action": "Action",
+    "composite state": "Composite State",
+    "composite states": "Composite State",
+    "guard": "Guard",
+    "history state": "History State",
+    "history states": "History State",
+    "region": "Region",
+    "state": "State",
+    "states": "State",
+    "transition": "Transition",
+    "transitions": "Transition",
+}
+
 TYPES = (
     "Composite State",
     "State",
@@ -53,6 +67,7 @@ class MetricRow:
     tp: float | None
     fp: float | None
     fn: float | None
+    s: float | None = None  # weighted TP (sum of scores); None = not computed
 
 
 @dataclass(frozen=True)
@@ -122,6 +137,95 @@ def sheet_rows(path: Path, sheet_match: str) -> list[list[str]]:
                 values[idx] = value
             rows.append(values)
         return rows
+
+
+def sheet_rows_by_index(path: Path, index: int) -> list[list[str]]:
+    """Return all rows from the sheet at the given 0-based index."""
+    with zipfile.ZipFile(path) as zf:
+        strings = _shared_strings(zf)
+        sheets = _workbook_sheets(zf)
+        sheet_name = list(sheets.keys())[index]
+        root = ET.fromstring(zf.read(sheets[sheet_name]))
+        rows: list[list[str]] = []
+        for row in root.findall(".//m:sheetData/m:row", NS):
+            values: list[str] = []
+            for cell in row.findall("m:c", NS):
+                idx = _col_index(cell.attrib["r"])
+                while len(values) <= idx:
+                    values.append("")
+                value_node = cell.find("m:v", NS)
+                value = "" if value_node is None else value_node.text or ""
+                if cell.attrib.get("t") == "s" and value:
+                    value = strings[int(value)]
+                values[idx] = value
+            rows.append(values)
+        return rows
+
+
+def _is_additional_row(elem_val: str) -> bool:
+    return "additional element" in elem_val.strip().lower()
+
+
+def parse_raw_grading_sheet(
+    path: Path, sheet_index: int
+) -> dict[str, dict[str, float]]:
+    """
+    Parse a raw Human or LLM grading sheet (col A=type, B=element, C=score, D=note).
+
+    Dynamically splits rows into expected vs. additional (FP) by detecting the first
+    row where col B contains "additional element".
+
+    Returns dict: norm_type -> {"S", "TP", "FN", "FP", "N"}
+      S  = sum of scores for expected elements (weighted TP)
+      TP = count of expected elements with score > 0 (binary)
+      FN = count of expected elements with score == 0
+      FP = sum of col-C integer counts from additional rows (0, 1, 2, …)
+      N  = TP + FN = total expected elements
+    """
+    rows = sheet_rows_by_index(path, sheet_index)
+
+    # Row 0 is the header; find split starting from row 1.
+    split_idx: int | None = None
+    for i, row in enumerate(rows):
+        if i == 0:
+            continue
+        elem = row[1] if len(row) > 1 else ""
+        if _is_additional_row(elem):
+            split_idx = i
+            break
+
+    expected = rows[1:split_idx] if split_idx is not None else rows[1:]
+    additional = rows[split_idx:] if split_idx is not None else []
+
+    result: dict[str, dict[str, float]] = {}
+
+    for row in expected:
+        t_val = row[0] if row else ""
+        s_val = row[2] if len(row) > 2 else ""
+        norm = TYPE_ALIASES.get(t_val.strip().lower() if t_val else "")
+        if norm is None:
+            continue
+        score = as_float(s_val) or 0.0
+        if norm not in result:
+            result[norm] = {"S": 0.0, "TP": 0.0, "FN": 0.0, "FP": 0.0, "N": 0.0}
+        result[norm]["S"] += score
+        result[norm]["N"] += 1.0
+        if score > 0:
+            result[norm]["TP"] += 1.0
+        else:
+            result[norm]["FN"] += 1.0
+
+    for row in additional:
+        t_val = row[0] if row else ""
+        s_val = row[2] if len(row) > 2 else ""
+        norm = TYPE_ALIASES.get(t_val.strip().lower() if t_val else "")
+        if norm is None:
+            continue
+        if norm not in result:
+            result[norm] = {"S": 0.0, "TP": 0.0, "FN": 0.0, "FP": 0.0, "N": 0.0}
+        result[norm]["FP"] += as_float(s_val) or 0.0
+
+    return result
 
 
 # ── Path helpers ──────────────────────────────────────────────────────────────

@@ -1,25 +1,25 @@
-approach,model_element,examples,n,tp,fp,fn,precision,recall,f1
-one-stage,Action,7,46.0,24.0,0,20.0,1.0,0.545,0.706
-one-stage,Composite State,7,16.0,14.0,0,1.0,1.0,0.933,0.966
-one-stage,Guard,7,43.0,23.5,0,17.0,1.0,0.58,0.734
-one-stage,History State,7,7.0,3.0,0,4.0,1.0,0.429,0.6
-one-stage,Region,7,13.0,9.5,0,3.0,1.0,0.76,0.864
-one-stage,State,7,90.0,71.5,0,13.0,1.0,0.846,0.917
-one-stage,Transition,7,120.0,79.5,0,30.0,1.0,0.726,0.841
-one-stage,Overall,7,335.0,225.0,0.0,88.0,1.0,0.719,0.836
-two-stage (3 examples),Action,7,46.0,36.5,0,8.0,1.0,0.82,0.901
-two-stage (3 examples),Composite State,7,16.0,16.0,2.0,0,0.889,1.0,0.941
-two-stage (3 examples),Guard,7,43.0,30.0,1.0,10.0,0.968,0.75,0.845
-two-stage (3 examples),History State,7,7.0,4.5,0,2.0,1.0,0.692,0.818
-two-stage (3 examples),Region,7,13.0,12.5,0,0,1.0,1.0,1.0
-two-stage (3 examples),State,7,89.0,80.0,1.0,7.0,0.988,0.92,0.952
-two-stage (3 examples),Transition,7,120.0,100.0,2.0,15.0,0.98,0.87,0.922
-two-stage (3 examples),Overall,7,334.0,279.5,6.0,42.0,0.979,0.869,0.921
-two-stage (6 examples),Action,9,103.0,72.5,0,28.0,1.0,0.721,0.838
-two-stage (6 examples),Composite State,9,22.0,20.5,0,1.0,1.0,0.953,0.976
-two-stage (6 examples),Guard,9,57.0,45.5,0,8.0,1.0,0.85,0.919
-two-stage (6 examples),History State,9,9.0,6.5,2.0,2.0,0.765,0.765,0.765
-two-stage (6 examples),Region,9,15.0,13.0,0,2.0,1.0,0.867,0.929
-two-stage (6 examples),State,9,122.0,109.5,0,8.0,1.0,0.932,0.965
-two-stage (6 examples),Transition,9,180.0,162.5,0,11.0,1.0,0.937,0.967
-two-stage (6 examples),Overall,9,508.0,430.0,2.0,60.0,0.995,0.878,0.933
+approach,model_element,examples,n,s,tp,fp,fn,precision,recall,f1
+one-stage,Action,7,46.0,24.0,26.0,0,20.0,0.923,0.522,0.667
+one-stage,Composite State,7,16.0,14.0,15.0,0,1.0,0.933,0.875,0.903
+one-stage,Guard,7,43.0,23.5,26.0,0,17.0,0.904,0.547,0.681
+one-stage,History State,7,7.0,3.0,3.0,0,4.0,1.0,0.429,0.6
+one-stage,Region,7,13.0,9.5,10.0,0,3.0,0.95,0.731,0.826
+one-stage,State,7,89.0,71.5,77.0,0,12.0,0.929,0.803,0.861
+one-stage,Transition,7,120.0,79.5,90.0,0,30.0,0.883,0.662,0.757
+one-stage,Overall,7,334.0,225.0,247.0,0.0,87.0,0.911,0.674,0.775
+two-stage (3 examples),Action,7,46.0,36.5,38.0,0,8.0,0.961,0.793,0.869
+two-stage (3 examples),Composite State,7,16.0,16.0,16.0,2.0,0,0.889,1.0,0.941
+two-stage (3 examples),Guard,7,43.0,30.0,33.0,1.0,10.0,0.882,0.698,0.779
+two-stage (3 examples),History State,7,7.0,4.5,5.0,0,2.0,0.9,0.643,0.75
+two-stage (3 examples),Region,7,13.0,12.5,13.0,0,0,0.962,0.962,0.962
+two-stage (3 examples),State,7,89.0,80.0,82.0,1.0,7.0,0.964,0.899,0.93
+two-stage (3 examples),Transition,7,120.0,100.0,105.0,2.0,15.0,0.935,0.833,0.881
+two-stage (3 examples),Overall,7,334.0,279.5,292.0,6.0,42.0,0.938,0.837,0.884
+two-stage (6 examples),Action,9,103.0,72.5,75.0,0,28.0,0.967,0.704,0.815
+two-stage (6 examples),Composite State,9,22.0,20.5,21.0,0,1.0,0.976,0.932,0.953
+two-stage (6 examples),Guard,9,57.0,45.5,49.0,0,8.0,0.929,0.798,0.858
+two-stage (6 examples),History State,9,9.0,6.5,7.0,2.0,2.0,0.722,0.722,0.722
+two-stage (6 examples),Region,9,15.0,13.0,13.0,0,2.0,1.0,0.867,0.929
+two-stage (6 examples),State,9,122.0,109.5,114.0,0,8.0,0.961,0.898,0.928
+two-stage (6 examples),Transition,9,180.0,162.5,169.0,0,11.0,0.962,0.903,0.931
+two-stage (6 examples),Overall,9,508.0,430.0,448.0,2.0,60.0,0.956,0.846,0.898
