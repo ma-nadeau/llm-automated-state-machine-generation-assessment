@@ -21,6 +21,52 @@ The repositories used to generate these results are:
 - https://github.com/reheant/mermaid-parser-py — Mermaid parsing logic  
 - https://github.com/reheant/StateMachineLLM — Generation, prompting, and visualization logic  
 
+---
+
+## Table of Contents
+
+- [Top-Level Structure](#top-level-structure)
+- [Examples](#examples)
+  - [Main Evaluation Systems](#main-evaluation-systems-non-blind-examples--1-stage--2-stage-3-shot-and-6-shot)
+  - [Validation Set Examples](#validation-set-examples-blind-examples--2-stage-with-6-examples-only)
+- [Directory Organization](#directory-organization)
+  - [Reference Files](#reference-files-at-example-root-level)
+  - [Stage Folders](#stage-folders)
+  - [Example Count Folders](#example-count-folders)
+- [Pipeline Script](#pipeline-script)
+- [Scripts](#scripts)
+  - [compute/](#_scriptscompute)
+    - [\_xlsx\_utils.py](#_xlsx_utilspy)
+    - [compute\_rq1\_generation\_quality.py](#compute_rq1_generation_qualitypy)
+    - [compute\_rq2\_grading\_quality.py](#compute_rq2_grading_qualitypy)
+    - [compute\_rq2\_grading\_results.py](#compute_rq2_grading_resultspy)
+    - [compute\_rq2\_weighted\_kappa.py](#compute_rq2_weighted_kappappy)
+    - [compute\_rq2\_human\_grading\_agreement.py](#compute_rq2_human_grading_agreementpy)
+    - [compute\_rq3\_grader\_stability.py](#compute_rq3_grader_stabilitypy)
+    - [compute\_element\_distribution.py](#compute_element_distributionpy)
+  - [generate/](#_scriptsgenerate)
+    - [generate\_agreement\_figures.py](#generate_agreement_figurespy)
+    - [generate\_paper\_rq2\_confusion\_matrices.py](#generate_paper_rq2_confusion_matricespy)
+  - [checks/](#_scriptschecks)
+    - [check\_cohens\_kappa\_consistency.py](#check_cohens_kappa_consistencypy)
+    - [check\_interrater\_consistency.py](#check_interrater_consistencypy)
+- [Output Files](#output-files)
+  - [Excel Files](#excel-files-at-examples-level)
+  - [\_Figures/data/ — Experiment CSVs and Reports](#_figuresdata--experiment-csvs-and-reports)
+  - [Confusion Matrix Figures](#confusion-matrix-figures)
+  - [Grading Results Files](#grading-results-files-inside-generated-files-subfolder)
+  - [Generated State Machine Files](#generated-state-machine-files-inside-generated-files-subfolder)
+- [Evaluation Methodology](#evaluation-methodology)
+  - [Human Grading Process](#human-grading-process)
+  - [LLM-Based Grading](#llm-based-grading-automatic-grading)
+- [Grading Scheme](#grading-scheme)
+  - [Additional Elements (False Positives)](#additional-elements-false-positives)
+- [Performance Metrics Explanation](#performance-metrics-explanation)
+  - [How Metrics Are Gathered](#how-metrics-are-gathered)
+- [File Naming Convention](#file-naming-convention)
+
+---
+
 ## Top-Level Structure
 
 ```
@@ -212,7 +258,7 @@ python _scripts/run_pipeline.py --skip-figures
 
 #### `compute_rq1_generation_quality.py`
 
-**Purpose:** Reads the human-grading section (top of the `Metrics` sheet, rows 3–10) from every `*CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx` workbook across all stages and shot configurations. Pools raw N / TP / FP / FN counts across all examples per (approach, element type), derives an Overall row by summing the element-type pools, and computes micro-averaged Precision / Recall / F1 (rounded to 3 decimal places) from the pooled totals. Element types are output in alphabetical order.
+**Purpose:** Reads raw human scores from the `Human Grading` sheet (sheet index 1, column C) of every `*CombinedHumanGradingVsClaude4.5SonnetAutoGrading_Claude4.5SonnetGeneration.xlsx` workbook across all stages and shot configurations. Dynamically detects the split between expected elements and additional (false-positive) elements, then computes weighted Precision / Recall / F1 per (approach, project, element type). For the summary CSV, raw N / S / TP / FP / FN counts are pooled across all examples per (approach, element type) before metrics are derived (micro-averaging). Element types are output in alphabetical order.
 
 **Usage:**
 ```bash
@@ -241,7 +287,7 @@ python _scripts/compute/compute_rq2_grading_quality.py --print
 
 #### `compute_rq2_grading_results.py`
 
-**Purpose:** Computes and aggregates N, TP, FP, and FN counts across all grading workbooks, then derives precision, recall, and F1 metrics for CombinedHumanGrading vs. LLM AutoGrading in the 2-stage 6-example setup.
+**Purpose:** Reads raw scores directly from the `Human Grading` sheet (sheet index 1, column C) and `LLM Grading` sheet (sheet index 2, column C) of every `*CombinedHumanGradingVs*AutoGrading_Claude4.5SonnetGeneration.xlsx` workbook in the 2-stage/6-examples folders. Dynamically detects the expected-element / additional-element (FP) split per sheet, accumulates N / S / TP / FP / FN across all 9 examples per (grader, element type), then derives micro-averaged Precision / Recall / F1 from the pooled totals. The human grading section is read only once per example (it is identical across the three LLM workbooks). Graders are output in a fixed order: Human, Claude4.5Sonnet, GPT-5.5, Gemini3.1ProPreview. An Overall row is appended per grader by summing across all element types.
 
 **Usage:**
 ```bash
@@ -249,7 +295,7 @@ python _scripts/compute/compute_rq2_grading_results.py
 ```
 
 **Outputs** (written to `_Figures/data/rq2/`):
-- `rq2_2stage_6examples_Metrics_CombinedHumanVsLLM.csv` — aggregated precision, recall, F1, and N/TP/FP/FN metrics across all 9 examples, per grader and element type
+- `rq2_2stage_6examples_Metrics_CombinedHumanVsLLM.csv` — pooled N/S/TP/FP/FN counts, TotalElements (N + FP), and micro-averaged Precision/Recall/F1 (6 d.p.) across all 9 examples, per grader and element type, with a derived Overall row per grader (S = weighted true positives)
 
 #### `compute_rq2_weighted_kappa.py`
 
