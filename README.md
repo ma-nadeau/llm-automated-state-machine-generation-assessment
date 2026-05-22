@@ -13,7 +13,7 @@ This directory contains evaluation results for state machine diagram generation 
 For RQ1, precision is very high for both configurations; recall and F1 distinguish single-stage from two-stage performance. For RQ2, weighted Cohen's κ is the primary agreement metric alongside per-element confusion matrices. For RQ3, Score 1 rates and partial-credit rates are compared across generator conditions without human ground truth.
 
 > [!WARNING]
-> **Known bug — individual Metrics sheets**
+> **Known bug — Metrics sheets inside all Excel files**
 > The Precision and Recall values in each workbook's Metrics sheet are incorrect. See the [Performance Metrics Explanation](#performance-metrics-explanation) section for details.
 
 The repositories used to generate these results are:
@@ -568,7 +568,7 @@ The metrics are then:
 - **High F1-Score** → Well-balanced correctness and completeness
 
 > [!WARNING]
-> **Known bug — individual Metrics sheets**
+> **Known bug — Metrics sheets inside all Excel files**
 >
 > **Note on the individual Metrics sheets:** Each Excel workbook contains a pre-computed Metrics sheet that was used as a development aid during data collection. That sheet contains a bug: it does not distinguish between **S** (sum of partial scores) and **TP** (binary count of matched elements), treating them as equal (i.e., it uses S in place of TP in the denominator). As a result, the Precision and Recall values displayed in the individual Metrics sheets are incorrect and differ from the values reported in the final output CSVs. The individual Metrics sheets are **not** the source of any reported results.
 
