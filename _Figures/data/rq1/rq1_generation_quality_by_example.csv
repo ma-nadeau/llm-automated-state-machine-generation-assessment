@@ -1,162 +1,187 @@
-approach,project,model_element,n,tp,fp,fn
-one-stage,Automatic Bread Maker,Composite State,3.0,2.5,0.0,0.0
-one-stage,Automatic Bread Maker,State,12.0,10.5,0.0,0.0
-one-stage,Automatic Bread Maker,Transition,18.0,15.5,0.0,1.0
-one-stage,Automatic Bread Maker,Action,10.0,5.0,0.0,5.0
-one-stage,Automatic Bread Maker,Region,0.0,0.0,0.0,0.0
-one-stage,Automatic Bread Maker,History State,1.0,0.0,0.0,1.0
-one-stage,Automatic Bread Maker,Guard,4.0,3.0,0.0,1.0
-two-stage (3 examples),Automatic Bread Maker,Composite State,3.0,3.0,0.0,0.0
-two-stage (3 examples),Automatic Bread Maker,State,12.0,8.0,0.0,4.0
-two-stage (3 examples),Automatic Bread Maker,Transition,18.0,12.5,0.0,5.0
-two-stage (3 examples),Automatic Bread Maker,Action,10.0,7.0,0.0,3.0
-two-stage (3 examples),Automatic Bread Maker,Region,0.0,0.0,0.0,0.0
-two-stage (3 examples),Automatic Bread Maker,History State,1.0,0.0,0.0,1.0
-two-stage (3 examples),Automatic Bread Maker,Guard,4.0,4.0,0.0,0.0
-two-stage (6 examples),Automatic Bread Maker,Composite State,3.0,2.5,0.0,0.0
-two-stage (6 examples),Automatic Bread Maker,State,12.0,10.0,0.0,0.0
-two-stage (6 examples),Automatic Bread Maker,Transition,18.0,16.0,0.0,0.0
-two-stage (6 examples),Automatic Bread Maker,Action,10.0,9.0,0.0,0.0
-two-stage (6 examples),Automatic Bread Maker,Region,0.0,0.0,0.0,0.0
-two-stage (6 examples),Automatic Bread Maker,History State,1.0,0.5,0.0,0.0
-two-stage (6 examples),Automatic Bread Maker,Guard,4.0,4.0,0.0,0.0
-one-stage,Digital Chess Clock,Composite State,3.0,2.5,0.0,0.0
-one-stage,Digital Chess Clock,State,13.0,9.0,0.0,3.0
-one-stage,Digital Chess Clock,Transition,14.0,9.0,0.0,4.0
-one-stage,Digital Chess Clock,Action,8.0,4.5,0.0,2.0
-one-stage,Digital Chess Clock,Region,2.0,0.0,0.0,2.0
-one-stage,Digital Chess Clock,History State,1.0,1.0,0.0,0.0
-one-stage,Digital Chess Clock,Guard,4.0,0.0,0.0,4.0
-two-stage (3 examples),Digital Chess Clock,Composite State,3.0,3.0,0.0,0.0
-two-stage (3 examples),Digital Chess Clock,State,13.0,11.0,0.0,0.0
-two-stage (3 examples),Digital Chess Clock,Transition,14.0,12.0,1.0,1.0
-two-stage (3 examples),Digital Chess Clock,Action,8.0,8.0,0.0,0.0
-two-stage (3 examples),Digital Chess Clock,Region,2.0,1.5,0.0,0.0
-two-stage (3 examples),Digital Chess Clock,History State,1.0,1.0,0.0,0.0
-two-stage (3 examples),Digital Chess Clock,Guard,4.0,4.0,0.0,0.0
-two-stage (6 examples),Digital Chess Clock,Composite State,3.0,3.0,0.0,0.0
-two-stage (6 examples),Digital Chess Clock,State,13.0,11.5,0.0,1.0
-two-stage (6 examples),Digital Chess Clock,Transition,14.0,12.0,0.0,2.0
-two-stage (6 examples),Digital Chess Clock,Action,8.0,8.0,0.0,0.0
-two-stage (6 examples),Digital Chess Clock,Region,2.0,1.0,0.0,1.0
-two-stage (6 examples),Digital Chess Clock,History State,1.0,1.0,0.0,0.0
-two-stage (6 examples),Digital Chess Clock,Guard,4.0,4.0,0.0,0.0
-one-stage,Dishwasher,Composite State,2.0,2.0,0.0,0.0
-one-stage,Dishwasher,State,12.0,9.0,0.0,2.0
-one-stage,Dishwasher,Transition,19.0,10.5,0.0,7.0
-one-stage,Dishwasher,Action,7.0,4.0,0.0,3.0
-one-stage,Dishwasher,Region,2.0,0.5,0.0,1.0
-one-stage,Dishwasher,History State,1.0,0.0,0.0,1.0
-one-stage,Dishwasher,Guard,4.0,1.0,0.0,3.0
-two-stage (3 examples),Dishwasher,Composite State,2.0,2.0,1.0,0.0
-two-stage (3 examples),Dishwasher,State,12.0,12.0,0.0,0.0
-two-stage (3 examples),Dishwasher,Transition,19.0,18.0,0.0,0.0
-two-stage (3 examples),Dishwasher,Action,7.0,6.0,0.0,0.0
-two-stage (3 examples),Dishwasher,Region,2.0,2.0,0.0,0.0
-two-stage (3 examples),Dishwasher,History State,1.0,0.5,0.0,0.0
-two-stage (3 examples),Dishwasher,Guard,4.0,3.5,0.0,0.0
-two-stage (6 examples),Dishwasher,Composite State,2.0,2.0,0.0,0.0
-two-stage (6 examples),Dishwasher,State,12.0,9.0,0.0,3.0
-two-stage (6 examples),Dishwasher,Transition,19.0,13.5,0.0,5.0
-two-stage (6 examples),Dishwasher,Action,7.0,5.5,0.0,1.0
-two-stage (6 examples),Dishwasher,Region,2.0,1.0,0.0,1.0
-two-stage (6 examples),Dishwasher,History State,1.0,0.0,0.0,1.0
-two-stage (6 examples),Dishwasher,Guard,4.0,3.0,0.0,1.0
-one-stage,Printer,Composite State,2.0,1.0,0.0,1.0
-one-stage,Printer,State,9.0,8.0,0.0,1.0
-one-stage,Printer,Transition,17.0,11.0,0.0,4.0
-one-stage,Printer,Action,3.0,0.0,0.0,3.0
-one-stage,Printer,Region,0.0,0.0,0.0,0.0
-one-stage,Printer,History State,1.0,1.0,0.0,0.0
-one-stage,Printer,Guard,6.0,5.5,0.0,0.0
-two-stage (3 examples),Printer,Composite State,2.0,2.0,1.0,0.0
-two-stage (3 examples),Printer,State,8.0,8.0,0.0,0.0
-two-stage (3 examples),Printer,Transition,17.0,17.0,0.0,0.0
-two-stage (3 examples),Printer,Action,3.0,3.0,0.0,0.0
-two-stage (3 examples),Printer,Region,0.0,0.0,0.0,0.0
-two-stage (3 examples),Printer,History State,1.0,1.0,0.0,0.0
-two-stage (3 examples),Printer,Guard,6.0,6.0,0.0,0.0
-two-stage (6 examples),Printer,Composite State,2.0,2.0,0.0,0.0
-two-stage (6 examples),Printer,State,8.0,8.0,0.0,0.0
-two-stage (6 examples),Printer,Transition,17.0,17.0,0.0,0.0
-two-stage (6 examples),Printer,Action,3.0,3.0,0.0,0.0
-two-stage (6 examples),Printer,Region,0.0,0.0,0.0,0.0
-two-stage (6 examples),Printer,History State,1.0,1.0,0.0,0.0
-two-stage (6 examples),Printer,Guard,6.0,6.0,0.0,0.0
-two-stage (6 examples),SSC7,Composite State,1.0,1.0,0.0,0.0
-two-stage (6 examples),SSC7,State,9.0,9.0,0.0,0.0
-two-stage (6 examples),SSC7,Transition,23.0,23.0,0.0,0.0
-two-stage (6 examples),SSC7,Action,21.0,15.0,0.0,6.0
-two-stage (6 examples),SSC7,Region,0.0,0.0,0.0,
-two-stage (6 examples),SSC7,History State,1.0,1.0,0.0,0.0
-two-stage (6 examples),SSC7,Guard,11.0,11.0,0.0,0.0
-one-stage,Spa Manager,Composite State,3.0,3.0,0.0,0.0
-one-stage,Spa Manager,State,16.0,16.0,0.0,0.0
-one-stage,Spa Manager,Transition,15.0,13.5,0.0,1.0
-one-stage,Spa Manager,Action,0.0,0.0,0.0,0.0
-one-stage,Spa Manager,Region,5.0,5.0,0.0,0.0
-one-stage,Spa Manager,History State,1.0,1.0,0.0,0.0
-one-stage,Spa Manager,Guard,4.0,4.0,0.0,0.0
-two-stage (3 examples),Spa Manager,Composite State,3.0,3.0,0.0,0.0
-two-stage (3 examples),Spa Manager,State,16.0,16.0,0.0,0.0
-two-stage (3 examples),Spa Manager,Transition,15.0,14.5,0.0,0.0
-two-stage (3 examples),Spa Manager,Action,0.0,0.0,0.0,0.0
-two-stage (3 examples),Spa Manager,Region,5.0,5.0,0.0,0.0
-two-stage (3 examples),Spa Manager,History State,1.0,1.0,0.0,0.0
-two-stage (3 examples),Spa Manager,Guard,4.0,3.0,0.0,0.0
-two-stage (6 examples),Spa Manager,Composite State,3.0,3.0,0.0,0.0
-two-stage (6 examples),Spa Manager,State,16.0,16.0,0.0,0.0
-two-stage (6 examples),Spa Manager,Transition,15.0,15.0,0.0,0.0
-two-stage (6 examples),Spa Manager,Action,0.0,0.0,0.0,0.0
-two-stage (6 examples),Spa Manager,Region,5.0,5.0,0.0,0.0
-two-stage (6 examples),Spa Manager,History State,1.0,1.0,0.0,0.0
-two-stage (6 examples),Spa Manager,Guard,4.0,4.0,0.0,0.0
-one-stage,Thermomix TM6,Composite State,1.0,1.0,0.0,0.0
-one-stage,Thermomix TM6,State,11.0,9.0,0.0,2.0
-one-stage,Thermomix TM6,Transition,17.0,10.0,0.0,7.0
-one-stage,Thermomix TM6,Action,6.0,2.0,0.0,4.0
-one-stage,Thermomix TM6,Region,0.0,0.0,0.0,0.0
-one-stage,Thermomix TM6,History State,1.0,0.0,0.0,1.0
-one-stage,Thermomix TM6,Guard,7.0,2.5,0.0,4.0
-two-stage (3 examples),Thermomix TM6,Composite State,1.0,1.0,0.0,0.0
-two-stage (3 examples),Thermomix TM6,State,11.0,11.0,0.0,0.0
-two-stage (3 examples),Thermomix TM6,Transition,17.0,15.0,0.0,1.0
-two-stage (3 examples),Thermomix TM6,Action,6.0,4.0,0.0,2.0
-two-stage (3 examples),Thermomix TM6,Region,0.0,0.0,0.0,0.0
-two-stage (3 examples),Thermomix TM6,History State,1.0,0.0,0.0,1.0
-two-stage (3 examples),Thermomix TM6,Guard,7.0,3.0,0.0,3.0
-two-stage (6 examples),Thermomix TM6,Composite State,1.0,0.0,0.0,1.0
-two-stage (6 examples),Thermomix TM6,State,11.0,9.0,0.0,2.0
-two-stage (6 examples),Thermomix TM6,Transition,17.0,14.0,0.0,3.0
-two-stage (6 examples),Thermomix TM6,Action,6.0,1.0,0.0,5.0
-two-stage (6 examples),Thermomix TM6,Region,0.0,0.0,0.0,0.0
-two-stage (6 examples),Thermomix TM6,History State,1.0,0.0,0.0,1.0
-two-stage (6 examples),Thermomix TM6,Guard,7.0,3.0,0.0,3.0
-one-stage,Train Automation System,Composite State,2.0,2.0,0.0,0.0
-one-stage,Train Automation System,State,17.0,10.0,0.0,5.0
-one-stage,Train Automation System,Transition,20.0,10.0,0.0,6.0
-one-stage,Train Automation System,Action,12.0,8.5,0.0,3.0
-one-stage,Train Automation System,Region,4.0,4.0,0.0,0.0
-one-stage,Train Automation System,History State,1.0,0.0,0.0,1.0
-one-stage,Train Automation System,Guard,14.0,7.5,0.0,5.0
-two-stage (3 examples),Train Automation System,Composite State,2.0,2.0,0.0,0.0
-two-stage (3 examples),Train Automation System,State,17.0,14.0,1.0,3.0
-two-stage (3 examples),Train Automation System,Transition,20.0,11.0,1.0,8.0
-two-stage (3 examples),Train Automation System,Action,12.0,8.5,0.0,3.0
-two-stage (3 examples),Train Automation System,Region,4.0,4.0,0.0,0.0
-two-stage (3 examples),Train Automation System,History State,1.0,1.0,0.0,0.0
-two-stage (3 examples),Train Automation System,Guard,14.0,6.5,1.0,7.0
-two-stage (6 examples),Train Automation System,Composite State,2.0,2.0,0.0,0.0
-two-stage (6 examples),Train Automation System,State,17.0,14.5,0.0,1.0
-two-stage (6 examples),Train Automation System,Transition,20.0,17.5,0.0,0.0
-two-stage (6 examples),Train Automation System,Action,12.0,9.5,0.0,2.0
-two-stage (6 examples),Train Automation System,Region,4.0,4.0,0.0,0.0
-two-stage (6 examples),Train Automation System,History State,1.0,1.0,0.0,0.0
-two-stage (6 examples),Train Automation System,Guard,14.0,10.5,0.0,1.0
-two-stage (6 examples),Wumple,Composite State,5.0,5.0,0.0,0.0
-two-stage (6 examples),Wumple,State,24.0,22.5,0.0,1.0
-two-stage (6 examples),Wumple,Transition,37.0,34.5,0.0,1.0
-two-stage (6 examples),Wumple,Action,36.0,21.5,0.0,14.0
-two-stage (6 examples),Wumple,Region,2.0,2.0,0.0,0.0
-two-stage (6 examples),Wumple,History State,1.0,1.0,2.0,0.0
-two-stage (6 examples),Wumple,Guard,3.0,0.0,0.0,3.0
+approach,project,model_element,n,s,tp,fp,fn,precision,recall,f1
+one-stage,Automatic Bread Maker,Action,10.0,5.0,5.0,0.0,5.0,1.0,0.5,0.667
+one-stage,Automatic Bread Maker,Composite State,3.0,2.5,3.0,0.0,0.0,0.833,0.833,0.833
+one-stage,Automatic Bread Maker,Guard,4.0,3.0,3.0,0.0,1.0,1.0,0.75,0.857
+one-stage,Automatic Bread Maker,History State,1.0,0.0,0.0,0.0,1.0,,0.0,
+one-stage,Automatic Bread Maker,Region,0.0,0.0,0.0,0.0,0.0,,,
+one-stage,Automatic Bread Maker,State,12.0,10.5,12.0,0.0,0.0,0.875,0.875,0.875
+one-stage,Automatic Bread Maker,Transition,18.0,15.5,17.0,0.0,1.0,0.912,0.861,0.886
+two-stage (3 examples),Automatic Bread Maker,Action,10.0,7.0,7.0,0.0,3.0,1.0,0.7,0.824
+two-stage (3 examples),Automatic Bread Maker,Composite State,3.0,3.0,3.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Automatic Bread Maker,Guard,4.0,4.0,4.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Automatic Bread Maker,History State,1.0,0.0,0.0,0.0,1.0,,0.0,
+two-stage (3 examples),Automatic Bread Maker,Region,0.0,0.0,0.0,0.0,0.0,,,
+two-stage (3 examples),Automatic Bread Maker,State,12.0,8.0,8.0,0.0,4.0,1.0,0.667,0.8
+two-stage (3 examples),Automatic Bread Maker,Transition,18.0,12.5,13.0,0.0,5.0,0.962,0.694,0.806
+two-stage (6 examples),Automatic Bread Maker,Action,10.0,9.0,10.0,0.0,0.0,0.9,0.9,0.9
+two-stage (6 examples),Automatic Bread Maker,Composite State,3.0,2.5,3.0,0.0,0.0,0.833,0.833,0.833
+two-stage (6 examples),Automatic Bread Maker,Guard,4.0,4.0,4.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Automatic Bread Maker,History State,1.0,0.5,1.0,0.0,0.0,0.5,0.5,0.5
+two-stage (6 examples),Automatic Bread Maker,Region,0.0,0.0,0.0,0.0,0.0,,,
+two-stage (6 examples),Automatic Bread Maker,State,12.0,10.0,12.0,0.0,0.0,0.833,0.833,0.833
+two-stage (6 examples),Automatic Bread Maker,Transition,18.0,16.0,18.0,0.0,0.0,0.889,0.889,0.889
+one-stage,Digital Chess Clock,Action,8.0,4.5,6.0,0.0,2.0,0.75,0.562,0.643
+one-stage,Digital Chess Clock,Composite State,3.0,2.5,3.0,0.0,0.0,0.833,0.833,0.833
+one-stage,Digital Chess Clock,Guard,4.0,0.0,0.0,0.0,4.0,,0.0,
+one-stage,Digital Chess Clock,History State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Digital Chess Clock,Region,2.0,0.0,0.0,0.0,2.0,,0.0,
+one-stage,Digital Chess Clock,State,13.0,9.0,10.0,0.0,3.0,0.9,0.692,0.783
+one-stage,Digital Chess Clock,Transition,14.0,9.0,10.0,0.0,4.0,0.9,0.643,0.75
+two-stage (3 examples),Digital Chess Clock,Action,8.0,8.0,8.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Digital Chess Clock,Composite State,3.0,3.0,3.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Digital Chess Clock,Guard,4.0,4.0,4.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Digital Chess Clock,History State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Digital Chess Clock,Region,2.0,1.5,2.0,0.0,0.0,0.75,0.75,0.75
+two-stage (3 examples),Digital Chess Clock,State,13.0,11.0,13.0,0.0,0.0,0.846,0.846,0.846
+two-stage (3 examples),Digital Chess Clock,Transition,14.0,12.0,13.0,1.0,1.0,0.857,0.857,0.857
+two-stage (6 examples),Digital Chess Clock,Action,8.0,8.0,8.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Digital Chess Clock,Composite State,3.0,3.0,3.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Digital Chess Clock,Guard,4.0,4.0,4.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Digital Chess Clock,History State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Digital Chess Clock,Region,2.0,1.0,1.0,0.0,1.0,1.0,0.5,0.667
+two-stage (6 examples),Digital Chess Clock,State,13.0,11.5,12.0,0.0,1.0,0.958,0.885,0.92
+two-stage (6 examples),Digital Chess Clock,Transition,14.0,12.0,12.0,0.0,2.0,1.0,0.857,0.923
+one-stage,Dishwasher,Action,7.0,4.0,4.0,0.0,3.0,1.0,0.571,0.727
+one-stage,Dishwasher,Composite State,2.0,2.0,2.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Dishwasher,Guard,4.0,1.0,1.0,0.0,3.0,1.0,0.25,0.4
+one-stage,Dishwasher,History State,1.0,0.0,0.0,0.0,1.0,,0.0,
+one-stage,Dishwasher,Region,2.0,0.5,1.0,0.0,1.0,0.5,0.25,0.333
+one-stage,Dishwasher,State,12.0,9.0,10.0,0.0,2.0,0.9,0.75,0.818
+one-stage,Dishwasher,Transition,19.0,10.5,12.0,0.0,7.0,0.875,0.553,0.677
+two-stage (3 examples),Dishwasher,Action,7.0,6.0,7.0,0.0,0.0,0.857,0.857,0.857
+two-stage (3 examples),Dishwasher,Composite State,2.0,2.0,2.0,1.0,0.0,0.667,1.0,0.8
+two-stage (3 examples),Dishwasher,Guard,4.0,3.5,4.0,0.0,0.0,0.875,0.875,0.875
+two-stage (3 examples),Dishwasher,History State,1.0,0.5,1.0,0.0,0.0,0.5,0.5,0.5
+two-stage (3 examples),Dishwasher,Region,2.0,2.0,2.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Dishwasher,State,12.0,12.0,12.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Dishwasher,Transition,19.0,18.0,19.0,0.0,0.0,0.947,0.947,0.947
+two-stage (6 examples),Dishwasher,Action,7.0,5.5,6.0,0.0,1.0,0.917,0.786,0.846
+two-stage (6 examples),Dishwasher,Composite State,2.0,2.0,2.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Dishwasher,Guard,4.0,3.0,3.0,0.0,1.0,1.0,0.75,0.857
+two-stage (6 examples),Dishwasher,History State,1.0,0.0,0.0,0.0,1.0,,0.0,
+two-stage (6 examples),Dishwasher,Region,2.0,1.0,1.0,0.0,1.0,1.0,0.5,0.667
+two-stage (6 examples),Dishwasher,State,12.0,9.0,9.0,0.0,3.0,1.0,0.75,0.857
+two-stage (6 examples),Dishwasher,Transition,19.0,13.5,14.0,0.0,5.0,0.964,0.711,0.818
+one-stage,Printer,Action,3.0,0.0,0.0,0.0,3.0,,0.0,
+one-stage,Printer,Composite State,2.0,1.0,1.0,0.0,1.0,1.0,0.5,0.667
+one-stage,Printer,Guard,6.0,5.5,6.0,0.0,0.0,0.917,0.917,0.917
+one-stage,Printer,History State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Printer,Region,0.0,0.0,0.0,0.0,0.0,,,
+one-stage,Printer,State,8.0,8.0,8.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Printer,Transition,17.0,11.0,13.0,0.0,4.0,0.846,0.647,0.733
+two-stage (3 examples),Printer,Action,3.0,3.0,3.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Printer,Composite State,2.0,2.0,2.0,1.0,0.0,0.667,1.0,0.8
+two-stage (3 examples),Printer,Guard,6.0,6.0,6.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Printer,History State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Printer,Region,0.0,0.0,0.0,0.0,0.0,,,
+two-stage (3 examples),Printer,State,8.0,8.0,8.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Printer,Transition,17.0,17.0,17.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Printer,Action,3.0,3.0,3.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Printer,Composite State,2.0,2.0,2.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Printer,Guard,6.0,6.0,6.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Printer,History State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Printer,Region,0.0,0.0,0.0,0.0,0.0,,,
+two-stage (6 examples),Printer,State,8.0,8.0,8.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Printer,Transition,17.0,17.0,17.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),SSC7,Action,21.0,15.0,15.0,0.0,6.0,1.0,0.714,0.833
+two-stage (6 examples),SSC7,Composite State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),SSC7,Guard,11.0,11.0,11.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),SSC7,History State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),SSC7,Region,0.0,0.0,0.0,0.0,0.0,,,
+two-stage (6 examples),SSC7,State,9.0,9.0,9.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),SSC7,Transition,23.0,23.0,23.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Spa Manager,Action,0.0,0.0,0.0,0.0,0.0,,,
+one-stage,Spa Manager,Composite State,3.0,3.0,3.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Spa Manager,Guard,4.0,4.0,4.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Spa Manager,History State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Spa Manager,Region,5.0,5.0,5.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Spa Manager,State,16.0,16.0,16.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Spa Manager,Transition,15.0,13.5,14.0,0.0,1.0,0.964,0.9,0.931
+two-stage (3 examples),Spa Manager,Action,0.0,0.0,0.0,0.0,0.0,,,
+two-stage (3 examples),Spa Manager,Composite State,3.0,3.0,3.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Spa Manager,Guard,4.0,3.0,4.0,0.0,0.0,0.75,0.75,0.75
+two-stage (3 examples),Spa Manager,History State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Spa Manager,Region,5.0,5.0,5.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Spa Manager,State,16.0,16.0,16.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Spa Manager,Transition,15.0,14.5,15.0,0.0,0.0,0.967,0.967,0.967
+two-stage (6 examples),Spa Manager,Action,0.0,0.0,0.0,0.0,0.0,,,
+two-stage (6 examples),Spa Manager,Composite State,3.0,3.0,3.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Spa Manager,Guard,4.0,4.0,4.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Spa Manager,History State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Spa Manager,Region,5.0,5.0,5.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Spa Manager,State,16.0,16.0,16.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Spa Manager,Transition,15.0,15.0,15.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Thermomix TM6,Action,6.0,2.0,2.0,0.0,4.0,1.0,0.333,0.5
+one-stage,Thermomix TM6,Composite State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Thermomix TM6,Guard,7.0,2.5,3.0,0.0,4.0,0.833,0.357,0.5
+one-stage,Thermomix TM6,History State,1.0,0.0,0.0,0.0,1.0,,0.0,
+one-stage,Thermomix TM6,Region,0.0,0.0,0.0,0.0,0.0,,,
+one-stage,Thermomix TM6,State,11.0,9.0,9.0,0.0,2.0,1.0,0.818,0.9
+one-stage,Thermomix TM6,Transition,17.0,10.0,10.0,0.0,7.0,1.0,0.588,0.741
+two-stage (3 examples),Thermomix TM6,Action,6.0,4.0,4.0,0.0,2.0,1.0,0.667,0.8
+two-stage (3 examples),Thermomix TM6,Composite State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Thermomix TM6,Guard,7.0,3.0,4.0,0.0,3.0,0.75,0.429,0.545
+two-stage (3 examples),Thermomix TM6,History State,1.0,0.0,0.0,0.0,1.0,,0.0,
+two-stage (3 examples),Thermomix TM6,Region,0.0,0.0,0.0,0.0,0.0,,,
+two-stage (3 examples),Thermomix TM6,State,11.0,11.0,11.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Thermomix TM6,Transition,17.0,15.0,16.0,0.0,1.0,0.938,0.882,0.909
+two-stage (6 examples),Thermomix TM6,Action,6.0,1.0,1.0,0.0,5.0,1.0,0.167,0.286
+two-stage (6 examples),Thermomix TM6,Composite State,1.0,0.0,0.0,0.0,1.0,,0.0,
+two-stage (6 examples),Thermomix TM6,Guard,7.0,3.0,4.0,0.0,3.0,0.75,0.429,0.545
+two-stage (6 examples),Thermomix TM6,History State,1.0,0.0,0.0,0.0,1.0,,0.0,
+two-stage (6 examples),Thermomix TM6,Region,0.0,0.0,0.0,0.0,0.0,,,
+two-stage (6 examples),Thermomix TM6,State,11.0,9.0,9.0,0.0,2.0,1.0,0.818,0.9
+two-stage (6 examples),Thermomix TM6,Transition,17.0,14.0,14.0,0.0,3.0,1.0,0.824,0.903
+one-stage,Train Automation System,Action,12.0,8.5,9.0,0.0,3.0,0.944,0.708,0.81
+one-stage,Train Automation System,Composite State,2.0,2.0,2.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Train Automation System,Guard,14.0,7.5,9.0,0.0,5.0,0.833,0.536,0.652
+one-stage,Train Automation System,History State,1.0,0.0,0.0,0.0,1.0,,0.0,
+one-stage,Train Automation System,Region,4.0,4.0,4.0,0.0,0.0,1.0,1.0,1.0
+one-stage,Train Automation System,State,17.0,10.0,12.0,0.0,5.0,0.833,0.588,0.69
+one-stage,Train Automation System,Transition,20.0,10.0,14.0,0.0,6.0,0.714,0.5,0.588
+two-stage (3 examples),Train Automation System,Action,12.0,8.5,9.0,0.0,3.0,0.944,0.708,0.81
+two-stage (3 examples),Train Automation System,Composite State,2.0,2.0,2.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Train Automation System,Guard,14.0,6.5,7.0,1.0,7.0,0.812,0.464,0.591
+two-stage (3 examples),Train Automation System,History State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Train Automation System,Region,4.0,4.0,4.0,0.0,0.0,1.0,1.0,1.0
+two-stage (3 examples),Train Automation System,State,17.0,14.0,14.0,1.0,3.0,0.933,0.824,0.875
+two-stage (3 examples),Train Automation System,Transition,20.0,11.0,12.0,1.0,8.0,0.846,0.55,0.667
+two-stage (6 examples),Train Automation System,Action,12.0,9.5,10.0,0.0,2.0,0.95,0.792,0.864
+two-stage (6 examples),Train Automation System,Composite State,2.0,2.0,2.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Train Automation System,Guard,14.0,10.5,13.0,0.0,1.0,0.808,0.75,0.778
+two-stage (6 examples),Train Automation System,History State,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Train Automation System,Region,4.0,4.0,4.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Train Automation System,State,17.0,14.5,16.0,0.0,1.0,0.906,0.853,0.879
+two-stage (6 examples),Train Automation System,Transition,20.0,17.5,20.0,0.0,0.0,0.875,0.875,0.875
+two-stage (6 examples),Wumple,Action,36.0,21.5,22.0,0.0,14.0,0.977,0.597,0.741
+two-stage (6 examples),Wumple,Composite State,5.0,5.0,5.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Wumple,Guard,3.0,0.0,0.0,0.0,3.0,,0.0,
+two-stage (6 examples),Wumple,History State,1.0,1.0,1.0,2.0,0.0,0.333,1.0,0.5
+two-stage (6 examples),Wumple,Region,2.0,2.0,2.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Wumple,State,24.0,22.5,23.0,0.0,1.0,0.978,0.938,0.957
+two-stage (6 examples),Wumple,Transition,37.0,34.5,36.0,0.0,1.0,0.958,0.932,0.945
+one-stage,Automatic Bread Maker,Overall,48.0,36.5,40.0,0.0,8.0,0.912,0.76,0.83
+one-stage,Digital Chess Clock,Overall,45.0,26.0,30.0,0.0,15.0,0.867,0.578,0.693
+one-stage,Dishwasher,Overall,47.0,27.0,30.0,0.0,17.0,0.9,0.574,0.701
+one-stage,Printer,Overall,37.0,26.5,29.0,0.0,8.0,0.914,0.716,0.803
+one-stage,Spa Manager,Overall,44.0,42.5,43.0,0.0,1.0,0.988,0.966,0.977
+one-stage,Thermomix TM6,Overall,43.0,24.5,25.0,0.0,18.0,0.98,0.57,0.721
+one-stage,Train Automation System,Overall,70.0,42.0,50.0,0.0,20.0,0.84,0.6,0.7
+two-stage (3 examples),Automatic Bread Maker,Overall,48.0,34.5,35.0,0.0,13.0,0.986,0.719,0.831
+two-stage (3 examples),Digital Chess Clock,Overall,45.0,40.5,44.0,1.0,1.0,0.9,0.9,0.9
+two-stage (3 examples),Dishwasher,Overall,47.0,44.0,47.0,1.0,0.0,0.917,0.936,0.926
+two-stage (3 examples),Printer,Overall,37.0,37.0,37.0,1.0,0.0,0.974,1.0,0.987
+two-stage (3 examples),Spa Manager,Overall,44.0,42.5,44.0,0.0,0.0,0.966,0.966,0.966
+two-stage (3 examples),Thermomix TM6,Overall,43.0,34.0,36.0,0.0,7.0,0.944,0.791,0.861
+two-stage (3 examples),Train Automation System,Overall,70.0,47.0,49.0,3.0,21.0,0.904,0.671,0.77
+two-stage (6 examples),Automatic Bread Maker,Overall,48.0,42.0,48.0,0.0,0.0,0.875,0.875,0.875
+two-stage (6 examples),Digital Chess Clock,Overall,45.0,40.5,41.0,0.0,4.0,0.988,0.9,0.942
+two-stage (6 examples),Dishwasher,Overall,47.0,34.0,35.0,0.0,12.0,0.971,0.723,0.829
+two-stage (6 examples),Printer,Overall,37.0,37.0,37.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),SSC7,Overall,66.0,60.0,60.0,0.0,6.0,1.0,0.909,0.952
+two-stage (6 examples),Spa Manager,Overall,44.0,44.0,44.0,0.0,0.0,1.0,1.0,1.0
+two-stage (6 examples),Thermomix TM6,Overall,43.0,27.0,28.0,0.0,15.0,0.964,0.628,0.761
+two-stage (6 examples),Train Automation System,Overall,70.0,59.0,66.0,0.0,4.0,0.894,0.843,0.868
+two-stage (6 examples),Wumple,Overall,108.0,86.5,89.0,2.0,19.0,0.951,0.801,0.869
+two-stage (6 examples),main examples,Overall,334.0,283.5,299.0,0.0,35.0,0.948,0.849,0.896
+two-stage (6 examples),blind test,Overall,174.0,146.5,149.0,2.0,25.0,0.97,0.842,0.902

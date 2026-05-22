@@ -2,26 +2,25 @@
 """
 Aggregate CombinedHumanGrading vs LLM AutoGrading metrics for the 2-stage 6-examples setup.
 
-Reads the Metrics sheet of every CombinedHumanGradingVs<LLM>AutoGrading workbook and
-extracts two grading sections per file:
+Reads raw scores directly from the grading sheets (not the cached Metrics sheet):
+  Sheet 2 (Human Grading) – col C scores, human grader.
+  Sheet 3 (LLM Grading)   – col C scores, LLM auto-grader.
 
-  Rows 1-10  – Human grading (human-annotated diagrams evaluated by a human grader).
-               Identical across the 3 LLM files for the same example, so it is read
-               only once per example.
+Dynamically detects the split between expected elements and additional (FP) elements
+in each sheet by finding the first row where col B or col D contains "additional element".
 
-  Rows 12-21 – LLM auto-grader section (Claude4.5Sonnet-generated diagrams evaluated
-               by the LLM named in the filename).
+Weighted scoring per element type:
+  S  = sum of col-C scores for expected elements  (weighted TP)
+  TP = count of expected elements with score > 0  (binary TP count)
+  FP = sum of col-C integer counts from additional-element rows (0, 1, 2, …)
+  FN = count of expected elements with score == 0
+  P  = S / (TP + FP),  R = S / (TP + FN),  F1 = 2PR/(P+R)
 
+The Human section is read only once per example (it is identical across the 3 LLM files).
 
-For each section, N, TP, FP, and  FN are taken from the cached Metrics sheet values.
-
-Aggregates across all 9 examples per (Grader, ElementType), then across all element
-types for an "Overall" row per grader.
-
-Output: a single merged CSV saved to _Figures/data/rq2/
-  rq2_2stage_6examples_Metrics_CombinedHumanVsLLM.csv
-Columns: Grader, ElementType, TotalN, TotalTP, TotalFP, TotalFN, TotalElements, Precision, Recall, F1
-  TotalElements = TotalN + TotalFP (all expected + all spurious generated elements)
+Output: _Figures/data/rq2/rq2_2stage_6examples_Metrics_CombinedHumanVsLLM.csv
+Columns: Grader, ElementType, TotalN, TotalS, TotalTP, TotalFP, TotalFN,
+         TotalElements, Precision, Recall, F1
 """
 
 import csv
@@ -30,7 +29,8 @@ import os
 import re
 from collections import defaultdict
 
-import openpyxl
+from _xlsx_utils import parse_raw_grading_sheet
+from pathlib import Path
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
@@ -47,41 +47,15 @@ TARGET_TYPES = [
     "Transition",
 ]
 
-TYPE_ALIASES = {
-    "action": "Action",
-    "composite state": "Composite State",
-    "composite states": "Composite State",
-    "guard": "Guard",
-    "history state": "History State",
-    "history states": "History State",
-    "region": "Region",
-    "state": "State",
-    "states": "State",
-    "transition": "Transition",
-    "transitions": "Transition",
-}
-
 HUMAN_GRADER_LABEL = "Human"
 
-
-def normalize_type(raw):
-    if raw is None:
-        return None
-    return TYPE_ALIASES.get(str(raw).strip().lower())
+HUMAN_SHEET_INDEX = 1   # 2nd sheet = Human Grading
+LLM_SHEET_INDEX   = 2   # 3rd sheet = LLM Grading
 
 
-def safe_float(val):
-    if val is None or val == "Not Available":
-        return None
-    try:
-        return float(val)
-    except (TypeError, ValueError):
-        return None
-
-
-def compute_metrics(tp, fp, fn):
-    precision = tp / (tp + fp) if (tp + fp) > 0 else None
-    recall = tp / (tp + fn) if (tp + fn) > 0 else None
+def compute_metrics(s, tp, fp, fn):
+    precision = s / (tp + fp) if (tp + fp) > 0 else None
+    recall    = s / (tp + fn) if (tp + fn) > 0 else None
     if precision is not None and recall is not None and (precision + recall) > 0:
         f1 = 2 * precision * recall / (precision + recall)
     else:
@@ -93,35 +67,14 @@ def fmt(val, decimals=6):
     return round(val, decimals) if val is not None else "N/A"
 
 
-def read_section(ws, start_row, end_row):
-    """
-    Read target element type rows between start_row and end_row (exclusive of header
-    and 'Overall Score').  Returns dict: norm_type -> (N, TP, FP, FN_effective).
-    """
-    result = {}
-    for rn in range(start_row, end_row):
-        raw_type = ws.cell(rn, 1).value
-        if not raw_type:
-            continue
-        if str(raw_type).strip().lower() == "overall score":
-            continue
-        norm_type = normalize_type(raw_type)
-        if norm_type is None:
-            continue
-        n = safe_float(ws.cell(rn, 2).value) or 0.0
-        tp = safe_float(ws.cell(rn, 3).value) or 0.0
-        fp = safe_float(ws.cell(rn, 4).value) or 0.0
-        fn = safe_float(ws.cell(rn, 5).value) or 0.0 
-        result[norm_type] = (n, tp, fp, fn)
-    return result
-
-
-def accumulate(agg, section_data):
-    for norm_type, (n, tp, fp, fn) in section_data.items():
-        agg[norm_type]["N"] += n
-        agg[norm_type]["TP"] += tp
-        agg[norm_type]["FP"] += fp
-        agg[norm_type]["FN"] += fn
+def accumulate(agg, type_data):
+    """Add parsed sheet data (dict: type -> {S,TP,FN,FP,N}) into agg."""
+    for norm_type, d in type_data.items():
+        agg[norm_type]["N"]  += d["N"]
+        agg[norm_type]["S"]  += d["S"]
+        agg[norm_type]["TP"] += d["TP"]
+        agg[norm_type]["FP"] += d["FP"]
+        agg[norm_type]["FN"] += d["FN"]
 
 
 def main():
@@ -140,13 +93,12 @@ def main():
 
     print(f"Found {len(files)} files.\n")
 
-    # grader -> element_type -> cumulative {N, TP, FP, FN}
+    # grader -> element_type -> cumulative {N, S, TP, FP, FN}
     aggregated = defaultdict(
-        lambda: defaultdict(lambda: {"N": 0.0, "TP": 0.0, "FP": 0.0, "FN": 0.0})
+        lambda: defaultdict(lambda: {"N": 0.0, "S": 0.0, "TP": 0.0, "FP": 0.0, "FN": 0.0})
     )
 
-    # Track which examples have already contributed to the Human aggregate
-    human_examples_seen = set()
+    human_examples_seen: set[str] = set()
 
     for filepath in files:
         bn = os.path.basename(filepath)
@@ -159,47 +111,21 @@ def main():
             os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(filepath))))
         )
 
-        wb = openpyxl.load_workbook(filepath, data_only=True)
-        metrics_name = next((s for s in wb.sheetnames if "metric" in s.lower()), None)
-        if not metrics_name:
-            print(f"  WARNING: No Metrics sheet in {bn}")
-            wb.close()
-            continue
+        path = Path(filepath)
 
-        ws = wb[metrics_name]
-
-        # ── Human section: rows 3-10 (header at row 2, data at 3-9, overall at 10) ──
+        # ── Human grading: sheet 2 (index 1) ──
+        human_flag = ""
         if example not in human_examples_seen:
-            human_section = read_section(ws, start_row=3, end_row=11)
-            accumulate(aggregated[HUMAN_GRADER_LABEL], human_section)
+            human_data = parse_raw_grading_sheet(path, HUMAN_SHEET_INDEX)
+            accumulate(aggregated[HUMAN_GRADER_LABEL], human_data)
             human_examples_seen.add(example)
-            human_flag = "  [+human]"
-        else:
-            human_flag = ""
+            human_flag = f"  [+human, {len(human_data)} types]"
 
-        # ── LLM section: find header row at or after row 12, then read data ──
-        header_row = None
-        for rn in range(12, 30):
-            cell_val = ws.cell(rn, 1).value
-            if cell_val and str(cell_val).strip().lower() == "type":
-                header_row = rn
-                break
+        # ── LLM grading: sheet 3 (index 2) ──
+        llm_data = parse_raw_grading_sheet(path, LLM_SHEET_INDEX)
+        accumulate(aggregated[llm], llm_data)
 
-        if header_row is None:
-            print(f"  WARNING: No LLM header row in {bn}")
-            wb.close()
-            continue
-
-        llm_section = read_section(
-            ws, start_row=header_row + 1, end_row=header_row + 20
-        )
-        accumulate(aggregated[llm], llm_section)
-
-        wb.close()
-        print(
-            f"  {example:35} | {llm:25} | "
-            f"{len(llm_section)} LLM types, {len(human_section if human_flag else {})} human{human_flag}"
-        )
+        print(f"  {example:35} | {llm:25} | {len(llm_data)} LLM types{human_flag}")
 
     # ── Build output rows ─────────────────────────────────────────────────────
     GRADER_ORDER = [
@@ -215,17 +141,18 @@ def main():
             print(f"  WARNING: No data for grader '{grader}'")
             continue
 
-        total_n = total_tp = total_fp = total_fn = 0.0
+        total_n = total_s = total_tp = total_fp = total_fn = 0.0
 
         for etype in TARGET_TYPES:
             d = aggregated[grader][etype]
-            tp, fp, fn, n = d["TP"], d["FP"], d["FN"], d["N"]
-            precision, recall, f1 = compute_metrics(tp, fp, fn)
+            n, s, tp, fp, fn = d["N"], d["S"], d["TP"], d["FP"], d["FN"]
+            precision, recall, f1 = compute_metrics(s, tp, fp, fn)
             output_rows.append(
                 {
                     "Grader": grader,
                     "ElementType": etype,
                     "TotalN": round(n, 4),
+                    "TotalS": round(s, 4),
                     "TotalTP": round(tp, 4),
                     "TotalFP": round(fp, 4),
                     "TotalFN": round(fn, 4),
@@ -235,18 +162,19 @@ def main():
                     "F1": fmt(f1),
                 }
             )
-            total_n += n
+            total_n  += n
+            total_s  += s
             total_tp += tp
             total_fp += fp
             total_fn += fn
 
-        # Overall row for this grader
-        precision, recall, f1 = compute_metrics(total_tp, total_fp, total_fn)
+        precision, recall, f1 = compute_metrics(total_s, total_tp, total_fp, total_fn)
         output_rows.append(
             {
                 "Grader": grader,
                 "ElementType": "Overall",
                 "TotalN": round(total_n, 4),
+                "TotalS": round(total_s, 4),
                 "TotalTP": round(total_tp, 4),
                 "TotalFP": round(total_fp, 4),
                 "TotalFN": round(total_fn, 4),
@@ -261,16 +189,9 @@ def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     out_path = os.path.join(OUTPUT_DIR, OUTPUT_FILE)
     fields = [
-        "Grader",
-        "ElementType",
-        "TotalN",
-        "TotalTP",
-        "TotalFP",
-        "TotalFN",
-        "TotalElements",
-        "Precision",
-        "Recall",
-        "F1",
+        "Grader", "ElementType",
+        "TotalN", "TotalS", "TotalTP", "TotalFP", "TotalFN",
+        "TotalElements", "Precision", "Recall", "F1",
     ]
     with open(out_path, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
@@ -278,11 +199,11 @@ def main():
         writer.writerows(output_rows)
 
     # ── Console summary ───────────────────────────────────────────────────────
-    print("\n" + "=" * 100)
+    print("\n" + "=" * 110)
     print(
-        f"{'Grader':25} {'ElementType':20} {'N':>7} {'TP':>7} {'FP':>7} {'FN':>7}  {'Prec':>8} {'Rec':>8} {'F1':>8}"
+        f"{'Grader':25} {'ElementType':20} {'N':>7} {'S':>7} {'TP':>7} {'FP':>7} {'FN':>7}  {'Prec':>8} {'Rec':>8} {'F1':>8}"
     )
-    print("=" * 100)
+    print("=" * 110)
     prev_grader = None
     for r in output_rows:
         if r["Grader"] != prev_grader:
@@ -292,7 +213,7 @@ def main():
         marker = "  <-- Overall" if r["ElementType"] == "Overall" else ""
         print(
             f"{r['Grader']:25} {r['ElementType']:20} "
-            f"{r['TotalN']:>7} {r['TotalTP']:>7} {r['TotalFP']:>7} {r['TotalFN']:>7}  "
+            f"{r['TotalN']:>7} {r['TotalS']:>7} {r['TotalTP']:>7} {r['TotalFP']:>7} {r['TotalFN']:>7}  "
             f"{str(r['Precision']):>8} {str(r['Recall']):>8} {str(r['F1']):>8}{marker}"
         )
 
